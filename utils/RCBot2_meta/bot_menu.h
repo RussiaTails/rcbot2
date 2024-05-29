@@ -82,7 +82,10 @@ typedef enum
 	BOT_MENU_MAX_ITEMS
 }eBotMenus;
 
-#define MAX_MENU_CAPTION_LENGTH 64
+enum
+{
+	MAX_MENU_CAPTION_LENGTH = 64
+};
 
 class CBotMenuItem
 {
@@ -91,6 +94,8 @@ public:
 	{
 		m_szCaption[0] = 0;
 	}
+
+	virtual ~CBotMenuItem() = default;
 
 	virtual const char *getCaption ( CClient *pClient, WptColor &color );
 
@@ -176,7 +181,7 @@ public:
 
 	void activate ( CClient *pClient ) override;
 
-	Color getColor ( CClient *pClient ); // gets the colour of the caption
+	Color getColor ( CClient *pClient ); // gets the colour of the caption - TODO: not implemented yet [APG]RoboCop[CL]
 
 	virtual void addMenuItem ( CBotMenuItem *item )
 	{

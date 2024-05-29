@@ -79,6 +79,8 @@ extern IVDebugOverlay *debugoverlay;
 class CTraceFilterVis : public CTraceFilter
 {
 public:
+	virtual ~CTraceFilterVis() = default;
+
 	CTraceFilterVis(edict_t *pPlayer, edict_t *pHit = nullptr)
 	{
 		m_pPlayer = pPlayer;
@@ -260,14 +262,13 @@ edict_t *CBotGlobals :: findPlayerByTruncName ( const char *name )
 // find a player by a truncated name "name".
 // e.g. name = "Jo" might find a player called "John"
 {
+	const unsigned int length = std::strlen(name);
 	for( int i = 1; i <= maxClients(); i ++ )
 	{
 		edict_t* pent = INDEXENT(i);
 
 		if( pent && CBotGlobals::isNetworkable(pent) )
 		{
-			const int length = std::strlen(name);						 
-
 			char arg_lwr[128];
 			char pent_lwr[128];
 
@@ -280,8 +281,8 @@ edict_t *CBotGlobals :: findPlayerByTruncName ( const char *name )
 
 			std::strcpy(pent_lwr,pInfo->GetName());
 
-			__strlow(arg_lwr);
-			__strlow(pent_lwr);
+			__strlow(arg_lwr)
+			__strlow(pent_lwr)
 
 			if( std::strncmp( arg_lwr,pent_lwr,length) == 0 )
 			{
@@ -296,6 +297,8 @@ edict_t *CBotGlobals :: findPlayerByTruncName ( const char *name )
 class CTraceFilterHitAllExceptPlayers : public CTraceFilter
 {
 public:
+	virtual ~CTraceFilterHitAllExceptPlayers() = default;
+
 	bool ShouldHitEntity( IHandleEntity *pServerEntity, int contentsMask ) override
 	{ 
 		return pServerEntity->GetRefEHandle().GetEntryIndex() <= gpGlobals->maxClients; 
@@ -308,7 +311,8 @@ public:
 class CTraceFilterSimple : public CTraceFilter
 {
 public:
-	
+	virtual ~CTraceFilterSimple() = default;
+
 	CTraceFilterSimple( const IHandleEntity *passentity1, const IHandleEntity *passentity2, int collisionGroup )
 	{
 		m_pPassEnt1 = passentity1;
@@ -484,8 +488,8 @@ bool CBotGlobals::initModFolder() {
 	char szGameFolder[512];
 	engine->GetGameDir(szGameFolder, 512);
 
-	const int iLength = std::strlen(CStrings::getString(szGameFolder));
-	int pos = iLength - 1;
+	const unsigned int iLength = std::strlen(CStrings::getString(szGameFolder));
+	unsigned int pos = iLength - 1;
 
 	while (pos > 0 && szGameFolder[pos] != '\\' && szGameFolder[pos] != '/') {
 		pos--;
@@ -837,10 +841,10 @@ bool CBotGlobals :: onOppositeSides2d (
 		const Vector2D &bmins, const Vector2D &bmaxs )
 {
 	const float g = (amaxs.x - amins.x) * (bmins.y - amins.y) - 
-	        (amaxs.y - amins.y) * (bmins.x - amins.x);
+			(amaxs.y - amins.y) * (bmins.x - amins.x);
 
 	const float h = (amaxs.x - amins.x) * (bmaxs.y - amins.y) - 
-	        (amaxs.y - amins.y) * (bmaxs.x - amins.x);
+			(amaxs.y - amins.y) * (bmaxs.x - amins.x);
 
   return g * h <= 0.0f;
 }
@@ -853,10 +857,10 @@ bool CBotGlobals :: onOppositeSides3d (
 	amaxs.Cross(bmaxs);
 
 	const float g = (amaxs.x - amins.x) * (bmins.y - amins.y) * (bmins.z - amins.z) - 
-	        (amaxs.z - amins.z) * (amaxs.y - amins.y) * (bmins.x - amins.x);
+			(amaxs.z - amins.z) * (amaxs.y - amins.y) * (bmins.x - amins.x);
 
 	const float h = (amaxs.x - amins.x) * (bmaxs.y - amins.y) * (bmaxs.z - amins.z) - 
-	        (amaxs.z - amins.z) * (amaxs.y - amins.y) * (bmaxs.x - amins.x);
+			(amaxs.z - amins.z) * (amaxs.y - amins.y) * (bmaxs.x - amins.x);
 
   return g * h <= 0.0f;
 }
@@ -885,15 +889,15 @@ void CBotGlobals :: botMessage ( edict_t *pEntity, int iErr, const char *fmt, ..
 	va_end (argptr); 
 
 	const char *bot_tag = BOT_TAG;
-	const int len = std::strlen(string);
-	const int taglen = std::strlen(BOT_TAG);
+	const unsigned int len = std::strlen(string);
+	const unsigned int taglen = std::strlen(BOT_TAG);
 	// add tag -- push tag into string
-	for ( int i = len + taglen; i >= taglen; i -- )
+	for ( unsigned int i = len + taglen; i >= taglen; i -- )
 		string[i] = string[i-taglen];
 
 	string[len+taglen+1] = 0;
 
-	for ( int i = 0; i < taglen; i ++ )
+	for ( unsigned int i = 0; i < taglen; i ++ )
 		string[i] = bot_tag[i];
 
 	std::strcat(string,"\n");
@@ -915,19 +919,20 @@ void CBotGlobals :: botMessage ( edict_t *pEntity, int iErr, const char *fmt, ..
 
 bool CBotGlobals :: makeFolders (const char* szFile)
 {
+	//Should be `const char*` to fix strings [APG]RoboCop[CL]
 #ifndef __linux__
-	char *delimiter = "\\";
+	const char* delimiter = "\\";
 #else
-	char *delimiter = "/";
+	const char* delimiter = "/";
 #endif
 
 	char szFolderName[1024];
-	int folderNameSize = 0;
+	unsigned int folderNameSize = 0;
 	szFolderName[0] = 0;
 
-	const int iLen = std::strlen(szFile);
+	const unsigned int iLen = std::strlen(szFile);
 
-	int i = 0;
+	unsigned int i = 0;
 
 	while ( i < iLen )
 	{
@@ -942,10 +947,10 @@ bool CBotGlobals :: makeFolders (const char* szFile)
 
 		i++;
 		szFolderName[folderNameSize++]=*delimiter;//next
-        szFolderName[folderNameSize] = 0;
-        
+		szFolderName[folderNameSize] = 0;
+		
 #ifndef __linux__
-        mkdir(szFolderName);
+		_mkdir(szFolderName);
 #else
 		if ( mkdir(szFolderName, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 0 ) {
 			logger->Log(LogLevel::INFO, "Trying to create folder '%s' successful", szFolderName);
@@ -1058,9 +1063,9 @@ std::fstream CBotGlobals::openFile(const char* szFile, std::ios_base::openmode m
 		fp.open(szFile, mode);
 
 		if (!fp)
-			logger->Log(LogLevel::ERROR, "failed to make folders for %s", szFile);
+			logger->Log(LogLevel::WARN, "failed to make folders for %s", szFile);
 		} else {
-		logger->Log(LogLevel::INFO, "Opened file '%s' mode %s", szFile, mode);
+		logger->Log(LogLevel::INFO, "Opened file '%s' mode %i", szFile, mode); // `mode %i` fix by caxanga334
 	}
 
 	return fp;
@@ -1106,7 +1111,9 @@ void CBotGlobals :: buildFileName ( char *szOutput, const char *szFile, const ch
 	else
 		std::strcpy(szOutput, m_szRCBotFolder);
 
-	if ( szOutput[std::strlen(szOutput)-1] != '\\' && szOutput[std::strlen(szOutput)-1] != '/' )
+	const size_t len = std::strlen(szOutput);
+
+	if (len > 0 && szOutput[len - 1] != '\\' && szOutput[len - 1] != '/')
 		addDirectoryDelimiter(szOutput);
 
 	if ( szFolder )

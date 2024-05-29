@@ -41,14 +41,24 @@
 #include "bot_tf2_points.h"
 #include "bot_cvars.h"
 
-#define MAX_CAP_POINTS 32
+enum
+{
+	MAX_CAP_POINTS = 32
+};
 
-#define DOD_MAPTYPE_UNKNOWN 0 
-#define DOD_MAPTYPE_FLAG 1
-#define DOD_MAPTYPE_BOMB 2
+enum
+{
+	DOD_MAPTYPE_UNKNOWN = 0,
+	DOD_MAPTYPE_FLAG = 1,
+	DOD_MAPTYPE_BOMB = 2
+};
 
-#define BOT_ADD_METHOD_DEFAULT 0
-#define BOT_ADD_METHOD_PUPPET 1
+enum
+{
+	BOT_ADD_METHOD_DEFAULT = 0,
+	BOT_ADD_METHOD_PUPPET = 1
+};
+
 #define BOT_ADD_PUPPET_COMMAND "bot"
 
 class CBotNeuralNet;
@@ -96,11 +106,13 @@ public:
 		m_bBotCommand_ResetCheatFlag = false;
 	}
 
+	virtual ~CBotMod() = default;
+	
 	virtual bool checkWaypointForTeam(CWaypoint *pWpt, int iTeam)
 	{
 		return true; // okay -- no teams!!
 	}
-// linux fix
+	// linux fix
 	void setup ( const char *szModFolder, eModId iModId, eBotType iBotType, const char *szWeaponListName );
 
 	bool isModFolder (const char* szModFolder) const;
@@ -112,7 +124,7 @@ public:
 		return "CBasePlayer";
 	}
 
-	eModId getModId () const;
+	eModId getModId () const; //TODO: not implemented? [APG]RoboCop[CL]
 
 	virtual bool isAreaOwnedByTeam (int iArea, int iTeam) { return iArea == 0; }
 
@@ -183,7 +195,10 @@ private:
 	int m_iId;
 };
 */
-#define MAX_DOD_FLAGS 8
+enum
+{
+	MAX_DOD_FLAGS = 8
+};
 
 class CDODFlags
 {
@@ -213,13 +228,13 @@ public:
 		memset(m_pFlags,0,sizeof(edict_t*)*MAX_DOD_FLAGS);
 		memset(m_pBombs,0,sizeof(edict_t*)*MAX_DOD_FLAGS*2);
 
-		for ( short int i = 0; i < MAX_DOD_FLAGS; i ++ )
+		for (int& i : m_iWaypoint)
 		{
-			m_iWaypoint[i] = -1;
+			i = -1;
 		}
 	}
 
-	int getNumFlags () const { return m_iNumControlPoints; }
+	short int getNumFlags () const { return m_iNumControlPoints; }
 	int getNumFlagsOwned (int iTeam) const
 	{
 		int count = 0;
@@ -514,7 +529,7 @@ private:
 
 	// reply on this one
 	bool *m_bBombPlanted_Unreliable;
-    bool m_bBombPlanted[MAX_DOD_FLAGS];
+	bool m_bBombPlanted[MAX_DOD_FLAGS];
 	float m_fBombPlantedTime[MAX_DOD_FLAGS];
 	int *m_iBombsRequired;
 	int *m_iBombsRemaining;
@@ -567,10 +582,10 @@ public:
 
 	static CWaypoint *getBombWaypoint ( edict_t *pBomb )
 	{
-		for ( unsigned int i = 0; i < m_BombWaypoints.size(); i ++ )
+		for (edict_wpt_pair_t& m_BombWaypoint : m_BombWaypoints)
 		{
-			if ( m_BombWaypoints[i].pEdict == pBomb )
-				return m_BombWaypoints[i].pWaypoint;
+			if (m_BombWaypoint.pEdict == pBomb )
+				return m_BombWaypoint.pWaypoint;
 		}
 
 		return nullptr;
@@ -578,9 +593,9 @@ public:
 
 	static bool isPathBomb ( edict_t *pBomb )
 	{
-		for ( unsigned int i = 0; i < m_BombWaypoints.size(); i ++ )
+		for (edict_wpt_pair_t& m_BombWaypoint : m_BombWaypoints)
 		{
-			if ( m_BombWaypoints[i].pEdict == pBomb )
+			if (m_BombWaypoint.pEdict == pBomb )
 				return true;
 		}
 
@@ -861,7 +876,7 @@ public:
 
 	static int getTeam ( edict_t *pEntity );
 
-	static TF_Class getSpyDisguise ( edict_t *pPlayer );
+	static TF_Class getSpyDisguise ( edict_t *pPlayer ); //TODO: not implemented? [APG]RoboCop[CL]
 
 	static int getSentryLevel ( edict_t *pSentry );
 	static int getDispenserLevel ( edict_t *pDispenser );
@@ -880,7 +895,7 @@ public:
 
 	static bool isAmmo (const edict_t* pEntity);
 
-	static int getArea (); // get current area of map // TODO: Needs implemented properly [APG]RoboCop[CL]
+	static int getArea (); // get current area of map // TODO: Needs implemented properly? [APG]RoboCop[CL]
 
 	static void setArea ( int area ) { m_iArea = area; }
 
@@ -930,9 +945,9 @@ public:
 
 	static bool TF2_IsPlayerTaunting(edict_t *pPlayer);
 
-	static float TF2_GetPlayerSpeed(edict_t *pPlayer, TF_Class iClass );
+	static float TF2_GetPlayerSpeed(edict_t *pPlayer, TF_Class iClass );  //TODO: not implemented? [APG]RoboCop[CL]
 
-	static void teleporterBuilt ( edict_t *pOwner, eEngiBuild type, edict_t *pBuilding );
+	static void teleporterBuilt ( edict_t *pOwner, eEngiBuild type, edict_t *pBuilding );  //TODO: not implemented? [APG]RoboCop[CL]
 
 	static edict_t *getTeleporterExit ( edict_t *pTele );
 
@@ -999,7 +1014,7 @@ public:
 	static void roundStarted ()
 	{
 		m_bHasRoundStarted = true;
-	    m_bRoundOver = false;
+		m_bRoundOver = false;
 		m_iWinningTeam = 0; 
 	}
 
@@ -1048,7 +1063,7 @@ public:
 		return false;
 	}
 
-	static void sapperPlaced(const edict_t* pOwner, eEngiBuild type, edict_t* pSapper);
+	static void sapperPlaced(const edict_t* pOwner, eEngiBuild type, edict_t* pSapper);  //TODO: all 4 lines not implemented? [APG]RoboCop[CL]
 	static void sapperDestroyed(edict_t *pOwner,eEngiBuild type,edict_t *pSapper);
 	static void sentryBuilt(const edict_t* pOwner, eEngiBuild type, edict_t* pBuilding);
 	static void dispenserBuilt(const edict_t* pOwner, eEngiBuild type, edict_t* pBuilding);
@@ -1127,10 +1142,10 @@ public:
 
 	static bool isSentrySapped ( edict_t *pSentry )
 	{
-		for ( unsigned int i = 0; i < RCBOT_MAXPLAYERS; i ++ )
+		for (tf_sentry_t& m_SentryGun : m_SentryGuns)
 		{
-			if ( m_SentryGuns[i].sentry.get() == pSentry )
-				return m_SentryGuns[i].sapper.get()!= nullptr;
+			if (m_SentryGun.sentry.get() == pSentry )
+				return m_SentryGun.sapper.get()!= nullptr;
 		}
 
 		return false;
@@ -1138,10 +1153,10 @@ public:
 
 	static bool isTeleporterSapped ( edict_t *pTele )
 	{
-		for ( unsigned int i = 0; i < RCBOT_MAXPLAYERS; i ++ )
+		for (tf_tele_t& m_Teleporter : m_Teleporters)
 		{
-			if ( m_Teleporters[i].entrance.get() == pTele || m_Teleporters[i].exit.get() == pTele )
-				return m_Teleporters[i].sapper.get()!= nullptr;
+			if (m_Teleporter.entrance.get() == pTele || m_Teleporter.exit.get() == pTele )
+				return m_Teleporter.sapper.get()!= nullptr;
 		}
 
 		return false;
@@ -1149,10 +1164,10 @@ public:
 
 	static bool isDispenserSapped ( edict_t *pDisp )
 	{
-		for ( unsigned int i = 0; i < RCBOT_MAXPLAYERS; i ++ )
+		for (tf_disp_t& m_Dispenser : m_Dispensers)
 		{
-			if ( m_Dispensers[i].disp.get() == pDisp )
-				return m_Dispensers[i].sapper.get()!= nullptr;
+			if (m_Dispenser.disp.get() == pDisp )
+				return m_Dispenser.sapper.get()!= nullptr;
 		}
 
 		return false;
@@ -1181,7 +1196,7 @@ public:
 	
 	static void addCapper ( int cp, int capper )
 	{
-		if (capper && (cp < MAX_CAP_POINTS))
+		if (capper > 0 && cp >= 0 && cp < MAX_CAP_POINTS)
 			m_Cappers[cp] |= 1 << (capper - 1);
 	}
 
@@ -1201,8 +1216,8 @@ public:
 	static int getFlagCarrierTeam () { return m_iFlagCarrierTeam; }
 	static bool canTeamPickupFlag_SD(int iTeam,bool bGetUnknown);
 
-	static edict_t *getBuildingOwner (eEngiBuild object, short index);
-	static edict_t *getBuilding (eEngiBuild object, const edict_t* pOwner);
+	static edict_t *getBuildingOwner (eEngiBuild object, short index); //TODO: not implemented? [APG]RoboCop[CL]
+	static edict_t *getBuilding (eEngiBuild object, const edict_t* pOwner); //TODO: not implemented? [APG]RoboCop[CL]
 
 	static bool isBoss ( edict_t *pEntity, float *fFactor = nullptr);
 
@@ -1342,10 +1357,10 @@ public:
 
 	static edict_t *getButtonAtWaypoint ( CWaypoint *pWaypoint )
 	{
-		for ( unsigned int i = 0; i < m_LiftWaypoints.size(); i ++ )
+		for (edict_wpt_pair_t& m_LiftWaypoint : m_LiftWaypoints)
 		{
-			if ( m_LiftWaypoints[i].pWaypoint == pWaypoint )
-				return m_LiftWaypoints[i].pEdict;
+			if (m_LiftWaypoint.pWaypoint == pWaypoint )
+				return m_LiftWaypoint.pEdict;
 		}
 
 		return nullptr;

@@ -26,7 +26,7 @@ class CTFGameRulesProxy
 {
 	MyEHandle m_Resource;
 
-	float m_flCapturePointEnableTime;
+	float m_flCapturePointEnableTime = 0.0f;
 };
 
 
@@ -279,14 +279,14 @@ public:
 	{
 		resetValidWaypointAreas();
 
-		for ( int i = 0; i < 2; i ++ )
+		for (const TF2PointProb_t (&m_ValidPoint)[2][8] : m_ValidPoints)
 		{
-			for ( int j = 0; j < 2; j ++ )
+			for (const TF2PointProb_t (&j)[8] : m_ValidPoint)
 			{
 				for ( int k = 0; k < MAX_CONTROL_POINTS; k ++ )
 				{
 					// OR
-					m_ValidAreas[k] = m_ValidAreas[k] || m_ValidPoints[i][j][k].bValid;
+					m_ValidAreas[k] = m_ValidAreas[k] || j[k].bValid;
 				}
 			}
 		}
@@ -419,9 +419,9 @@ public:
 			iszOverlay = NULL_STRING;
 			iPlayersRequired = 0;
 			iTimedPoints = 0;
-			for ( int i = 0; i < MAX_PREVIOUS_POINTS; i++ )
+			for (string_t& i : iszPreviousPoint)
 			{
-				iszPreviousPoint[i] = NULL_STRING;
+				i = NULL_STRING;
 			}
 			iTeamPoseParam = 0;
 		}

@@ -6,7 +6,7 @@
 
 #include "bot_cvars.h"
 
-static ICvar* s_pCVar;
+static ICvar* s_pCVar; //TODO: Unused? [APG]RoboCop[CL]
 
 ConVar rcbot_tf2_debug_spies_cloakdisguise("rcbot_tf2_debug_spies_cloakdisguise", "1", 0, "Debug command : allow spy bots to cloak and disguise");
 ConVar rcbot_tf2_medic_letgotime("rcbot_tf2_medic_letgotime", "0.5", 0, "Time for medic to let go of medigun to switch players");
@@ -14,7 +14,7 @@ ConVar rcbot_tf2_pyro_airblast("rcbot_tf2_pyro_airblast_ammo", "50", 0, "Ammo mu
 ConVar rcbot_projectile_tweak("rcbot_projtweak", "0.05", 0, "Tweaks the bots knowledge of projectiles and gravity");
 
 ConVar bot_cmd_enable_wpt_sounds("rcbot_enable_wpt_sounds", "1", 0, "Enable/disable sound effects when editing waypoints");
-ConVar bot_general_difficulty("rcbot_skill", "0.8", 0, "General difficulty of the bots. 0.5 = stock, < 0.5 easier, > 0.5 = harder");//TODO: Broken! [APG]RoboCop[CL]
+//ConVar bot_general_difficulty("rcbot_skill", "0.8", 0, "General difficulty of the bots. 0.5 = stock, < 0.5 easier, > 0.5 = harder");//TODO: Broken! [APG]RoboCop[CL]
 ConVar bot_visrevs_clients("rcbot_visrevs_clients", "3", 0, "how many revs the bot searches for visible players and enemies, lower to reduce cpu usage");
 ConVar bot_spyknifefov("rcbot_spyknifefov", "80", 0, "the FOV from the enemy that spies must backstab from");
 ConVar bot_visrevs("rcbot_visrevs", "6", 0, "how many revs the bot searches for visible monsters, lower to reduce cpu usage min:5");
@@ -122,7 +122,7 @@ ConVarRef mp_stalemate_meleeonly("mp_stalemate_meleeonly");
 ConVarRef mp_roundtime("mp_roundtime");
 ConVarRef mp_c4timer("mp_c4timer");
 
-void RCBOT2_Cvar_setup (ICvar *cvar)
+void RCBOT2_Cvar_setup (ICvar *cvar) //'cvar' hides global declaration from /public/icvar.h [APG]RoboCop[CL]
 {
 	if ( sv_tags.IsValid() )
 	{

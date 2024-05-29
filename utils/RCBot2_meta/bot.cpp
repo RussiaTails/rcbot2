@@ -363,7 +363,16 @@ bool CBot :: createBotFromEdict(edict_t *pEdict, CBotProfile *pProfile)
 	#if SOURCE_ENGINE == SE_TF2
 	helpers->ClientCommand(pEdict, "jointeam auto");
 
-	//"heavy" should me "heavyweapons" in TF2? [APG]RoboCop[CL]
+	//"heavy" should be "heavyweapons" in TF2?
+	//
+	//TODO: To allow the proper slot# values to be used,
+	//the class names should be changed to the slot names [APG]RoboCop[CL]
+	
+	/*char classNames[32][10] = {
+	"auto", "scout", "soldier", "pyro", "demoman", "heavy", "medic",
+	"engineer",	"sniper", "spy",
+	};*/
+	
 	char classNames[32][10] = {
 		"auto", "scout", "sniper", "soldier", "demoman", "medic", "heavy",
 		"pyro", "spy", "engineer"
@@ -456,7 +465,6 @@ inline QAngle CBot :: eyeAngles () const
 
 Vector CBot :: getEyePosition () const
 {
-	
 	Vector vOrigin;//'/ = getOrigin();
 	//vOrigin.z = m_pPlayerInfo->GetPlayerMaxs().z;
 
@@ -858,8 +866,6 @@ void CBot :: think ()
 	m_bWantToListen = true;
 	m_bWantToChangeWeapon = true;
 
-
-	//
 	if ( !rcbot_debug_notasks.GetBool() )
 	{
 #ifdef _DEBUG
@@ -1352,8 +1358,8 @@ void CBot :: spawnInit ()
 	m_fLastUpdateLastSeeEnemy = 0.0f;
 	m_fPercentMoved = 1.0f;
 
-	for (short int i = 0; i < BOT_UTIL_MAX; i ++ )
-		m_fUtilTimes[i] = 0;
+	for (float& m_fUtilTime : m_fUtilTimes)
+		m_fUtilTime = 0;
 
 	if ( m_pSchedules != nullptr)
 		m_pSchedules->freeMemory(); // clear tasks, im dead now!!
@@ -1738,7 +1744,7 @@ void CBot ::debugBot(char *msg)
 
 	char task_string[256];
 
-	extern const char *g_szUtils[BOT_UTIL_MAX+1];
+	extern const char *g_szUtils[BOT_UTIL_MAX+1]; //Redundant? [APG]RoboCopCL]
 
 	edict_t *pEnemy = m_pEnemy.get();
 
@@ -2194,8 +2200,8 @@ void CBot :: doMove ()
 
 		const float radians = DEG_TO_RAD(fAngle);
 		//radians = fAngle * 3.141592f / 180.0f; // degrees to radians
-        // fl Move is percentage (0 to 1) of forward speed,
-        // flSide is percentage (0 to 1) of side speed.
+		// fl Move is percentage (0 to 1) of forward speed,
+		// flSide is percentage (0 to 1) of side speed.
 		
 		// quicker
 		SinCos(radians,&move.y,&move.x);
@@ -2491,9 +2497,9 @@ Vector CBot::snipe (const Vector& vAiming)
 {
 		if ( m_fLookAroundTime < engine->Time() )
 		{
-			CTraceFilterWorldAndPropsOnly filter;
+			CTraceFilterWorldAndPropsOnly filter; //Unused? [APG]RoboCop[CL]
 			float fTime;
-			Vector vOrigin = getOrigin();
+			Vector vOrigin = getOrigin(); //Unused? [APG]RoboCop[CL]
 
 			//trace_t *tr = CBotGlobals::getTraceResult();
 
@@ -2831,7 +2837,7 @@ void CBot :: doLook ()
 	getLookAtVector();
 
 	// looking at something?
-    if ( lookAtIsValid () )
+	if ( lookAtIsValid () )
 	{	
 		float fSensitivity;
 		if ( rcbot_supermode.GetBool() || m_bIncreaseSensitivity || onLadder() )
@@ -3093,8 +3099,8 @@ bool CBots :: controlBot ( const char *szOldName, const char *szName, const char
 
 bool CBots :: createBot (const char *szClass, const char *szTeam, const char *szName)
 {
-	CBotMod *pMod = CBotGlobals::getCurrentMod();
-	const char *szOVName = "";
+	CBotMod *pMod = CBotGlobals::getCurrentMod(); // `*pMod` Unused? [APG]RoboCop[CL]
+	const char *szOVName = ""; // `szOVName` Unused? [APG]RoboCop[CL]
 
 	if ( m_iMaxBots != -1 && CBotGlobals::numClients() >= m_iMaxBots )
 		logger->Log(LogLevel::ERROR, "Can't create bot, max_bots reached");
@@ -3184,7 +3190,7 @@ void CBots :: init ()
 			m_Bots[i] = new CBotCoop();
 			break;
 		case BOTTYPE_TF2:
-			m_Bots[i] = new CBotTF2();//RCBOT_MAXPLAYERS];
+			m_Bots[i] = new CBotTF2();//[RCBOT_MAXPLAYERS];
 			//CBotGlobals::setEventVersion(2);
 			break;
 		case BOTTYPE_FF:
@@ -3196,7 +3202,7 @@ void CBots :: init ()
 		case BOTTYPE_SYN:
 			m_Bots[i] = new CBotSynergy();
 			break;
-		//case BOTTYPE_BMS:
+		//case BOTTYPE_BMS: //TODO: Add Black Mesa Support [APG]RoboCop[CL]
 		//	m_Bots[i] = new CBotBMS();
 		//	break;
 		//case BOTTYPE_NS2:
@@ -3446,6 +3452,13 @@ void CBots :: kickRandomBot (size_t count)
 	}
 
 	std::shuffle( botList.begin(), botList.end(), std::mt19937(std::random_device()()));
+
+	// std::random_shuffle was removed in C++17
+	// std::random_shuffle ( botList.begin(), botList.end() );
+
+	//std::random_device rd;
+	//std::mt19937 g(rd());
+	//std::shuffle(botList.begin(), botList.end(), g);
 
 	size_t numBotsKicked = 0;
 	while (numBotsKicked < count && !botList.empty()) {

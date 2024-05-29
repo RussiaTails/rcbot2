@@ -34,6 +34,8 @@
 #include "toolframework/itoolentity.h"
 #include <server_class.h>
 
+#include "smsdk_config.h"
+
 static CBotHelper s_bot_helper;
 CBotHelper *bot_helper = &s_bot_helper;
 
@@ -52,7 +54,7 @@ bool CBotHelper::IndexToAThings(int num, CBaseEntity **pEntData, edict_t **pEdic
 		return false;
 	}
 
-	int index = sm_gamehelpers->ReferenceToIndex(num);
+	const int index = sm_gamehelpers->ReferenceToIndex(num);
 	if (index > 0 && index <= sm_players->GetMaxClients())
 	{
 		SourceMod::IGamePlayer *pPlayer = sm_players->GetGamePlayer(index);
@@ -143,38 +145,41 @@ bool CBotHelper::pointIsWithin( edict_t *pEntity, const Vector &vPoint )
 /// @return True if brush model
 bool CBotHelper::isBrushEntity( edict_t *pEntity )
 {
-	const char *szModel;
-	szModel = pEntity->GetIServerEntity()->GetModelName().ToCStr();
+	const char* szModel = pEntity->GetIServerEntity()->GetModelName().ToCStr();
 	return szModel[0] == '*';
 }
 
+/// @brief Searches for entities by classname
+/// @return Entity index/reference or INVALID_EHANDLE_INDEX if none is found
 int CBotHelper::FindEntityByClassname(int start,const char *classname)
 {
 	CBaseEntity *pEntity = servertools->FindEntityByClassname(GetEntity(start), classname);
 	return sm_gamehelpers->EntityToBCompatRef(pEntity);
 }
 
-int CBotHelper::FindEntityInSphere(int start, Vector center, float radius)
+/// @brief Searches for entities in a sphere
+/// @return Entity index/reference or INVALID_EHANDLE_INDEX if none is found
+int CBotHelper::FindEntityInSphere(int start, const Vector& center, float radius)
 {
 	CBaseEntity *pEntity = servertools->FindEntityInSphere(GetEntity(start), center, radius);
 	return sm_gamehelpers->EntityToBCompatRef(pEntity);
 }
 
+/// @brief Searches for entities by their networkable class
+/// @return Entity index or INVALID_EHANDLE_INDEX if none is found
 int CBotHelper::FindEntityByNetClass(int start, const char *classname)
 {
-	edict_t *current;
-
 	for (int i = ((start != -1) ? start : 0); i < gpGlobals->maxEntities; i++)
 	{
-		current = engine->PEntityOfEntIndex(i);
-		if (current == NULL || current->IsFree())
+		edict_t* current = engine->PEntityOfEntIndex(i);
+		if (current == nullptr || current->IsFree())
 		{
 			continue;
 		}
 
 		IServerNetworkable *network = current->GetNetworkable();
 
-		if (network == NULL)
+		if (network == nullptr)
 		{
 			continue;
 		}
@@ -189,7 +194,7 @@ int CBotHelper::FindEntityByNetClass(int start, const char *classname)
 		}
 	}
 
-	return -1;
+	return INVALID_EHANDLE_INDEX;
 }
 
 /// @brief check if a point is in the field of a view of an object. supports up to 180 degree fov.
@@ -201,13 +206,13 @@ int CBotHelper::FindEntityByNetClass(int start, const char *classname)
 /// @note https://github.com/ValveSoftware/source-sdk-2013/blob/beaae8ac45a2f322a792404092d4482065bef7ef/sp/src/public/mathlib/vector.h#L462-L477
 bool CBotHelper::PointWithinViewAngle(Vector const &vecSrcPosition, Vector const &vecTargetPosition, Vector const &vecLookDirection, float flCosHalfFOV)
 {
-	Vector vecDelta = vecTargetPosition - vecSrcPosition;
-	float cosDiff = DotProduct( vecLookDirection, vecDelta );
+	const Vector vecDelta = vecTargetPosition - vecSrcPosition;
+	const float cosDiff = DotProduct( vecLookDirection, vecDelta );
 
 	if ( cosDiff < 0 ) 
 		return false;
 
-	float flLen2 = vecDelta.LengthSqr();
+	const float flLen2 = vecDelta.LengthSqr();
 
 	// a/sqrt(b) > c  == a^2 > b * c ^2
 	return ( cosDiff * cosDiff > flLen2 * flCosHalfFOV * flCosHalfFOV );

@@ -37,39 +37,57 @@
 
 //#include <stack>
 
-#define TF2_ROCKETSPEED   1100
-#define TF2_GRENADESPEED  1065 // TF2 wiki
-#define TF2_MAX_SENTRYGUN_RANGE 1024
-#define TF2_STICKYGRENADE_MAX_DISTANCE 1600
+enum
+{
+	TF2_ROCKETSPEED = 1100,
+	TF2_GRENADESPEED = 1065,
+	TF2_MAX_SENTRYGUN_RANGE = 1024,
+	TF2_STICKYGRENADE_MAX_DISTANCE = 1600
+};
 
 class CBotWeapon;
 class CWaypoint;
 class CBotUtility;
 
-#define TF2_SLOT_PRMRY 0 // primary
-#define TF2_SLOT_SCNDR 1 // secondary
-#define TF2_SLOT_MELEE 2
-#define TF2_SLOT_PDA 3
-#define TF2_SLOT_PDA2 4
-#define TF2_SLOT_HAT 5
-#define TF2_SLOT_MISC 6
-#define TF2_SLOT_ACTION 7
-#define TF2_SLOT_MAX 8
+enum
+{
+	TF2_SLOT_PRMRY = 0,	// primary
+	TF2_SLOT_SCNDR = 1,	// secondary
+	TF2_SLOT_MELEE = 2,
+	TF2_SLOT_PDA = 3,
+	TF2_SLOT_PDA2 = 4,
+	TF2_SLOT_HAT = 5,
+	TF2_SLOT_MISC = 6,
+	TF2_SLOT_ACTION = 7,
+	TF2_SLOT_MAX = 8
+};
 
-#define TF2_TEAM_BLUE 3
-#define TF2_TEAM_RED 2
+enum
+{
+	TF2_TEAM_BLUE = 3,
+	TF2_TEAM_RED = 2
+};
 
-#define RESIST_BULLETS 0
-#define RESIST_EXPLO 1
-#define RESIST_FIRE 2
+enum
+{
+	RESIST_BULLETS = 0,
+	RESIST_EXPLO = 1,
+	RESIST_FIRE = 2
+};
 
-#define TF2_SENTRY_LEVEL1_HEALTH 150
-#define TF2_SENTRY_LEVEL2_HEALTH 180
-#define TF2_SENTRY_LEVEL3_HEALTH 216
+enum
+{
+	TF2_SENTRY_LEVEL1_HEALTH = 150,
+	TF2_SENTRY_LEVEL2_HEALTH = 180,
+	TF2_SENTRY_LEVEL3_HEALTH = 216
+};
 
-#define TF2_DISPENSER_LEVEL1_HEALTH 150
-#define TF2_DISPENSER_LEVEL2_HEALTH 180
-#define TF2_DISPENSER_LEVEL3_HEALTH 216
+enum
+{
+	TF2_DISPENSER_LEVEL1_HEALTH = 150,
+	TF2_DISPENSER_LEVEL2_HEALTH = 180,
+	TF2_DISPENSER_LEVEL3_HEALTH = 216
+};
 
 // Naris @ Alliedmodders.net
 /*
@@ -177,48 +195,51 @@ enum TFCond
 	TFCond_RuneAgility,
 };*/
 
-#define TF2_PLAYER_BONKED		(1<<14)
-#define TF2_PLAYER_SLOWED       (1 << 0)    // 1
-#define TF2_PLAYER_ZOOMED       (1 << 1)    // 2
-#define TF2_PLAYER_DISGUISING   (1 << 2)    // 4
-#define TF2_PLAYER_DISGUISED	(1 << 3)    // 8
-#define TF2_PLAYER_CLOAKED      (1 << 4)    // 16
-#define TF2_PLAYER_INVULN       (1 << 5)    // 32
-#define TF2_PLAYER_TELEGLOW     (1 << 6)    // 64
-#define TF2_PLAYER_KRITS		524288
-#define TF2_PLAYER_HEALING	    2097152    
-#define TF2_PLAYER_TAUNTING	    (1 << 7)    // 128
-#define TF2_PLAYER_TELEPORTING	(1<<10)    // 1024 Player is teleporting
-#define TF2_PLAYER_ONFIRE	    4194304 // fix may 2013
+enum
+{
+	TF2_PLAYER_BONKED = 1<<14,
+	TF2_PLAYER_SLOWED = 1 << 0,	// 1
+	TF2_PLAYER_ZOOMED = 1 << 1,	// 2
+	TF2_PLAYER_DISGUISING = 1 << 2,	// 4
+	TF2_PLAYER_DISGUISED = 1 << 3,	// 8
+	TF2_PLAYER_CLOAKED = 1 << 4,	// 16
+	TF2_PLAYER_INVULN = 1 << 5,	// 32
+	TF2_PLAYER_TELEGLOW = 1 << 6,	// 64
+	TF2_PLAYER_KRITS = 524288,
+	TF2_PLAYER_HEALING = 2097152,
+	TF2_PLAYER_TAUNTING = 1 << 7,	// 128
+	TF2_PLAYER_TELEPORTING = 1<<10,	// 1024 Player is teleporting
+	TF2_PLAYER_ONFIRE = 4194304 // fix may 2013
+};
 
 //#define TF2_SPY_FOV_KNIFEATTACK 90.0f
 
 typedef enum
 {
-    TF_VC_MEDIC = 0,
+	TF_VC_MEDIC = 0,
 	TF_VC_INCOMING = 1,
 	TF_VC_HELP = 2,
-    TF_VC_THANKS = 4,
+	TF_VC_THANKS = 4,
 	TF_VC_SPY = 5,
 	TF_VC_BATTLECRY = 6,
-    TF_VC_GOGOGO = 8,
-    TF_VC_SENTRYAHEAD = 9,
+	TF_VC_GOGOGO = 8,
+	TF_VC_SENTRYAHEAD = 9,
 	TF_VC_CHEERS = 10,
-    TF_VC_MOVEUP = 12,
-    TF_VC_TELEPORTERHERE = 13,//TODO: allow engineers to hearcommands [APG]RoboCop[CL]
-    TF_VC_JEERS = 14,
-    TF_VC_GOLEFT = 16,
+	TF_VC_MOVEUP = 12,
+	TF_VC_TELEPORTERHERE = 13,//TODO: allow engineers to hearcommands [APG]RoboCop[CL]
+	TF_VC_JEERS = 14,
+	TF_VC_GOLEFT = 16,
 	TF_VC_DISPENSERHERE = 17,// TODO: allow engineers to hearcommands [APG]RoboCop[CL]
 	TF_VC_POSITIVE = 18,
-    TF_VC_GORIGHT = 20,
-    TF_VC_SENTRYHERE = 21,
-    TF_VC_NEGATIVE = 22,
-    TF_VC_YES = 24,
-    TF_VC_ACTIVATEUBER = 25,
-    TF_VC_NICESHOT = 26,
-    TF_VC_NO = 28,
-    TF_VC_UBERREADY = 29,
-    TF_VC_GOODJOB = 30,
+	TF_VC_GORIGHT = 20,
+	TF_VC_SENTRYHERE = 21,
+	TF_VC_NEGATIVE = 22,
+	TF_VC_YES = 24,
+	TF_VC_ACTIVATEUBER = 25,
+	TF_VC_NICESHOT = 26,
+	TF_VC_NO = 28,
+	TF_VC_UBERREADY = 29,
+	TF_VC_GOODJOB = 30,
 	TF_VC_INVALID = 31
 }eTFVoiceCMD;
 
@@ -232,6 +253,24 @@ typedef enum
 	TF_TRAP_TYPE_PL,
 	TF_TRAP_TYPE_ENEMY
 }eDemoTrapType;
+
+//TODO: To allow the proper slot# values to be used,
+//the class names should be changed to the slot names [APG]RoboCop[CL]
+
+/*typedef enum
+{
+	TF_CLASS_UNDEFINED = 0,
+	TF_CLASS_SCOUT = 1,
+	TF_CLASS_SOLDIER = 2,
+	TF_CLASS_PYRO = 3,
+	TF_CLASS_DEMOMAN = 4,
+	TF_CLASS_HWGUY = 5,
+	TF_CLASS_MEDIC = 6,
+	TF_CLASS_ENGINEER = 7,
+	TF_CLASS_SNIPER = 8,
+	TF_CLASS_SPY = 9,
+	TF_CLASS_MAX = 10
+}TF_Class;*/
 
 typedef enum
 {
@@ -371,9 +410,11 @@ private:
 	const char *m_szName;
 };
 
-#define EVENT_FLAG_PICKUP 0
-#define EVENT_CAPPOINT    1
-
+enum
+{
+	EVENT_FLAG_PICKUP = 0,
+	EVENT_CAPPOINT = 1
+};
 
 class CBotFortress : public CBot
 {
@@ -441,7 +482,7 @@ public:
 
 	virtual void engineerBuild ( eEngiBuild iBuilding, eEngiCmd iEngiCmd ) {}
 
-	virtual void spyDisguise ( int iTeam, int iClass ) {}
+	virtual void spyDisguise (int iTeam, unsigned int iClass) {}
 
 	virtual bool lookAfterBuildings (float *fTime) { return false; }
 
@@ -496,7 +537,7 @@ public:
 
 	virtual TF_Class getClass () { return TF_CLASS_UNDEFINED; }
 
-	virtual void updateClass () { };
+	virtual void updateClass () {}
 
 	void currentlyDead () override;
 
@@ -585,7 +626,7 @@ public:
 	void seeFriendlyDie ( edict_t *pDied, edict_t *pKiller, CWeapon *pWeapon ) override { CBot::seeFriendlyDie(pDied,pKiller,pWeapon); }
 	void seeFriendlyKill ( edict_t *pTeamMate, edict_t *pDied, CWeapon *pWeapon ) override { CBot::seeFriendlyKill(pTeamMate,pDied,pWeapon); }
 
-	void voiceCommand ( int cmd ) override { };
+	void voiceCommand ( int cmd ) override {} //conflicts with bot.h `CBotCmd cmd`? [APG]RoboCop[CL]
 
 	void seeFriendlyHurtEnemy ( edict_t *pTeammate, edict_t *pEnemy, CWeapon *pWeapon ) override;
 	
@@ -782,7 +823,7 @@ public:
 
 	void pointsUpdated ( );
 
-	eBotFuncState rocketJump(int *iState,float *fTime);
+	eBotFuncState rocketJump(int *iState,float *fTime); //TODO: not implemented? [APG]RoboCop[CL]
 
 	bool wantToFollowEnemy () override;
 
@@ -806,8 +847,8 @@ public:
 
 	//Vector getAimVector ( edict_t *pEntity );
 	void modAim ( edict_t *pEntity, Vector &v_origin, 
-	              Vector *v_desired_offset, Vector &v_size,
-	              float fDist, float fDist2D) override;
+				  Vector *v_desired_offset, Vector &v_size,
+				  float fDist, float fDist2D) override;
 
 	void modThink () override;
 
@@ -837,7 +878,7 @@ public:
 
 	void engineerBuild ( eEngiBuild iBuilding, eEngiCmd iEngiCmd ) override;
 
-	void spyDisguise ( int iTeam, int iClass ) override;
+	void spyDisguise (int iTeam, unsigned int iClass) override;
 
 	bool hasEngineerBuilt ( eEngiBuild iBuilding ) override;
 
@@ -890,7 +931,7 @@ public:
 	void seeFriendlyDie ( edict_t *pDied, edict_t *pKiller, CWeapon *pWeapon ) override;
 	void seeFriendlyKill ( edict_t *pTeamMate, edict_t *pDied, CWeapon *pWeapon ) override;
 
-	void voiceCommand ( int cmd ) override;
+	void voiceCommand (int cmd) override;
 
 	void handleWeapons () override;
 
@@ -927,7 +968,7 @@ public:
 
 	void MvM_Update(); // Mann vs Machine think function!
 
-	bool MvM_IsReady();
+	bool MvM_IsReady() const;
 
 	void MvM_Upgrade (); // TODO: To allow bots to menuselect in order to buy upgrades? [APG]RoboCop[CL]
 
@@ -1004,7 +1045,6 @@ private:
 class CBotFF : public CBotFortress
 {
 public:
-
 	CBotFF() { CBotFortress(); } //TODO: unused object [APG]RoboCop[CL]
 
 	void modThink () override;

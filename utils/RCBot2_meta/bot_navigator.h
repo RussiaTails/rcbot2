@@ -40,7 +40,14 @@
 
 #include "bot_belief.h"
 
-class CNavMesh;
+class CNavMesh {
+public:
+	// other methods...
+	static void freeMemory()
+	{
+		// implementation of freeing memory
+	}
+};
 class CWaypointVisibilityTable;
 
 #define MAX_BELIEF 200.0f
@@ -56,6 +63,7 @@ protected:
 class IBotNavigator
 {
 public:
+	virtual ~IBotNavigator() = default;
 	virtual void init () = 0;
 
 	// returns true when working out route finishes, not if successful
@@ -137,7 +145,7 @@ public:
 	virtual bool wantToSaveBelief () { return false; }
 	float getGoalDistance () const { return m_fGoalDistance; }
 
-	static const int MAX_PATH_TICKS = 200;
+	static constexpr int MAX_PATH_TICKS = 200;
 
 protected:
 	Vector m_vGoal;
@@ -150,10 +158,13 @@ protected:
 	bool m_bLoadBelief = false;
 };
 
-#define FL_ASTAR_CLOSED		1
-#define FL_ASTAR_PARENT		2
-#define FL_ASTAR_OPEN		4
-#define FL_HEURISTIC_SET	8
+enum
+{
+	FL_ASTAR_CLOSED = 1,
+	FL_ASTAR_PARENT = 2,
+	FL_ASTAR_OPEN = 4,
+	FL_HEURISTIC_SET = 8
+};
 
 class AStarNode
 {
@@ -317,7 +328,7 @@ struct AstarNodeCompare : binary_function<AStarNode*, AStarNode*, bool>
   // Other stuff...
   bool operator()(AStarNode* x, AStarNode* y) const 
   {
-    return y->betterCost(x);
+	return y->betterCost(x);
   }
 };
 
@@ -326,16 +337,16 @@ class AStarOpenList : public vector<AStarNode*>
   AstarNodeCompare comp;
 public:
   AStarOpenList(AstarNodeCompare cmp = AstarNodeCompare()) : comp(cmp) {
-    make_heap(begin(), end(), comp);
+	make_heap(begin(), end(), comp);
   }
   AStarNode* top() { return front(); }
   void push(AStarNode* x) {
-    emplace_back(x);
-    push_heap(begin(), end(), comp);
+	emplace_back(x);
+	push_heap(begin(), end(), comp);
   }
   void pop() {
-    pop_heap(begin(), end(), comp);
-    pop_back();
+	pop_heap(begin(), end(), comp);
+	pop_back();
   }  
 };*/
 
@@ -343,17 +354,20 @@ public:
 /*
 bool operator<( const AStarNode & A, const AStarNode & B )
 {
-    return A.betterCost(&B);
+	return A.betterCost(&B);
 }
 
 bool operator<( const AStarNode * A, const AStarNode * B )
 {
-    return A->betterCost(B);
+	return A->betterCost(B);
 }*/
 
-#define WPT_SEARCH_AVOID_SENTRIES 1
-#define WPT_SEARCH_AVOID_SNIPERS 2
-#define WPT_SEARCH_AVOID_TEAMMATE 4
+enum
+{
+	WPT_SEARCH_AVOID_SENTRIES = 1,
+	WPT_SEARCH_AVOID_SNIPERS = 2,
+	WPT_SEARCH_AVOID_TEAMMATE = 4
+};
 
 typedef struct
 {
@@ -366,7 +380,7 @@ typedef struct
 class CWaypointNavigator : public IBotNavigator
 {
 public:
-	CWaypointNavigator ( CBot *pBot ) 
+	CWaypointNavigator(CBot* pBot)
 	{
 		CWaypointNavigator::init();
 		m_pBot = pBot; 
@@ -395,8 +409,8 @@ public:
 
 	void updatePosition () override;
 
-    float getBelief ( int index ) override
-    { if ( index >= 0 ) return m_fBelief[index]; return 0; }
+	float getBelief ( int index ) override
+	{ if ( index >= 0 ) return m_fBelief[index]; return 0; }
 
 	void failMove () override;
 
@@ -430,9 +444,9 @@ public:
 
 	//virtual void goBack();
 	
-	void belief ( Vector origin, Vector vOther, float fBelief, float fStrength, BotBelief iType ) override;
+	void belief ( Vector origin, Vector vOther, float fBelief, float fStrength, BotBelief iType ) override; //TODO: not implemented? [APG]RoboCop[CL]
 
-	void beliefOne ( int iWptIndex, BotBelief iBeliefType, float fDist ) override;
+	void beliefOne ( int iWptIndex, BotBelief iBeliefType, float fDist ) override; //TODO: not implemented? [APG]RoboCop[CL]
 
 	// nearest cover position to vOrigin only
 	bool getCoverPosition ( Vector vCoverOrigin, Vector *vCover ) override;
@@ -507,7 +521,7 @@ public:
 	CNavMesh* m_theNavMesh; // Add a member variable for the NavMesh instance
 
 	CNavMeshNavigator();
-	~CNavMeshNavigator();
+	~CNavMeshNavigator() override;
 
 	void CalculateRoute(Vector startNodeID, Vector goalNodeID);
 
@@ -529,13 +543,13 @@ public:
 
 	void init () override;
 
-    void belief ( Vector origin, Vector facing, float fBelief, float fStrength, BotBelief iType ) override {} //bir3yk
+	void belief ( Vector origin, Vector facing, float fBelief, float fStrength, BotBelief iType ) override {} //bir3yk
 
 	//void rememberEnemyPosition ( Vector vOrigin );
 
 	//Vector getEnemyPositionPinchPoint ( Vector vOrigin );
 private:
-	CNavMesh * m_pNavMesh = nullptr;
+	CNavMesh * m_pNavMesh;
 };
 
 #endif

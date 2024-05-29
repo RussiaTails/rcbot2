@@ -60,8 +60,6 @@ class IMoveHelper;
 
 #if defined WIN32 && !defined snprintf
 #define snprintf _snprintf
-#elif defined __linux__ && !defined snprintf
-#define snprintf std::snprintf
 #endif
 
 class RCBotPluginMeta : public ISmmPlugin, public IMetamodListener
@@ -110,7 +108,7 @@ public:
 
 //public: // SourceMod
 #if defined SM_EXT
-	void *OnMetamodQuery(const char* iface, int *ret);
+	void *OnMetamodQuery(const char* iface, int *ret) override;
 #endif
 
 //public:
@@ -133,7 +131,7 @@ private:
 
 	// Bot Quota
 	float m_fBotQuotaTimer = 0.0f;
-	int m_iTargetBots[RCBOT_MAXPLAYERS];
+	int m_iTargetBots[RCBOT_MAXPLAYERS] = {};
 
 	void BotQuotaCheck();
 };

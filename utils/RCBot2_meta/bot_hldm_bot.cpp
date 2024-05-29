@@ -339,7 +339,7 @@ bool CHLDMBot :: executeAction ( eBotAction iAction )
 
 			if ( pWaypoint )
 			{
-				auto* snipe = new CBotSchedule();
+				CBotSchedule* snipe = new CBotSchedule();
 				CBotTask *findpath = new CFindPathTask(CWaypoints::getWaypointIndex(pWaypoint));
 
 				// use DOD task  //Unstable? [APG]RoboCop[CL]
@@ -639,7 +639,8 @@ bool CHLDMBot::checkStuck()
 				if ( !m_pSchedules->hasSchedule(SCHED_GRAVGUN_PICKUP) )
 				{
 					m_pSchedules->freeMemory();
-					const auto pSched = new CBotSchedule(new CBotGravGunPickup(m_pCurrentWeapon,m_NearestPhysObj));
+					CBotSchedule* const pSched = new CBotSchedule(
+						new CBotGravGunPickup(m_pCurrentWeapon, m_NearestPhysObj));
 					pSched->setID(SCHED_GRAVGUN_PICKUP);
 					m_pSchedules->add(pSched);
 				}

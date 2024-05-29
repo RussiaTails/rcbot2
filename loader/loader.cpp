@@ -28,10 +28,10 @@
  */
 
 #include <ISmmPluginExt.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdarg>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
 
 #if defined _MSC_VER
 	#define DLL_EXPORT				extern "C" __declspec(dllexport)
@@ -86,7 +86,7 @@
 #define FILENAME_1_6_CONTAGION		PLATFORM_ARCH_FOLDER "rcbot.2.contagion" PLATFORM_EXT
 #define FILENAME_1_6_BMS			PLATFORM_ARCH_FOLDER "rcbot.2.bms" PLATFORM_EXT
 
-HINSTANCE g_hCore = NULL;
+HINSTANCE g_hCore = nullptr;
 bool load_attempted = false;
 
 size_t UTIL_Format(char *buffer, size_t maxlength, const char *fmt, ...);
@@ -94,14 +94,14 @@ size_t UTIL_Format(char *buffer, size_t maxlength, const char *fmt, ...);
 class FailPlugin : public SourceMM::ISmmFailPlugin
 {
 public:
-	int GetApiVersion()
+	int GetApiVersion() override
 	{
 		return fail_version;
 	}
 
-	bool Load(SourceMM::PluginId id, SourceMM::ISmmAPI *ismm, char *error, size_t maxlength, bool late)
+	bool Load(SourceMM::PluginId id, SourceMM::ISmmAPI *ismm, char *error, size_t maxlength, bool late) override
 	{
-		if (error != NULL && maxlength != 0)
+		if (error != nullptr && maxlength != 0)
 		{
 			UTIL_Format(error, maxlength, "%s", error_buffer);
 		}
@@ -135,7 +135,7 @@ METAMOD_PLUGIN *_GetPluginPtr(const char *path, int fail_api)
 	METAMOD_PLUGIN *pl;
 	int ret;
 
-	if (!(g_hCore=openlib(path)))
+	if (!((g_hCore=openlib(path))))
 	{
 #if defined __linux__ || defined __APPLE__
 		UTIL_Format(s_FailPlugin.error_buffer, 
@@ -147,12 +147,12 @@ METAMOD_PLUGIN *_GetPluginPtr(const char *path, int fail_api)
 
 		if (FormatMessageA(
 				FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
-				NULL,
+				nullptr,
 				err,
 				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 				s_FailPlugin.error_buffer,
 				sizeof(s_FailPlugin.error_buffer),
-				NULL)
+			nullptr)
 			== 0)
 		{
 			UTIL_Format(s_FailPlugin.error_buffer, 
@@ -167,12 +167,12 @@ METAMOD_PLUGIN *_GetPluginPtr(const char *path, int fail_api)
 		return (METAMOD_PLUGIN *)&s_FailPlugin;
 	}
 
-	if (!(fn=(METAMOD_FN_ORIG_LOAD)findsym(g_hCore, "CreateInterface")))
+	if (!((fn=METAMOD_FN_ORIG_LOAD(findsym(g_hCore, "CreateInterface")))))
 	{
 		goto error;
 	}
 
-	pl = (METAMOD_PLUGIN *)fn(METAMOD_PLAPI_NAME, &ret);
+	pl = static_cast<METAMOD_PLUGIN*>(fn(METAMOD_PLAPI_NAME, &ret));
 	if (!pl)
 	{
 		goto error;
@@ -181,8 +181,8 @@ METAMOD_PLUGIN *_GetPluginPtr(const char *path, int fail_api)
 	return pl;
 error:
 	closelib(g_hCore);
-	g_hCore = NULL;
-	return NULL;
+	g_hCore = nullptr;
+	return nullptr;
 }
 
 DLL_EXPORT METAMOD_PLUGIN *CreateInterface_MMS(const MetamodVersionInfo *mvi, const MetamodLoaderInfo *mli)
@@ -193,7 +193,7 @@ DLL_EXPORT METAMOD_PLUGIN *CreateInterface_MMS(const MetamodVersionInfo *mvi, co
 	
 	if (mvi->api_major > METAMOD_API_MAJOR)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	switch (mvi->source_engine)
@@ -314,7 +314,7 @@ DLL_EXPORT METAMOD_PLUGIN *CreateInterface_MMS(const MetamodVersionInfo *mvi, co
 			}
 			else
 			{
-				return NULL;
+				return nullptr;
 			}
 			break;
 		}
@@ -335,7 +335,7 @@ DLL_EXPORT METAMOD_PLUGIN *CreateInterface_MMS(const MetamodVersionInfo *mvi, co
 		}
 	default:
 		{
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -350,7 +350,7 @@ DLL_EXPORT void UnloadInterface_MMS()
 	if (g_hCore)
 	{
 		closelib(g_hCore);
-		g_hCore = NULL;
+		g_hCore = nullptr;
 	}
 }
 

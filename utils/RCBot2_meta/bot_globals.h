@@ -44,9 +44,12 @@
 #include <cctype>
 #endif
 
-#define MAX_MAP_STRING_LEN 64
-#define MAX_PATH_LEN 512
-#define MAX_ENTITIES 2048
+enum
+{
+	MAX_MAP_STRING_LEN = 64,
+	MAX_PATH_LEN = 512,
+	MAX_ENTITIES = 2048
+};
 
 class CBotGlobals
 {
@@ -196,7 +199,7 @@ public:
 
 	static edict_t *playerByUserId(int iUserId);
 
-	static bool isCurrentMod ( eModId modid );
+	static bool isCurrentMod ( eModId modid ); //TODO: not implemented? [APG]RoboCop[CL]
 
 	static bool checkOpensLater (const Vector& vSrc, const Vector& vDest );
 

@@ -1,7 +1,8 @@
 ######### General Settings ########
 #
 # General difficulty of the bots. 0.5 = stock, < 0.5 easier, > 0.5 = harder -Broken!
-rcbot_skill 0.8 
+# Not used - DNA.styx
+# rcbot_skill 0.8
 #
 # If set to 1 will make every bot skill and reaction much higher
 rcbot_supermode 0
@@ -40,13 +41,16 @@ rcbot_shoot_breakable_dist 128.0
 rcbot_shoot_breakable_cos 0.9
 #
 # How many revs the bot searches for visible players and enemies, lower to reduce cpu usage
-rcbot_visrevs_clients 3
+# Replaced by visionticks_clients setting in profile .ini files - DNA.styx
+# rcbot_visrevs_clients 3
 #
 # How many revs the bot searches for visible monsters, lower to reduce cpu usage
-rcbot_visrevs 6
+# Replaced by visionticks setting in profile .ini files - DNA.styx
+# rcbot_visrevs 6
 #
 # How many revs the bot searches for a path each frame, lower to reduce cpu usage, but causes bots to stand still more
-rcbot_pathrevs 30
+# Replaced by pathticks setting in profile .ini files - DNA.styx
+# rcbot_pathrevs 30
 #
 # The fov dot product before the bot shoots an enemy 0.7 = 45 degrees
 rcbot_enemyshootfov 0.97

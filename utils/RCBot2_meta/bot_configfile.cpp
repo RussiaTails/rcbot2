@@ -86,7 +86,7 @@ void CBotConfigFile :: load ()
 
 void CBotConfigFile :: doNextCommand ()
 {
-	char cmd[64] = {0};
+	char cmd[64] = {};
 
 	if ( m_fNextCommandTime < engine->Time() && m_iCmd < m_Commands.size() )
 	{
@@ -101,7 +101,7 @@ void CBotConfigFile :: doNextCommand ()
 
 void CBotConfigFile :: executeCommands ()
 {
-	char cmd[64] = {0};
+	char cmd[64] = {};
 
 	while ( m_iCmd < m_Commands.size() )
 	{
@@ -117,14 +117,14 @@ void CBotConfigFile :: executeCommands ()
 
 void CRCBotTF2UtilFile :: init()
 {
-	for ( short unsigned int i = 0; i < UTIL_TYPE_MAX; i ++ )
+	for (bot_util_t (&m_fUtil)[112][9] : m_fUtils)
 	{
-		for ( short unsigned int j = 0; j < BOT_UTIL_MAX; j ++ )
+		for (bot_util_t (&j)[9] : m_fUtil)
 		{
-			for ( short unsigned int k = 0; k < 9; k ++ )
+			for (bot_util_t& k : j)
 			{
-				m_fUtils[i][j][k].min = 0;
-				m_fUtils[i][j][k].max = 0;
+				k.min = 0;
+				k.max = 0;
 			}
 		}
 	}
@@ -143,16 +143,16 @@ void CRCBotTF2UtilFile :: loadConfig()
 {
 	init();
 
-	 for ( eTF2UtilType iFile = BOT_ATT_UTIL; iFile < UTIL_TYPE_MAX; iFile = static_cast<eTF2UtilType>(static_cast<int>(iFile) + 1) )
-	 {
-		 char szFilename[64];
-		 char szFullFilename[512];
-		 if ( iFile == BOT_ATT_UTIL )
-		 {
+	for ( eTF2UtilType iFile = BOT_ATT_UTIL; iFile < UTIL_TYPE_MAX; iFile = static_cast<eTF2UtilType>(static_cast<int>(iFile) + 1) )
+	{
+		char szFilename[64];
+		char szFullFilename[512];
+		if ( iFile == BOT_ATT_UTIL )
+		{
 			std::sprintf(szFilename,"attack_util.csv");
-		 }
-		 else
-		 {
+		}
+		else
+		{
 			std::sprintf(szFilename,"normal_util.csv");
 		}
 
@@ -190,7 +190,7 @@ void CRCBotTF2UtilFile :: loadConfig()
 						&iClassList[7][0],&iClassList[7][1],
 						&iClassList[8][0],&iClassList[8][1]) )
 					{
-
+						//TODO: should be `iAction, iUtil, fUtility`? [APG]RoboCop[CL]
 						addUtilPerturbation(iUtil,iFile,iClassList);
 
 						iUtil = static_cast<eBotAction>(static_cast<int>(iUtil) + 1);
@@ -199,9 +199,8 @@ void CRCBotTF2UtilFile :: loadConfig()
 							break;
 
 					}
-
 				}
 			}
 		}
-	 }
+	}
 }

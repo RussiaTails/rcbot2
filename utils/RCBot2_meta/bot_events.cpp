@@ -524,7 +524,7 @@ void CPlayerHealed ::execute(IBotEventInterface *pEvent)
 {
 	const int patient = pEvent->getInt("patient",-1);
 	const int healer = pEvent->getInt("healer",-1);
-	const int amount = pEvent->getFloat("amount",0);
+	const float amount = pEvent->getFloat("amount",0);
 
 	if ( healer != -1 && patient != -1 && healer != patient )
 	{
@@ -634,7 +634,7 @@ void CTF2UpgradeObjectEvent :: execute ( IBotEventInterface *pEvent )
 	{
 		const eEngiBuild object = static_cast<eEngiBuild>(pEvent->getInt("object", 0));
 		const bool isbuilder = pEvent->getInt("isbuilder")>0;
-		const short index = pEvent->getInt("index");
+		const int index = pEvent->getInt("index");
 	
 		if ( !isbuilder )
 		{
@@ -1262,10 +1262,10 @@ void CBotEvents :: addEvent ( CBotEvent *pEvent )
 
 void CBotEvents :: freeMemory ()
 {
-	for ( unsigned int i = 0; i < m_theEvents.size(); i ++ )
+	for (CBotEvent*& m_theEvent : m_theEvents)
 	{
-		delete m_theEvents[i];
-		m_theEvents[i] = nullptr;	
+		delete m_theEvent;
+		m_theEvent = nullptr;	
 	}
 	m_theEvents.clear();
 }
@@ -1287,10 +1287,8 @@ void CBotEvents :: executeEvent( void *pEvent, eBotEventType iType )
 	if ( iType != TYPE_IGAMEEVENT )
 		iEventId = pInterface->getInt("eventid");
 
-	for ( unsigned short int i = 0; i < m_theEvents.size(); i ++ )
+	for (CBotEvent* const pFound : m_theEvents)
 	{
-		CBotEvent* pFound = m_theEvents[i];
-
 		// if it has an pEvent id stored just check that
 		//if ( ( iType != TYPE_IGAMEEVENT ) && pFound->hasEventId() )
 		//	bFound = pFound->isEventId(iEventId);

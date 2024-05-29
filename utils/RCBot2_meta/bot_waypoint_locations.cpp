@@ -73,10 +73,10 @@ unsigned char *CWaypointLocations :: resetFailedWaypoints (WaypointList *iIgnore
 #define CLAMP_TO(x,clamp) x=((x)>(clamp))?(clamp):x
 
 void CWaypointLocations :: getMinMaxs ( int iLoc, int jLoc, int kLoc, 
-									    int *iMinLoci, int *iMinLocj, int *iMinLock,
-									    int *iMaxLoci, int *iMaxLocj, int *iMaxLock )
+										int *iMinLoci, int *iMinLocj, int *iMinLock,
+										int *iMaxLoci, int *iMaxLocj, int *iMaxLock )
 {
-	static const int iMaxLoc = MAX_WPT_BUCKETS-1;
+	static constexpr int iMaxLoc = MAX_WPT_BUCKETS-1;
 
 	// get current area
 	*iMinLoci = iLoc-1;
@@ -146,7 +146,7 @@ void CWaypointLocations :: GetAllInArea (const Vector& vOrigin, WaypointList* pW
 		{
 			for (int k = iMinLock; k <= iMaxLock; k++ )
 			{
-				auto loc = m_iLocations[i][j][k];
+				WaypointList loc = m_iLocations[i][j][k];
 				for (int iWpt : loc)
 				{
 					if ( iWpt == iVisibleTo )
@@ -163,8 +163,8 @@ void CWaypointLocations :: GetAllInArea (const Vector& vOrigin, WaypointList* pW
 
 // @param iFrom waypoint number from a and b within distance
 void CWaypointLocations :: GetAllVisible (int iFrom, int iOther, const Vector& vOrigin,
-                                          const Vector& vOther, float fEDist, WaypointList* iVisible,
-                                          WaypointList* iInvisible)
+										  const Vector& vOther, float fEDist, WaypointList* iVisible,
+										  WaypointList* iInvisible)
 {
 	const int iLoc = READ_LOC(vOrigin.x)
 	const int jLoc = READ_LOC(vOrigin.y)
@@ -185,7 +185,7 @@ void CWaypointLocations :: GetAllVisible (int iFrom, int iOther, const Vector& v
 		{
 			for ( int k = iMinLock; k <= iMaxLock; k++ )
 			{
-				auto &arr = m_iLocations[i][j][k];
+				WaypointList& arr = m_iLocations[i][j][k];
 				for (size_t l = 0; l < m_iLocations[i][j][k].size(); l++)
 				{
 					int iWpt = arr[l];
@@ -219,7 +219,7 @@ void CWaypointLocations :: AutoPathInBucket ( edict_t *pPlayer, int i, int j, in
 
 	//CTraceFilterWorldOnly filter;
 
-	const auto &arr = m_iLocations[i][j][k];
+	const WaypointList& arr = m_iLocations[i][j][k];
 	const size_t size = arr.size();
 	
 	for (size_t l = 0; l < size; l++)
@@ -281,18 +281,18 @@ void CWaypointLocations :: DeleteWptLocation ( int iIndex, const float *fOrigin 
 	const int j = READ_LOC(fOrigin[1])
 	const int k = READ_LOC(fOrigin[2])
 
-	auto &vec = m_iLocations[i][j][k];
+	WaypointList& vec = m_iLocations[i][j][k];
 	vec.erase(std::remove(vec.begin(), vec.end(), iIndex), vec.end());
 }
 
 ///////////////
 // return nearest waypoint that can be used to cover from vCoverFrom vector
 int CWaypointLocations :: GetCoverWaypoint (const Vector& vPlayerOrigin, const Vector& vCoverFrom, 
-                                            WaypointList *iIgnoreWpts, Vector *vGoalOrigin, 
-                                            int iTeam, float fMinDist, float fMaxDist)
+											WaypointList *iIgnoreWpts, Vector *vGoalOrigin, 
+											int iTeam, float fMinDist, float fMaxDist)
 {
 	const int iWaypoint = NearestWaypoint(vCoverFrom, REACHABLE_RANGE, -1, true, true, false, nullptr, false,
-	                                      0, false, true, vPlayerOrigin);
+										  0, false, true, vPlayerOrigin);
 
 	if ( iWaypoint == -1 )
 		return -1;
@@ -333,7 +333,7 @@ int CWaypointLocations :: GetCoverWaypoint (const Vector& vPlayerOrigin, const V
 				// check each area around the current area
 				// for closer waypoints
 				FindNearestCoverWaypointInBucket(i, j, k, vPlayerOrigin, &fNearestDist, &iNearestIndex, iIgnoreWpts,
-				                                 iWaypoint, vGoalOrigin, iTeam, fMinDist);
+												 iWaypoint, vGoalOrigin, iTeam, fMinDist);
 			}
 		}
 	}
@@ -365,7 +365,7 @@ void CWaypointLocations :: FindNearestCoverWaypointInBucket ( int i, int j, int 
 		if ( iCoverFromWpt == iSelectedIndex )
 			continue;
 		if ( g_iFailedWaypoints[iSelectedIndex] )
-		    continue;
+			continue;
 
 		CWaypoint* curr_wpt = CWaypoints::getWaypoint(iSelectedIndex);
 
@@ -373,7 +373,7 @@ void CWaypointLocations :: FindNearestCoverWaypointInBucket ( int i, int j, int 
 			continue; 
 		if ( curr_wpt->hasFlag(CWaypointTypes::W_FL_UNREACHABLE) )
 			continue;
-	    if ( !curr_wpt->forTeam(iTeam) )
+		if ( !curr_wpt->forTeam(iTeam) )
 		{
 			continue;
 		}

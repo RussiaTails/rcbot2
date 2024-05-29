@@ -31,8 +31,11 @@
 #ifndef __DOD_RCBOT_H__
 #define __DOD_RCBOT_H__
 
-#define TEAM_ALLIES 2
-#define TEAM_AXIS 3
+enum
+{
+	TEAM_ALLIES = 2,
+	TEAM_AXIS = 3
+};
 
 #define MAX_GREN_THROW_DIST 1024.0f
 
@@ -89,7 +92,7 @@ typedef enum
 typedef struct
 {
 	eDODVoiceCMD id;
-	char *pcmd;
+	const char *pcmd;
 }eDODVoiceCommand_t;
 
 typedef enum
@@ -102,16 +105,22 @@ typedef enum
 	DOD_CLASS_ROCKET = 6
 }DOD_Class;
 
-#define DOD_BOMB_STATE_UNAVAILABLE 0
-#define DOD_BOMB_STATE_AVAILABLE   1
-#define DOD_BOMB_STATE_ACTIVE	   2
+enum
+{
+	DOD_BOMB_STATE_UNAVAILABLE = 0,
+	DOD_BOMB_STATE_AVAILABLE = 1,
+	DOD_BOMB_STATE_ACTIVE = 2
+};
 
-#define DOD_BOMB_EXPLODED		0
-#define DOD_BOMB_DEFUSE			1
-#define DOD_BOMB_PLANT			2
-#define DOD_BOMB_PATH_PLANT		3
-#define DOD_BOMB_PATH_DEFUSE	4
-#define DOD_POINT_CAPTURED		5
+enum
+{
+	DOD_BOMB_EXPLODED = 0,
+	DOD_BOMB_DEFUSE = 1,
+	DOD_BOMB_PLANT = 2,
+	DOD_BOMB_PATH_PLANT = 3,
+	DOD_BOMB_PATH_DEFUSE = 4,
+	DOD_POINT_CAPTURED = 5
+};
 
 #define DOD_CLASSNAME_CONTROLPOINT "dod_control_point"
 #define DOD_CLASSNAME_BOMBTARGET "dod_bomb_target"
@@ -164,7 +173,7 @@ public:
 
 	bool isEnemy ( edict_t *pEdict,bool bCheckWeapons = true ) override;
 
-	float getArmorPercent () const { return 0.01f * int(m_pPlayerInfo->GetArmorValue()); }
+	float getArmorPercent () const { return 0.01f * static_cast<float>(m_pPlayerInfo->GetArmorValue()); }
 
 	void getTasks (unsigned int iIgnore) override;
 
@@ -201,7 +210,7 @@ public:
 	CBotWeapon *getSniperRifle () const;
 	bool hasSniperRifle () const;
 
-	void voiceCommand ( int cmd ) override;
+	void voiceCommand (int cmd) override;
 
 	unsigned int maxEntityIndex ( ) override { return gpGlobals->maxEntities; }
 

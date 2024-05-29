@@ -9,6 +9,10 @@
 
 #include <cstring>
 
+#ifdef _WIN32
+#define strcmpi _strcmpi
+#endif 
+
 CClassInterfaceValue CClassInterface :: g_GetProps[GET_PROPDATA_MAX];
 bool CClassInterfaceValue :: m_berror = false;
 
@@ -44,8 +48,6 @@ void UTIL_FindServerClassnamePrint(const char *name_cmd)
 
 	CBotGlobals::botMessage(nullptr,0,"Not found");
 }
-
-
 
 void UTIL_FindServerClassPrint(const char *name_cmd)
 {
@@ -93,7 +95,6 @@ ServerClass *UTIL_FindServerClass(const char *name)
 	}
 
 	return nullptr;
-	
 }
 
 /**
@@ -240,7 +241,6 @@ edict_t *CClassInterfaceValue :: getEntity ( edict_t *edict )
 
 	getData(edict); 
 
-
 	if (m_berror)
 		return nullptr;
 
@@ -252,7 +252,7 @@ edict_t *CClassInterfaceValue :: getEntity ( edict_t *edict )
 	return nullptr;
 }
 
-void CClassInterfaceValue :: init (const char* key, char* value, unsigned preoffset)
+void CClassInterfaceValue :: init (const char* key, const char* value, unsigned preoffset)
 {
 	m_class = CStrings::getString(key);
 	m_value = CStrings::getString(value);
@@ -285,7 +285,7 @@ void UTIL_FindPropPrint(const char *prop_name)
 	}
 	catch (...)
 	{
-		bool bInterfaceErr = true;
+		bool bInterfaceErr = true; //Unused? [APG]RoboCop[CL]
 	}
 }
 
@@ -578,10 +578,10 @@ void CClassInterface:: init ()
 		DEFINE_GETPROP(GETPROP_PLAYER_FOV, "CBasePlayer", "m_iFOV", 0);
 		DEFINE_GETPROP(GETPROP_PLAYER_LIFESTATE, "CBasePlayer", "m_lifeState", 0);
 
-		for ( unsigned int i = 0; i < GET_PROPDATA_MAX; i ++ )
+		for (CClassInterfaceValue& g_GetProp : g_GetProps)
 		{
 			//if ( g_GetProps[i]
-			g_GetProps[i].findOffset();
+			g_GetProp.findOffset();
 		}
 }
 
@@ -589,8 +589,8 @@ void CClassInterface :: setupCTeamRoundTimer ( CTeamRoundTimer *pTimer )
 {
 	/*
 		GETPROP_TF2_RNDTM_m_flTimerEndTime,
-	GETPROP_TF2_RNDTM_m_nSetupTimeLength,
-	GETPROP_TF2_RNDTM_m_bInSetup,
+		GETPROP_TF2_RNDTM_m_nSetupTimeLength,
+		GETPROP_TF2_RNDTM_m_bInSetup,
 	*/
 	pTimer->m_flTimerEndTime = g_GetProps[GETPROP_TF2_RNDTM_m_flTimerEndTime].getFloatPointer(pTimer->m_Resource);
 	pTimer->m_nSetupTimeLength = g_GetProps[GETPROP_TF2_RNDTM_m_nSetupTimeLength].getIntPointer(pTimer->m_Resource);

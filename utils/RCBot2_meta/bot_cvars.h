@@ -7,7 +7,7 @@ extern ConVar rcbot_const_point_master_offset;
 extern ConVar rcbot_tf2_pyro_airblast;
 extern ConVar rcbot_projectile_tweak;
 extern ConVar bot_cmd_enable_wpt_sounds;
-extern ConVar bot_general_difficulty;
+//extern ConVar bot_general_difficulty;
 extern ConVar bot_visrevs_clients;
 extern ConVar bot_spyknifefov;
 extern ConVar bot_visrevs;

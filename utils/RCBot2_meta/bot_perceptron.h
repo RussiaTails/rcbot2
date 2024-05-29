@@ -67,11 +67,11 @@ class CNeuron
 public:
 	CNeuron ();
 
-	CNeuron (unsigned short int iInputs);
+	CNeuron (unsigned short int iInputs); //TODO: not implemented? [APG]RoboCop[CL]
 
-	~CNeuron() { /*if ( m_inputs )*/ delete[] m_inputs; /*if ( m_weights )*/ delete[] m_weights; }
+	virtual ~CNeuron() { /*if ( m_inputs )*/ delete[] m_inputs; /*if ( m_weights )*/ delete[] m_weights; }
 
-	void setWeights ( ga_nn_value *weights );
+	void setWeights ( ga_nn_value *weights ); //TODO: not implemented? [APG]RoboCop[CL]
 
 	virtual void input ( ga_nn_value *inputs );
 
@@ -79,7 +79,7 @@ public:
 
 	ga_nn_value execute ();
 
-	bool fired ();
+	bool fired (); //TODO: not implemented? [APG]RoboCop[CL]
 
 	ga_nn_value getOutput () const { return m_output; }
 
@@ -137,7 +137,7 @@ public:
 
 	void setError ( ga_nn_value err ) { m_error = err; }
 	void addError ( ga_nn_value err ) { m_error += err; }
-	void divError ( unsigned short int samples ) { m_error /= samples; }
+	void divError ( ga_nn_value samples ) { m_error /= samples; }
 
 	ga_nn_value getError ( unsigned short int w ) const { return m_error * m_weights[w]; }
 	ga_nn_value getMSE () const { return m_error; }

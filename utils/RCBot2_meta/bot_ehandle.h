@@ -87,9 +87,9 @@ public:
 		return nullptr;
 	}
 
-	bool operator == ( int a )
+	bool operator == (intptr_t a)
 	{
-		return reinterpret_cast<int>(get()) == a;
+		return reinterpret_cast<intptr_t>(get()) == a;
 	}
 
 	bool operator == ( edict_t *pent )

@@ -359,9 +359,11 @@ Vector CBotSquad :: GetFormationVector (const edict_t* pEdict)
 			vBase = -v_forward + v_right;
 		}
 		break;
+	//case SQUAD_FORM_NONE:
+	//	break;
 	}
 	
-	vBase = vBase * m_fDesiredSpread * iPosition;
+	vBase = vBase * static_cast<int>(m_fDesiredSpread) * iPosition;
 
 	CBotGlobals::quickTraceline(pLeader,vLeaderOrigin,vLeaderOrigin+vBase);
 
@@ -376,13 +378,13 @@ Vector CBotSquad :: GetFormationVector (const edict_t* pEdict)
 /**
  * Returns the edict's position in the squad.
  */
-int CBotSquad::GetFormationPosition (const edict_t* pEdict)
+int CBotSquad::GetFormationPosition(const edict_t* pEdict)
 {
 	const auto it = std::find(m_SquadMembers.begin(), m_SquadMembers.end(), pEdict);
-	return it != m_SquadMembers.end()? std::distance(m_SquadMembers.begin(), it) : 0;
+	return it != m_SquadMembers.end() ? std::distance(m_SquadMembers.begin(), it) : 0;
 }
 
-void CBotSquad::removeMember (const edict_t* pMember)
+void CBotSquad::removeMember(const edict_t* pMember)
 {
 	const auto it = std::find(m_SquadMembers.begin(), m_SquadMembers.end(), pMember);
 	if (it != m_SquadMembers.end()) {

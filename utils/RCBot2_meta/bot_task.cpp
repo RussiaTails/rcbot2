@@ -161,13 +161,13 @@ void CBotTF2MedicHeal::execute(CBot *pBot,CBotSchedule *pSchedule)
 		pBot->getNavigator()->rollBackPosition();
 		fail();
 	}
-	else if ( pBot->getCurrentWeapon() == nullptr)
+	else if (pBot->getCurrentWeapon() == nullptr) //Revert fix by caxanga334
 	{
 		pBotTF2->clearHealingEntity();
 		pBot->getNavigator()->rollBackPosition();
 		fail();
 	}
-	else if ( pBotTF2->getHealFactor(pHeal) == 0.0f )
+	else if (pBotTF2->getHealFactor(pHeal) == 0.0f)
 	{
 		pBotTF2->clearHealingEntity();
 		pBot->getNavigator()->rollBackPosition();
@@ -213,7 +213,6 @@ void CBotTF2MedicHeal::execute(CBot *pBot,CBotSchedule *pSchedule)
 }
 
 ///////////
-
 
 CBotTF2ShootLastEnemyPosition :: CBotTF2ShootLastEnemyPosition  (const Vector& vPosition, edict_t *pEnemy, const Vector& m_vVelocity )
 {
@@ -301,7 +300,6 @@ void CBotTF2ShootLastEnemyPosition :: debugString ( char *string )
 {
 	std::sprintf(string,"CBotTF2ShootLastEnemyPosition\nm_vPosition = (%0.4f,%0.4f,%0.4f)",m_vPosition.x,m_vPosition.y,m_vPosition.z);
 }
-
 
 /////////////
 
@@ -705,7 +703,7 @@ void CBotDODAttackPoint :: execute (CBot *pBot,CBotSchedule *pSchedule)
 void CBotDODAttackPoint :: debugString ( char *string )
 {
 	std::sprintf(string, "CBotDODAttackPoint\nm_iFlagID = %d\n m_vOrigin = (%0.1f,%0.1f,%0.1f,radius = %0.1f)", m_iFlagID,
-	        m_vOrigin.x, m_vOrigin.y, m_vOrigin.z, m_fRadius);
+			m_vOrigin.x, m_vOrigin.y, m_vOrigin.z, m_fRadius);
 }
 
 ///////////
@@ -883,7 +881,6 @@ void CBotTF2PushPayloadBombTask :: execute (CBot *pBot,CBotSchedule *pSchedule)
 
 		pBot->setLookAtTask(LOOK_AROUND);
 	}
-
 }
 
 void CBotTF2PushPayloadBombTask :: debugString ( char *string )
@@ -1157,7 +1154,7 @@ void CBotGravGunPickup :: execute(CBot *pBot,CBotSchedule *pSchedule)
 
 	if ( m_fTime < engine->Time() )
 	{
-		const auto HL2DMBot = static_cast<CHLDMBot*>(pBot);
+		CHLDMBot* const HL2DMBot = static_cast<CHLDMBot*>(pBot);
 
 		if (HL2DMBot->getFailedObject() && HL2DMBot->distanceFrom(HL2DMBot->getFailedObject())<=pBot->distanceFrom(m_Prop)+48 )
 			pBot->primaryAttack();
@@ -1607,7 +1604,8 @@ void CBotBackstab ::execute (CBot *pBot,CBotSchedule *pSchedule)
 	}
 
 	AngleVectors(CBotGlobals::entityEyeAngles(pEnemy),&vangles);
-	const Vector vrear = CBotGlobals::entityOrigin(pEnemy) - vangles * 45 + Vector(0, 0, 32);
+	constexpr int Z_OFFSET = 32;
+	const Vector vrear = CBotGlobals::entityOrigin(pEnemy) - vangles * 45 + Vector(0, 0, Z_OFFSET);
 
 	pTF2Bot->resetAttackingEnemy();
 
@@ -1714,7 +1712,7 @@ void CBotDefendTask :: execute (CBot *pBot,CBotSchedule *pSchedule)
 					if ( CTeamFortress2Mod::getFlagLocation(TF2_TEAM_BLUE,&vFlag) )
 					{
 						// FOR DEBUGGING
-						const float fDist = (vFlag - m_vOrigin).Length();
+						fDist = (vFlag - m_vOrigin).Length();
 						const float fWaitTime = 90.0f - fDist/45; // MAX Dist 4050
 						//
 						m_fTime = engine->Time() + fWaitTime;
@@ -2106,7 +2104,7 @@ void CFindPathTask :: execute ( CBot *pBot, CBotSchedule *pSchedule )
 #endif
 
 		if ( pNav->workRoute( pBot->getOrigin(),
-			                   m_vVector,
+							   m_vVector,
 							   &bFail,
 							   m_iInt==0,
 							   m_flags.bits.m_bNoInterruptions, 
@@ -2160,26 +2158,26 @@ void CFindPathTask :: execute ( CBot *pBot, CBotSchedule *pSchedule )
 				pBot->getNavigator()->failMove();
 			}
 
-			if ( m_pEdict )
+			if (m_pEdict)
 			{
-				if ( CBotGlobals::entityIsValid(m_pEdict) )
+				if (CBotGlobals::entityIsValid(m_pEdict))
 				{
 					pBot->lookAtEdict(m_pEdict);
 
-					if ( m_flags.bits.m_bCompleteInRangeOfEdict && m_flags.bits.m_bCompleteSeeTaskEdict )
+					if (m_flags.bits.m_bCompleteInRangeOfEdict && m_flags.bits.m_bCompleteSeeTaskEdict)
 					{
 						// complete if inrange AND see edict
-						if ( m_flags.bits.m_bCompleteInRangeOfEdict && pBot->distanceFrom(m_pEdict)<m_fRange && pBot->isVisible(m_pEdict) )
+						if (pBot->distanceFrom(m_pEdict) < m_fRange && pBot->isVisible(m_pEdict))
 							complete();
 					}
-					else if ( !m_flags.bits.m_bDontGoToEdict && pBot->isVisible(m_pEdict) )
+					else if (!m_flags.bits.m_bDontGoToEdict && pBot->isVisible(m_pEdict))
 					{
-						if ( pBot->distanceFrom(m_pEdict) < pBot->distanceFrom(pBot->getNavigator()->getNextPoint()) )
+						if (pBot->distanceFrom(m_pEdict) < pBot->distanceFrom(pBot->getNavigator()->getNextPoint()))
 							complete();
-					} 
-					else if ( m_flags.bits.m_bCompleteOutOfRangeEdict && pBot->distanceFrom(m_pEdict)>m_fRange )
+					}
+					else if (m_flags.bits.m_bCompleteOutOfRangeEdict && pBot->distanceFrom(m_pEdict) > m_fRange)
 						complete();
-					else if ( m_flags.bits.m_bCompleteInRangeOfEdict && pBot->distanceFrom(m_pEdict)<m_fRange)
+					else if (m_flags.bits.m_bCompleteInRangeOfEdict && pBot->distanceFrom(m_pEdict) < m_fRange)
 						complete();
 				}
 				else
@@ -3594,7 +3592,7 @@ void CBotTFUseTeleporter :: execute (CBot *pBot,CBotSchedule *pSchedule)
 
 void CBotTFUseTeleporter :: debugString ( char *string )
 {
-	std::sprintf(string,"CBotTFUseTeleporter\nm_pTele = %x",reinterpret_cast<int>(m_pTele.get()));
+	std::sprintf(string, "CBotTFUseTeleporter\nm_pTele = %p", m_pTele.get());
 }
 
 ///////////////////////////////////////////////////
@@ -3609,7 +3607,7 @@ void CAttackEntityTask :: debugString ( char *string )
 	int id = -1;
 
 	if ( m_pEdict )
-      id = ENTINDEX(m_pEdict);
+	  id = ENTINDEX(m_pEdict);
 
 	std::sprintf(string,"CAttackEntityTask (%d)",id);	
 }
@@ -4337,13 +4335,13 @@ void CCrouchHideTask :: execute ( CBot *pBot, CBotSchedule *pSchedule )
 		complete();
 
 }
+
 ////////////////////////////////////////////////////////
 CHideTask :: CHideTask(const Vector& vHideFrom )
 {
 	m_fHideTime = 0.0f;
 	m_vHideFrom = vHideFrom;
 }
-
 
 void CHideTask :: debugString ( char *string )
 {
@@ -4370,7 +4368,7 @@ void CHideTask :: execute ( CBot *pBot, CBotSchedule *pSchedule )
 }
 ///////////////////////////////////////////
 CBotTF2DemomanPipeJump :: CBotTF2DemomanPipeJump ( CBot *pBot, const Vector& vWaypointGround,
-                                                   const Vector& vWaypointNext, 
+												   const Vector& vWaypointNext, 
 						CBotWeapon *pWeapon )
 {
 	m_iStartingAmmo = pWeapon->getClip1(pBot);
@@ -4916,11 +4914,15 @@ void CBotTF2Spam :: execute (CBot *pBot,CBotSchedule *pSchedule)
 		return;
 	}
 
-
 	if ( m_fTime == 0.0f )
 	{
-		if ( m_pWeapon->getID() == TF2_WEAPON_GRENADELAUNCHER )
+		if ( m_pWeapon->getID() == TF2_WEAPON_GRENADELAUNCHER ) // Triggers crash [APG]RoboCop[CL]
 		{
+			//Stability fix? [APG]RoboCop[CL]
+			if (pSchedule == nullptr) {
+				// Handle the error
+				return;
+			}
 			const Vector vVisibleWaypoint = pSchedule->passedVector();
 
 			if ( vVisibleWaypoint.z > m_vTarget.z + 32.0f ) // need to lob grenade
@@ -4973,7 +4975,6 @@ void CBotTF2Spam :: execute (CBot *pBot,CBotSchedule *pSchedule)
 		pBot->primaryAttack();
 		m_fNextAttack = engine->Time() + randomFloat(0.2f,1.0f); 
 	}
-		
 }
 
 ///////////
@@ -5266,7 +5267,7 @@ CBotDODSnipe :: CBotDODSnipe ( CBotWeapon *pWeaponToUse, const Vector& vOrigin, 
 void CBotDODSnipe :: debugString ( char *string )
 {
 	std::sprintf(string, "CBotDODSnipe\nm_fTime = %0.2f\npWeaponToUse = %s\nm_bUseZ = %s\nm_z = %0.2f", m_fTime,
-	        m_pWeaponToUse->getWeaponInfo()->getWeaponName(), m_bUseZ ? "true" : "false", m_z);
+			m_pWeaponToUse->getWeaponInfo()->getWeaponName(), m_bUseZ ? "true" : "false", m_z);
 }
 	
 void CBotDODSnipe :: execute (CBot *pBot,CBotSchedule *pSchedule)
@@ -5460,7 +5461,7 @@ CBotHL2DMSnipe :: CBotHL2DMSnipe ( CBotWeapon *pWeaponToUse, const Vector& vOrig
 void CBotHL2DMSnipe::debugString(char* string) //Unstable? [APG]RoboCop[CL]
 {
 	std::sprintf(string, "CBotHL2DMSnipe\nm_fTime = %0.2f\npWeaponToUse = %s\nm_bUseZ = %s\nm_z = %0.2f", m_fTime,
-	        m_pWeaponToUse->getWeaponInfo()->getWeaponName(), m_bUseZ ? "true" : "false", m_z);
+			m_pWeaponToUse->getWeaponInfo()->getWeaponName(), m_bUseZ ? "true" : "false", m_z);
 }
 
 void CBotHL2DMSnipe :: execute (CBot *pBot,CBotSchedule *pSchedule)
@@ -5468,7 +5469,7 @@ void CBotHL2DMSnipe :: execute (CBot *pBot,CBotSchedule *pSchedule)
 	static CBotWeapon *pCurrentWeapon;
 	static CWeapon *pWeapon;
 
-	static bool bDeployedOrZoomed;
+	static bool bDeployedOrZoomed; //Unused? [APG]RoboCop[CL]
 	static float fDist;
 
 	bDeployedOrZoomed = false;
@@ -5596,7 +5597,6 @@ void CBotSynDisarmMineTask::execute(CBot *pBot,CBotSchedule *pSchedule)
 	pBot->setLookAtTask(LOOK_VECTOR);
 	pBot->setLookVector(m_vMinePos);
 	pBot->setMoveLookPriority(MOVELOOK_TASK);
-	
 
 	if(pBot->getCurrentWeapon() != pBot->getWeapons()->getWeapon(CWeapons::getWeapon(SYN_WEAPON_PHYSCANNON)))
 	{
@@ -5644,7 +5644,7 @@ void CBotSynDisarmMineTask::execute(CBot *pBot,CBotSchedule *pSchedule)
 void CBotSynDisarmMineTask::debugString(char *string)
 {
 	std::sprintf(string, "CBotSynDisarmMineTask\nPos: (%0.4f,%0.4f,%0.4f)\nDistance: %.2f\nTime Set: %s", m_vMinePos.x,
-	        m_vMinePos.y, m_vMinePos.z, m_fDist, m_bTimeSet ? "true" : "false");
+			m_vMinePos.y, m_vMinePos.z, m_fDist, m_bTimeSet ? "true" : "false");
 }
 
 void CBotSynBreakICrateTask::execute(CBot *pBot, CBotSchedule *pSchedule)
@@ -5680,9 +5680,11 @@ void CBotSynBreakICrateTask::execute(CBot *pBot, CBotSchedule *pSchedule)
 	pBot->setMoveLookPriority(MOVELOOK_TASK);
 
 	// Attack
-	if(pBot->getCurrentWeapon()->isGravGun())
+	const CBotWeapon* currentWeapon = pBot->getCurrentWeapon();
+
+	if (currentWeapon && currentWeapon->isGravGun())
 	{
-		if(CClassInterface::gravityGunObject(CClassInterface::getCurrentWeapon(pBot->getEdict())) != nullptr)
+		if (CClassInterface::gravityGunObject(CClassInterface::getCurrentWeapon(pBot->getEdict())) != nullptr)
 		{
 			pBot->primaryAttack();
 		}
@@ -5696,11 +5698,11 @@ void CBotSynBreakICrateTask::execute(CBot *pBot, CBotSchedule *pSchedule)
 		pBot->setMoveTo(m_vPos);
 		pBot->primaryAttack();
 
-		if(!pBot->getCurrentWeapon()->isMelee())
+		if (!currentWeapon->isMelee())
 		{
-			if(pBot->getCurrentWeapon()->getClip1(pBot) < 1)
+			if (currentWeapon->getClip1(pBot) < 1)
 			{
-				if(pBot->getCurrentWeapon()->getAmmo(pBot) < 1)
+				if (currentWeapon->getAmmo(pBot) < 1)
 				{
 					m_pWeapon = pBot->getBestWeapon(m_pCrate.get());
 				}
@@ -5753,7 +5755,6 @@ void CBotSynUseCharger::execute(CBot *pBot, CBotSchedule *pSchedule)
 		pBot->use();
 	}
 }
-
 
 ///////////////////////////////////////////
 // interrupts

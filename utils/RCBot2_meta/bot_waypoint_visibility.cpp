@@ -51,10 +51,10 @@ void CWaypointVisibilityTable::workVisibility()
 	const unsigned short int iSize = static_cast<unsigned short int>(CWaypoints::numWaypoints());
 
 	//for ( unsigned short int iCurFrom = 0; iCurFrom < iSize; iCurFrom++ )
-	for (iCurFrom = iCurFrom; iCurFrom < iSize; iCurFrom++)
+	for (iCurFrom = 0; iCurFrom < iSize; iCurFrom++)
 	{
 		//for ( unsigned short int iCurTo = 0; iCurTo < iSize; iCurTo++ )
-		for (iCurTo = iCurTo; iCurTo < iSize; iCurTo++)
+		for (iCurTo = 0; iCurTo < iSize; iCurTo++)
 		{
 			CWaypoint* pWaypoint1 = CWaypoints::getWaypoint(iCurFrom);
 			CWaypoint* pWaypoint2 = CWaypoints::getWaypoint(iCurTo);
@@ -173,7 +173,7 @@ bool CWaypointVisibilityTable::SaveToFile() const
 	header.waypoint_version = CWaypoints::WAYPOINT_VERSION;
 
 	bfp.write(reinterpret_cast<char*>(&header), sizeof(wpt_vis_header_t));
-	bfp.write(reinterpret_cast<char*>(m_VisTable), sizeof(byte) * g_iMaxVisibilityByte);
+	bfp.write(reinterpret_cast<char*>(m_VisTable), static_cast<std::streamsize>(sizeof(byte)) * g_iMaxVisibilityByte);
 
 	return true;
 }
@@ -203,7 +203,7 @@ bool CWaypointVisibilityTable::ReadFromFile(int numwaypoints) const
 	if (std::strncmp(header.szMapName, CBotGlobals::getMapName(), 63) != 0)
 		return false;
 
-	bfp.read(reinterpret_cast<char*>(m_VisTable), sizeof(byte) * g_iMaxVisibilityByte);
+	bfp.read(reinterpret_cast<char*>(m_VisTable), static_cast<std::streamsize>(sizeof(byte)) * g_iMaxVisibilityByte);
 
 	return true;
 }

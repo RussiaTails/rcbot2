@@ -37,7 +37,10 @@
 //#include "bot_ehandle.h"
 #include "bot_waypoint.h"
 
-#define MAX_STORED_AUTOWAYPOINT 5
+enum
+{
+	MAX_STORED_AUTOWAYPOINT = 5
+};
 
 typedef enum eWptCopyType
 {
@@ -71,7 +74,7 @@ public:
 		m_y = static_cast<T>(vVec.y);
 		m_z = static_cast<T>(vVec.z);
 
-		m_bVectorSet = TRUE;
+		m_bVectorSet = true;
 	}
 
 	Vector GetVector () const
@@ -79,19 +82,19 @@ public:
 		return Vector(static_cast<float>(m_x),static_cast<float>(m_y),static_cast<float>(m_z));
 	}
 
-	BOOL IsVectorSet () const
+	bool IsVectorSet () const
 	{
 		return m_bVectorSet;
 	}
 
 	void UnSet ()
 	{
-		m_bVectorSet = FALSE;
+		m_bVectorSet = false;
 	}
 protected:
 	T m_x,m_y,m_z;
 
-	BOOL m_bVectorSet;
+	bool m_bVectorSet;
 };
 
 class CAutoWaypointCheck : public CTypeVector<vec_t>
@@ -111,11 +114,11 @@ public:
 
 	void UnSetPoint ()
 	{
-		m_bVectorSet = FALSE;
+		m_bVectorSet = false;
 		m_iFlags = 0;
 	}
 private:
-	int m_iFlags;
+	int m_iFlags; //Not initialised? [APG]RoboCop[CL]
 };
 
 class CToolTip
@@ -136,7 +139,7 @@ private:
 class CClient
 {
 public:
-	CClient ()
+	CClient (): m_vLastAutoWaypointCheckPos{}
 	{
 		m_pPlayer = nullptr;
 		m_bWaypointOn = false;
@@ -152,7 +155,7 @@ public:
 		m_fCopyWptRadius = 0.0f;
 		m_iCopyWptFlags = 0;
 		m_iCopyWptArea = 0;
-		
+
 		m_fNextPrintDebugInfo = 0.0f;
 		m_iPrevMenu = 0;
 		m_bDebugAutoWaypoint = false;
@@ -161,7 +164,7 @@ public:
 		m_bSetUpAutoWaypoint = false;
 		m_fCanPlaceJump = 0.0f;
 		m_iLastButtons = 0;
-		
+
 		m_iLastJumpWaypointIndex = 0;
 		m_iLastLadderWaypointIndex = 0;
 		m_iLastMoveType = 0;
@@ -172,7 +175,7 @@ public:
 		m_iAutoEventWaypointTeam = 0;
 		m_bIsTeleporting = false;
 		m_fTeleportTime = 0.0f;
-		
+
 		m_szSteamID = nullptr;
 		m_pPlayerInfo = nullptr;
 		m_pDebugBot = nullptr;
@@ -440,7 +443,7 @@ public:
 		return nullptr;
 	}
 
-	static void initall () { for ( int i = 0; i < RCBOT_MAXPLAYERS; i ++ ) { m_Clients[i].init(); } }
+	static void initall () { for (CClient& m_Client : m_Clients) { m_Client.init(); } }
 	static void giveMessage (const char* msg, float fTime = 0.1f, edict_t* pPlayer = nullptr);// NULL to everyone
 private:
 	static CClient m_Clients[RCBOT_MAXPLAYERS];

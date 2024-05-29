@@ -58,6 +58,9 @@
 
 #include <build_info.h>
 
+#if defined SM_EXT
+#include "rcbot/entprops.h"
+#endif
 SH_DECL_HOOK6(IServerGameDLL, LevelInit, SH_NOATTRIB, 0, bool, char const *, char const *, char const *, char const *, bool, bool);
 SH_DECL_HOOK3_void(IServerGameDLL, ServerActivate, SH_NOATTRIB, 0, edict_t *, int, int);
 SH_DECL_HOOK1_void(IServerGameDLL, GameFrame, SH_NOATTRIB, 0, bool);
@@ -112,9 +115,12 @@ CON_COMMAND(rcbotd, "access the bot commands on a server")
 		return;
 	}
 
-	//iResult = CBotGlobals::m_pCommands->execute(NULL,engine->Cmd_Argv(1),engine->Cmd_Argv(2),engine->Cmd_Argv(3),engine->Cmd_Argv(4),engine->Cmd_Argv(5),engine->Cmd_Argv(6));
-	eBotCommandResult iResult = CBotGlobals::m_pCommands->execute(nullptr, args.Arg(1), args.Arg(2), args.Arg(3),
-	                                                              args.Arg(4), args.Arg(5), args.Arg(6));
+	// shift args and call subcommand
+	BotCommandArgs argList;
+	for (size_t i = 1; i <= static_cast<size_t>(args.ArgC()); i++) {
+		argList.emplace_back(args.Arg(static_cast<int>(i)));
+	}
+	const eBotCommandResult iResult = CBotGlobals::m_pCommands->execute(nullptr, argList);
 
 	if (iResult == COMMAND_ACCESSED)
 	{
@@ -160,7 +166,7 @@ public:
 		m_iMaxCount = 0;
 
 		for (int i = 0; i < RCBOT_MAXPLAYERS; ++i) {
-			const CClient* client = CClients::get(i);
+			CClient* client = CClients::get(i);
 
 			if (client->isUsed()) {
 				IPlayerInfo *p = playerinfomanager->GetPlayerInfo(client->getPlayer());
@@ -193,7 +199,7 @@ void RCBotPluginMeta::HudTextMessage(edict_t *pEntity, const char *szMessage)
 	int msgid = 0;
 	int imsgsize = 0;
 	char msgbuf[64];
-	bool bOK;
+	bool bOK; //Unused? [APG]RoboCop[CL]
 
 	int hint = -1;
 	int say = -1;
@@ -244,9 +250,9 @@ void RCBotPluginMeta::BroadcastTextMessage(const char *szMessage)
 	int msgid = 0;
 	int imsgsize = 0;
 	char msgbuf[64];
-	bool bOK;
+	bool bOK; //Unused? [APG]RoboCop[CL]
 
-	int hint = -1;
+	int hint = -1; //Unused? [APG]RoboCop[CL]
 	int say = -1;
 
 	while ((bOK = servergamedll->GetUserMessageInfo(msgid, msgbuf, 63, imsgsize)) == true)
@@ -313,6 +319,8 @@ void RCBotPluginMeta::Hook_PlayerRunCmd(CUserCmd *ucmd, IMoveHelper *moveHelper)
 class BaseAccessor : public IConCommandBaseAccessor
 {
 public:
+	virtual ~BaseAccessor() = default;
+
 	bool RegisterConCommandBase(ConCommandBase *pCommandBase) override
 	{
 		/* Always call META_REGCVAR instead of going through the engine. */
@@ -360,7 +368,6 @@ bool RCBotPluginMeta::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxle
 		ismm->EnableVSPListener();
 	}
 
-	
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, LevelInit, server, this, &RCBotPluginMeta::Hook_LevelInit, true);
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, ServerActivate, server, this, &RCBotPluginMeta::Hook_ServerActivate, true);
 	SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, server, this, &RCBotPluginMeta::Hook_GameFrame, true);
@@ -432,7 +439,7 @@ bool RCBotPluginMeta::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxle
 	if (!CBotGlobals::gameStart())
 		return false;
 
-	CBotMod *pMod = CBotGlobals::getCurrentMod();
+	CBotMod *pMod = CBotGlobals::getCurrentMod(); // `*pMod` Unused? [APG]RoboCop[CL]
 
 #ifdef OVERRIDE_RUNCMD
 	// TODO figure out a more robust gamedata fix instead of vtable
@@ -457,20 +464,21 @@ bool RCBotPluginMeta::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxle
 	irand.seed( static_cast<unsigned>(time(nullptr)) );
 
 	// Find the RCBOT2 Path from metamod VDF
-	extern IFileSystem *filesystem;
-	KeyValues *mainkv = new KeyValues("metamodplugin");
-	
-	const char *rcbot2path;
-	logger->Log(LogLevel::INFO, "Reading rcbot2 path from VDF...");
-	
-	mainkv->LoadFromFile(filesystem, "addons/metamod/rcbot2.vdf", "MOD");
-	
-	mainkv = mainkv->FindKey("Metamod Plugin");
+	extern IFileSystem* filesystem;
+	KeyValues* mainkv = new KeyValues("metamodplugin");
 
-	if (mainkv)
-		rcbot2path = mainkv->GetString("rcbot2path", "\0");
+	const char* rcbot2path; //Unused? [APG]RoboCop[CL]
+	logger->Log(LogLevel::INFO, "Reading rcbot2 path from VDF...");
+
+	mainkv->LoadFromFile(filesystem, "addons/metamod/rcbot2.vdf", "MOD");
+	KeyValues* temp = mainkv->FindKey("Metamod Plugin");
+
+	if (temp)
+		rcbot2path = temp->GetString("rcbot2path", "\0");
 
 	mainkv->deleteThis(); //mainkv possible redundant? [APG]RoboCop[CL]
+	mainkv = temp; // Memory leak fix [APG]RoboCop[CL]
+
 	//eventListener2 = new CRCBotEventListener();
 
 	// Initialize bot variables
@@ -523,20 +531,20 @@ bool RCBotPluginMeta::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxle
 			}
 
 			if (std::sscanf(bq_line, "%d %d", &human_count, &bot_count) == 2) {
-				if (human_count < 0 || human_count > 32) {
+				if (human_count < 0 || human_count > RCBOT_MAXPLAYERS) {
 					logger->Log(LogLevel::WARN, "Bot Quota - Invalid Human Count %d", human_count);
 					continue;
 				}
 
-				if (bot_count < 0 || bot_count > 32) {
+				if (bot_count < 0 || bot_count > RCBOT_MAXPLAYERS) {
 					logger->Log(LogLevel::WARN, "Bot Quota - Invalid Bot Count %d", bot_count);
 					continue;
 				}
 
 				m_iTargetBots[human_count] = bot_count;
 				logger->Log(LogLevel::INFO, "Bot Quota - Humans: %d, Bots: %d", human_count, bot_count);
+			}
 		}
-	}
 	}
 
 	return true;
@@ -667,8 +675,12 @@ void RCBotPluginMeta::Hook_ClientCommand(edict_t *pEntity)
 	// is bot command?
 	if ( CBotGlobals::m_pCommands->isCommand(pcmd) )
 	{		
-		//eBotCommandResult iResult = CBotGlobals::m_pCommands->execute(pClient,engine->Cmd_Argv(1),engine->Cmd_Argv(2),engine->Cmd_Argv(3),engine->Cmd_Argv(4),engine->Cmd_Argv(5),engine->Cmd_Argv(6));
-		eBotCommandResult iResult = CBotGlobals::m_pCommands->execute(pClient,args.Arg(1),args.Arg(2),args.Arg(3),args.Arg(4),args.Arg(5),args.Arg(6));
+		// create shifted command list
+		BotCommandArgs argList;
+		for (size_t i = 1; i <= static_cast<size_t>(args.ArgC()); i++) {
+			argList.emplace_back(args.Arg(static_cast<int>(i)));
+		}
+		const eBotCommandResult iResult = CBotGlobals::m_pCommands->execute(pClient, argList);
 
 		if ( iResult == COMMAND_ACCESSED )
 		{
@@ -727,14 +739,14 @@ bool RCBotPluginMeta::Hook_ClientConnect(edict_t *pEntity,
 	return true;
 }
 
-void RCBotPluginMeta::Hook_ClientPutInServer(edict_t *pEntity, char const *playername)
+void RCBotPluginMeta::Hook_ClientPutInServer(edict_t *pEntity, char const* playername)
 {
-	CBaseEntity *pEnt = servergameents->EdictToBaseEntity(pEntity);
-	const bool is_Rcbot = false;
+	CBaseEntity *pEnt = servergameents->EdictToBaseEntity(pEntity); //`*pEnt` Unused? [APG]RoboCop[CL]
+	constexpr bool is_Rcbot = false;
 
 	CClient *pClient = CClients::clientConnected(pEntity);
 
-	if ( !is_Rcbot && pClient )
+	if ( !is_Rcbot && pClient ) //`!is_Rcbot` Unused? [APG]RoboCop[CL]
 	{
 		if ( !engine->IsDedicatedServer() )
 		{
@@ -762,7 +774,7 @@ void RCBotPluginMeta::Hook_ClientPutInServer(edict_t *pEntity, char const *playe
 
 void RCBotPluginMeta::Hook_ClientDisconnect(edict_t *pEntity)
 {
-	CBaseEntity *pEnt = servergameents->EdictToBaseEntity(pEntity);
+	CBaseEntity *pEnt = servergameents->EdictToBaseEntity(pEntity); //`*pEnt` Unused? [APG]RoboCop[CL]
 
 #ifdef OVERRIDE_RUNCMD
 	if ( pEnt )
@@ -832,7 +844,7 @@ void RCBotPluginMeta::BotQuotaCheck() {
 		m_fBotQuotaTimer = engine->Time();
 
 		// Target Bot Count
-		int bot_target = 0; //not used? [APG]RoboCop[CL]
+		int bot_target; 
 
 		// Change Notification
 		bool notify = false;
@@ -872,11 +884,13 @@ void RCBotPluginMeta::BotQuotaCheck() {
 
 		// Change Bot Quota
 		if (bot_count > bot_target) {
-			CBots::kickRandomBot(bot_count - bot_target);
+			CBots::kickRandomBot(static_cast<size_t>(bot_count - bot_target));
 			notify = true;
-		} else if (bot_target > bot_count) {
+		}
+		else if (bot_target > bot_count) {
 			const int bot_diff = bot_target - bot_count;
 
+			// ReSharper disable once CppUnreachableCode
 			for (int i = 0; i < bot_diff; ++i) {
 				CBots::createBot("", "", "");
 				break; // Bug-Fix, only add one bot at a time
@@ -940,7 +954,7 @@ bool RCBotPluginMeta::Hook_LevelInit(const char *pMapName,
 	CClients::setListenServerClient(nullptr);
 
 	// Setup game rules
-	extern void **g_pGameRules;
+	extern void **g_pGameRules; //Unused? [APG]RoboCop[CL]
 
 	if (g_pGameRules_Obj && g_pGameRules_Obj->found())
 	{

@@ -112,9 +112,9 @@ bool CDODMod :: shouldAttack ( int iTeam )
 	//TODO: Improve on the integer and floating point precision conversion [APG]RoboCop[CL]
 	iNumFlags = m_Flags.getNumFlags();
 
-	iFlags_0 = static_cast<int>(static_cast<float>(m_Flags.getNumFlagsOwned(iTeam == TEAM_ALLIES ? TEAM_AXIS : TEAM_ALLIES)) /
+	iFlags_0 = static_cast<short>(m_Flags.getNumFlagsOwned(iTeam == TEAM_ALLIES ? TEAM_AXIS : TEAM_ALLIES) /
 		iNumFlags * MAX_DOD_FLAGS);
-	iFlags_1 = static_cast<int>(static_cast<float>(m_Flags.getNumFlagsOwned(iTeam)) / iNumFlags * MAX_DOD_FLAGS);
+	iFlags_1 = static_cast<short>(m_Flags.getNumFlagsOwned(iTeam)) / (iNumFlags * MAX_DOD_FLAGS);
 
 	return randomFloat(0.0f,1.0f) < fAttackProbLookUp[iFlags_0][iFlags_1];//gNetAttackOrDefend->getOutput();
 }
@@ -123,54 +123,52 @@ bool CDODMod :: shouldAttack ( int iTeam )
 void CDODMod :: initMod ()
 {
 ///-------------------------------------------------
-	CBotGlobals::botMessage(nullptr,0,"Training DOD:S capture decision 'NN' ... hold on...");
+	CBotGlobals::botMessage(nullptr, 0, "Training DOD:S capture decision 'NN' ... hold on...");
 
-	const CBotNeuralNet *nn = new CBotNeuralNet(2,2,2,1,0.4f);
+	const CBotNeuralNet nn(2, 2, 2, 1, 0.4f);
 
-	CTrainingSet *tset = new CTrainingSet(2,1,4);
+	CTrainingSet tset(2, 1, 4);
 
-	tset->setScale(0.0f,1.0f);
+	tset.setScale(0.0f,1.0f);
 
-	tset->addSet();
-	tset->in(1.0f/5); // E - enemy flag ratio
-	tset->in(1.0f/5); // T - team flag ratio
-	tset->out(0.9f); // probability of attack
+	tset.addSet();
+	tset.in(1.0f/5); // E - enemy flag ratio
+	tset.in(1.0f/5); // T - team flag ratio
+	tset.out(0.9f); // probability of attack
 
-	tset->addSet();
-	tset->in(4.0f/5); // E - enemy flag ratio
-	tset->in(1.0f/5); // T - team flag ratio
-	tset->out(0.2f); // probability of attack (mostly defend)
+	tset.addSet();
+	tset.in(4.0f/5); // E - enemy flag ratio
+	tset.in(1.0f/5); // T - team flag ratio
+	tset.out(0.2f); // probability of attack (mostly defend)
 	
-	tset->addSet();
-	tset->in(1.0f/5); // E - enemy flag ratio
-	tset->in(4.0f/5); // T - team flag ratio
-	tset->out(0.9f); // probability of attack
+	tset.addSet();
+	tset.in(1.0f/5); // E - enemy flag ratio
+	tset.in(4.0f/5); // T - team flag ratio
+	tset.out(0.9f); // probability of attack
 
-	tset->addSet();
-	tset->in(0.5f); // E - enemy flag ratio
-	tset->in(0.5f); // T - team flag ratio
-	tset->out(0.6f); // probability of attack
+	tset.addSet();
+	tset.in(0.5f); // E - enemy flag ratio
+	tset.in(0.5f); // T - team flag ratio
+	tset.out(0.6f); // probability of attack
 
-	nn->batch_train(tset,1000);
+	nn.batch_train(&tset,1000);
 
 	// create look up table for probabilities
 	for ( short int i = 0; i <= MAX_DOD_FLAGS; i ++ )
 	{
 		for ( short int j = 0; j <= MAX_DOD_FLAGS; j ++ )
 		{
-			tset->init();
-			tset->addSet();
-			tset->in(static_cast<float>(i) / MAX_DOD_FLAGS);
-			tset->in(static_cast<float>(j) / MAX_DOD_FLAGS);
-			nn->execute(tset->getBatches()->in,&fAttackProbLookUp[i][j],0.0f,1.0f);
+			tset.init();
+			tset.addSet();
+			tset.in(i / MAX_DOD_FLAGS);
+			tset.in(j / MAX_DOD_FLAGS);
+			nn.execute(tset.getBatches()->in,&fAttackProbLookUp[i][j],0.0f,1.0f);
 		}
 	}
 
-	tset->freeMemory();
-	delete tset;
-	delete nn;
+	tset.freeMemory();
 
-	CBotGlobals::botMessage(nullptr,0,"... done!");
+	CBotGlobals::botMessage(nullptr, 0, "... done!");
 ///-------------------------------------------------
 
 	CWeapons::loadWeapons(m_szWeaponListName == nullptr ? "DOD" : m_szWeaponListName, DODWeaps);
@@ -496,12 +494,12 @@ bool CDODFlags:: getRandomBombToPlant ( CBot *pBot, Vector *position, int iTeam,
 
 	for ( short int i = 0; i < m_iNumControlPoints; i ++ )
 	{
-		if ( m_iWaypoint[i] != -1 )
+		if (m_iWaypoint[i] != -1)
 		{
-			if ( m_pBombs[i][0] == nullptr || m_iOwner[i] == iTeam || isBombPlanted(i) )
+			if (m_pBombs[i][0] == nullptr || m_iOwner[i] == iTeam || isBombPlanted(i))
 				continue;
 
-				fTotal += (MAX_BELIEF + 1.0f - pNav->getBelief(m_iWaypoint[i])) / MAX_BELIEF * getNumBombsRemaining(i);
+			fTotal += (MAX_BELIEF + 1.0f - pNav->getBelief(m_iWaypoint[i])) / MAX_BELIEF * getNumBombsRemaining(i);
 		}
 		else
 			fTotal += 0.1f;
@@ -629,7 +627,7 @@ int CDODFlags::setup(edict_t *pResourceEntity)
 
 		Vector vOrigin;
 
-		short int i = gpGlobals->maxClients;
+		int i = gpGlobals->maxClients;
 
 		// find visible flags -- with a model
 		while ( ++i < gpGlobals->maxEntities &&  m_pFlags[j] == nullptr)
@@ -831,14 +829,14 @@ void CDODMod ::roundStart()
 // find it and add it as a waypoint offset
 Vector CDODMod :: getGround ( CWaypoint *pWaypoint )
 {
-	for ( unsigned int i = 0; i < m_BombWaypoints.size(); i ++ )
+	for (edict_wpt_pair_t& m_BombWaypoint : m_BombWaypoints)
 	{
-		if ( m_BombWaypoints[i].pWaypoint == pWaypoint )
+		if (m_BombWaypoint.pWaypoint == pWaypoint )
 		{
-			if ( m_BombWaypoints[i].pEdict )
+			if (m_BombWaypoint.pEdict )
 			{
-				if ( CClassInterface::getDODBombState(m_BombWaypoints[i].pEdict) == 0 )
-					return m_BombWaypoints[i].v_ground;
+				if ( CClassInterface::getDODBombState(m_BombWaypoint.pEdict) == 0 )
+					return m_BombWaypoint.v_ground;
 				
 				break;
 			}
@@ -913,7 +911,7 @@ void CDODMod ::clientCommand( edict_t *pEntity, int argc, const char *pcmd, cons
 	{
 		if ( std::strncmp(pcmd,"voice_",6) == 0 )
 		{
-			for ( short int i = 0; i < DOD_VC_INVALID; i ++ )
+			for ( byte i = 0; i < DOD_VC_INVALID; i ++ )
 			{
 				if ( std::strcmp(&pcmd[6],g_DODVoiceCommands[i].pcmd) == 0 )
 				{
@@ -935,11 +933,11 @@ bool CDODMod :: isBreakableRegistered ( edict_t *pBreakable, int iTeam )
 {
 	static CWaypoint *pWpt;
 
-	for ( unsigned int i = 0; i < m_BreakableWaypoints.size(); i ++ )
+	for (edict_wpt_pair_t& m_BreakableWaypoint : m_BreakableWaypoints)
 	{
-		if ( m_BreakableWaypoints[i].pEdict == pBreakable )
+		if (m_BreakableWaypoint.pEdict == pBreakable )
 		{
-			pWpt = m_BreakableWaypoints[i].pWaypoint;
+			pWpt = m_BreakableWaypoint.pWaypoint;
 
 			if ( pWpt->hasFlag(CWaypointTypes::W_FL_NOALLIES) )
 				return iTeam != TEAM_ALLIES;

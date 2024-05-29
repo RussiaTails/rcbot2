@@ -628,10 +628,9 @@ void CDODBot :: seeFriendlyDie ( edict_t *pDied, edict_t *pKiller, CWeapon *pWea
 	}
 }
 
-
 void CDODBot :: seeFriendlyKill ( edict_t *pTeamMate, edict_t *pDied, CWeapon *pWeapon )
 {
-	static CWaypoint *pWpt;
+	static CWaypoint *pWpt; //Unused? [APG]RoboCop[CL]
 
 	if ( (pDied != m_pEdict) && pTeamMate && !hasSomeConditions(CONDITION_SEE_CUR_ENEMY) && (CClassInterface::getTeam(pDied)!=m_iTeam) )
 	{
@@ -860,7 +859,7 @@ void CDODBot :: handleWeapons ()
 
 		if ( pWeapon && pWeapon->getWeaponEntity() && !rcbot_melee_only.GetBool() && pWeapon->isDeployable() && !pWeapon->outOfAmmo(this) && CClassInterface::isMachineGunDeployed(pWeapon->getWeaponEntity()))
 		{
-			;// keep current weapon on
+			// keep current weapon on
 		}
 		else 
 			pWeapon = getBestWeapon(m_pEnemy,true,true,rcbot_melee_only.GetBool(),!rcbot_melee_only.GetBool() && (((m_pEnemy == m_pNearestBreakable) || CDODMod::isBreakableRegistered(m_pEnemy,m_iTeam))));
@@ -884,7 +883,7 @@ void CDODBot :: handleWeapons ()
 
 void CDODBot :: touchedWpt ( CWaypoint *pWaypoint, int iNextWaypoint, int iPrevWaypoint )
 {
-	static int wptindex;
+	static int wptindex; //Unused? [APG]RoboCop[CL]
 
 	CBot::touchedWpt(pWaypoint);
 
@@ -901,7 +900,7 @@ void CDODBot :: touchedWpt ( CWaypoint *pWaypoint, int iNextWaypoint, int iPrevW
 
 		if ( CBotGlobals::entityIsValid(pBombTarget) )
 		{
-			Vector vBombTarget = CBotGlobals::entityOrigin(pBombTarget);
+			Vector vBombTarget = CBotGlobals::entityOrigin(pBombTarget);  // `vBombTarget` Unused? [APG]RoboCop[CL]
 			const int state = CClassInterface::getDODBombState(pBombTarget);
 
 			if ( state != 0 )
@@ -1074,7 +1073,7 @@ void CDODBot :: chooseClass ( bool bIsChangingClass )
 	}
 	else
 	{
-		float fClassFitness[6]; // 6 classes
+		float fClassFitness[7]; // 6 classes
 		float fTotalFitness = 0;
 
 		const int iTeam = getTeam();
@@ -1087,9 +1086,9 @@ void CDODBot :: chooseClass ( bool bIsChangingClass )
 		fClassFitness[DOD_CLASS_MACHINEGUNNER] *= 0.8f;
 		fClassFitness[DOD_CLASS_ROCKET] *= 0.5f;
 
-		for (int i = 0; i < 6; i++)
+		for (float& fClassFit : fClassFitness)
 		{
-			fClassFitness[i] = 1.0f;
+			fClassFit = 1.0f;
 		}
 
 		if (bIsChangingClass && ((m_iClass >= 0) && (m_iClass < 6)))
@@ -1108,8 +1107,8 @@ void CDODBot :: chooseClass ( bool bIsChangingClass )
 			}
 		}
 
-		for (int i = 0; i < 6; i++)
-			fTotalFitness += fClassFitness[i];
+		for (float fClassFit : fClassFitness)
+			fTotalFitness += fClassFit;
 
 		const float fRandom = randomFloat(0, fTotalFitness);
 
@@ -1197,7 +1196,7 @@ void CDODBot :: modThink ()
 		{
 			if ( CClassInterface::isMachineGunDeployed(m_pCurrentWeapon) )
 				m_fDeployMachineGunTime = engine->Time();
-			else if ( hasEnemy() & (m_StatsCanUse.stats.m_iEnemiesInRange>0) )
+			else if (hasEnemy() && (m_StatsCanUse.stats.m_iEnemiesInRange>0))
 			{
 				// Not deployed machine gun and within enemies -- run for cover
 				// run for cover
@@ -1446,7 +1445,7 @@ void CDODBot ::defending()
 	// check to go prone or not
 }
 
-void CDODBot ::voiceCommand ( int cmd )
+void CDODBot ::voiceCommand (int cmd)
 {
 	// find voice command
 	extern eDODVoiceCommand_t g_DODVoiceCommands[DOD_VC_INVALID];
@@ -1627,11 +1626,11 @@ void CDODBot :: hearVoiceCommand ( edict_t *pPlayer, byte cmd )
 				else
 				{
 					// find capture waypoint to right of leader
-					CWaypoint *pWaypoint = CWaypoints::getWaypoint(CWaypointLocations::NearestWaypoint(vOrigin,768.0f,-1,false,false,false, nullptr,false,0,false,false,Vector(0,0,0),CWaypointTypes::W_FL_CAPPOINT, nullptr));
+					CWaypoint *waypoint = CWaypoints::getWaypoint(CWaypointLocations::NearestWaypoint(vOrigin,768.0f,-1,false,false,false, nullptr,false,0,false,false,Vector(0,0,0),CWaypointTypes::W_FL_CAPPOINT, nullptr));
 
-					if ( pWaypoint != nullptr)
+					if ( waypoint != nullptr)
 					{
-						m_pSchedules->addFront(new CBotGotoOriginSched(pWaypoint->getOrigin()));
+						m_pSchedules->addFront(new CBotGotoOriginSched(waypoint->getOrigin()));
 						addVoiceCommand(DOD_VC_YES);
 					}					
 					else
@@ -2068,22 +2067,23 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 	int id = -1;
 	Vector vGoal;
 	edict_t *pBombTarget = nullptr;
+	uintptr_t intData = static_cast<uintptr_t>(util->getIntData());
 
 	switch ( util->getId() )
 	{
 	case  BOT_UTIL_INVESTIGATE_POINT:
 		m_pSchedules->removeSchedule(SCHED_INVESTIGATE_NOISE);
 		m_pSchedules->addFront(new CBotInvestigateNoiseSched(
-			CBotGlobals::entityOrigin(reinterpret_cast<edict_t*>(util->getIntData())), util->getVectorData()));
+			CBotGlobals::entityOrigin(reinterpret_cast<edict_t*>(intData)), util->getVectorData()));
 		return true;
 	case BOT_UTIL_COVER_POINT:
 		m_pSchedules->removeSchedule(SCHED_CROUCH_AND_HIDE);
-		m_pSchedules->addFront(new CCrouchHideSched(reinterpret_cast<edict_t*>(util->getIntData())));
+		m_pSchedules->addFront(new CCrouchHideSched(reinterpret_cast<edict_t*>(intData)));
 		return true;
 	case BOT_UTIL_SNIPE_POINT:
 		// find sniper point facing the enemy
 		{
-			edict_t *pEnemy = reinterpret_cast<edict_t*>(util->getIntData());
+			edict_t* pEnemy = reinterpret_cast<edict_t*>(intData);
 
 			Vector vEnemyOrigin = CBotGlobals::entityOrigin(pEnemy);
 
@@ -2209,30 +2209,30 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 		}
 	case BOT_UTIL_DEFEND_NEAREST_POINT:
 		{
-			Vector vGoal;
-			int id = util->getIntData();
+			Vector v_goal;
+			int i_area = util->getIntData();
 			bool defend_wpt = true;
 
-			vGoal = util->getVectorData();
+			v_goal = util->getVectorData();
 
 			if ( inSquad() && !isSquadLeader() )
 			{
-				if ( (m_pSquad->GetFormationVector(m_pEdict)-vGoal).Length() > 400.0f )
+				if ( (m_pSquad->GetFormationVector(m_pEdict)-v_goal).Length() > 400.0f )
 					return false;
 			}
 
 			CWaypoint *pWaypoint;
 
-			pWaypoint = CWaypoints::randomWaypointGoal(CWaypointTypes::W_FL_DEFEND,m_iTeam,id,true,this);
+			pWaypoint = CWaypoints::randomWaypointGoal(CWaypointTypes::W_FL_DEFEND,m_iTeam,i_area,true,this);
 
 			if ( pWaypoint == nullptr)
 			{			
 				defend_wpt = false;
 
-				if ( distanceFrom(vGoal) > 1024 ) // outside waypoint bucket of goal
-					pWaypoint = CWaypoints::getPinchPointFromWaypoint(vGoal,vGoal);
+				if ( distanceFrom(v_goal) > 1024 ) // outside waypoint bucket of goal
+					pWaypoint = CWaypoints::getPinchPointFromWaypoint(v_goal,v_goal);
 				else
-					pWaypoint = CWaypoints::getPinchPointFromWaypoint(getOrigin(),vGoal);
+					pWaypoint = CWaypoints::getPinchPointFromWaypoint(getOrigin(),v_goal);
 			}
 
 			if ( pWaypoint )
@@ -2242,7 +2242,7 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 				
 				CBotSchedule *defend = new CBotSchedule();
 				CBotTask *findpath = new CFindPathTask(pWaypoint->getOrigin());
-				CBotTask *deftask = new CBotDefendTask(pWaypoint->getOrigin(),randomFloat(7.5f,12.5f),0,true,vGoal,defend_wpt ? LOOK_SNIPE : LOOK_AROUND,pWaypoint->getFlags());
+				CBotTask *deftask = new CBotDefendTask(pWaypoint->getOrigin(),randomFloat(7.5f,12.5f),0,true,v_goal,defend_wpt ? LOOK_SNIPE : LOOK_AROUND,pWaypoint->getFlags());
 
 				removeCondition(CONDITION_PUSH); 
 				findpath->setCompleteInterrupt(CONDITION_PUSH);
@@ -2261,7 +2261,7 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 		break;
 	case BOT_UTIL_ATTACK_NEAREST_POINT:
 		{
-			Vector vGoal;
+			Vector v_goal;
 
 			int iFlagID;
 			int iWaypointGoal; 
@@ -2269,14 +2269,14 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 			iFlagID = util->getIntData();
 			iWaypointGoal = CDODMod::m_Flags.getWaypointAtFlag(iFlagID);
 
-			vGoal = util->getVectorData();
+			v_goal = util->getVectorData();
 
 			if ( iWaypointGoal == -1 )
 				return false;
 
 			if ( inSquad() && !isSquadLeader() )
 			{
-				if ( (m_pSquad->GetFormationVector(m_pEdict)-vGoal).Length() > 400.0f )
+				if ( (m_pSquad->GetFormationVector(m_pEdict)-v_goal).Length() > 400.0f )
 					return false;
 			}
 
@@ -2285,7 +2285,7 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 			attack->setID(SCHED_ATTACKPOINT);
 
 			attack->addTask(new CFindPathTask(iWaypointGoal));
-			attack->addTask(new CBotDODAttackPoint(iFlagID,vGoal,150.0f));
+			attack->addTask(new CBotDODAttackPoint(iFlagID,v_goal,150.0f));
 			// add defend task
 			m_pSchedules->add(attack);
 			removeCondition(CONDITION_PUSH);
@@ -2297,12 +2297,12 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 
 			return true;
 		}
-		break;
+		//break;
 	case BOT_UTIL_SNIPE: // find snipe or machine gun waypoint
 		{
 			int iFlagID = -1;
 			int iWaypointType = 0;
-			Vector vGoal;
+			Vector v_goal;
 			CWaypoint *pWaypoint = nullptr;
 
 			if ( hasMG() )
@@ -2332,7 +2332,7 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 				{
 					if ( !CDODMod::isBombMap() || !CDODMod::isCommunalBombPoint() )
 					{
-						if ( CDODMod::m_Flags.getRandomEnemyControlledFlag(this,&vGoal,getTeam(),&iFlagID) )
+						if ( CDODMod::m_Flags.getRandomEnemyControlledFlag(this,&v_goal,getTeam(),&iFlagID) )
 						{
 							pWaypoint = CWaypoints::randomWaypointGoal(iWaypointType,m_iTeam,iFlagID,true,this);
 						}
@@ -2349,7 +2349,7 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 						else
 						{
 							// attack a point
-							if ( CDODMod::m_Flags.getRandomEnemyControlledFlag(this,&vGoal,getTeam(),&iFlagID) )
+							if ( CDODMod::m_Flags.getRandomEnemyControlledFlag(this,&v_goal,getTeam(),&iFlagID) )
 							{
 								if ( hasMG() )
 									pWaypoint = CWaypoints::randomWaypointGoal(CWaypointTypes::W_FL_MACHINEGUN,m_iTeam,iFlagID,true,this);
@@ -2364,7 +2364,7 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 				}
 				else // defend
 				{
-					if ( CDODMod::m_Flags.getRandomTeamControlledFlag(this,&vGoal,getTeam(),&iFlagID) )
+					if ( CDODMod::m_Flags.getRandomTeamControlledFlag(this,&v_goal,getTeam(),&iFlagID) )
 					{
 						pWaypoint = CWaypoints::randomWaypointGoal(iWaypointType,m_iTeam,iFlagID,true,this);
 					}
@@ -2390,11 +2390,11 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 					if ( pBombs )
 					{
 						iFlagID = pWaypoint->getArea();
-						vGoal = pBombs->getOrigin();
+						v_goal = pBombs->getOrigin();
 					}
 				}
 
-				snipetask = new CBotDODSnipe(util->getWeaponChoice(),pWaypoint->getOrigin(),pWaypoint->getAimYaw(),iFlagID!=-1,vGoal.z+48,pWaypoint->getFlags());
+				snipetask = new CBotDODSnipe(util->getWeaponChoice(),pWaypoint->getOrigin(),pWaypoint->getAimYaw(),iFlagID!=-1,v_goal.z+48,pWaypoint->getFlags());
 
 				removeCondition(CONDITION_PUSH);
 				findpath->setCompleteInterrupt(CONDITION_PUSH);
@@ -2417,21 +2417,21 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 			CDODMod::m_Flags.getRandomBombToDefend(this,&vGoal,m_iTeam,&pBombTarget,&id);
 	case BOT_UTIL_DEFEND_POINT:
 		{
-			int id = -1;
+			int i_area = -1;
 
 			if ( util->getId() == BOT_UTIL_DEFEND_POINT )
 			{
-				if ( !CDODMod::m_Flags.getRandomTeamControlledFlag(this,&vGoal,getTeam(),&id) )
+				if ( !CDODMod::m_Flags.getRandomTeamControlledFlag(this,&vGoal,getTeam(),&i_area) )
 					return false;
 			}
 
 			CWaypoint *pWaypoint;
 
-			pWaypoint = CWaypoints::randomWaypointGoal(CWaypointTypes::W_FL_DEFEND,m_iTeam,id,true,this);
+			pWaypoint = CWaypoints::randomWaypointGoal(CWaypointTypes::W_FL_DEFEND,m_iTeam,i_area,true,this);
 
 			if ( pWaypoint == nullptr)
 			{
-				bool defend_wpt = true;
+				bool defend_wpt = true; //Unused? [APG]RoboCop[CL]
 				defend_wpt = false;
 
 				if ( distanceFrom(vGoal) > 1024 ) // outside waypoint bucket of goal
@@ -2467,6 +2467,7 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 
 		if ( CDODMod::m_Flags.isTeamMateDefusing(m_pEdict,m_iTeam,util->getIntData()) )
 			return false; // teammate doing the job already
+		break;
 
 	case BOT_UTIL_PLANT_NEAREST_BOMB:
 		id = util->getIntData();
@@ -2478,6 +2479,7 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 
 		if ( CDODMod::m_Flags.isTeamMatePlanting(m_pEdict,m_iTeam,id) )
 			return false; // teammate doing the job already
+		break;
 
 	case BOT_UTIL_DEFUSE_BOMB:
 		if ( util->getId() == BOT_UTIL_DEFUSE_BOMB )
@@ -2490,6 +2492,8 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 
 			iBombType = DOD_BOMB_DEFUSE;
 		}
+		break;
+		
 	case BOT_UTIL_PLANT_BOMB:
 		{
 			if ( util->getId() == BOT_UTIL_PLANT_BOMB )
@@ -2502,7 +2506,6 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 
 				iBombType = DOD_BOMB_PLANT;
 			}
-
 
 			int iWptGoal = CDODMod::m_Flags.getWaypointAtFlag(id);
 	
@@ -2538,7 +2541,7 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 			return true;
 		
 		}
-		break;
+		//break;
 	case BOT_UTIL_PICKUP_BOMB:
 		{
 			CWaypoint *pWaypoint;
@@ -2642,13 +2645,13 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 
 			return true;
 		}
-		break;
+		//break;
 	case BOT_UTIL_ATTACK_POINT:
 		{
-			Vector vGoal;
+			Vector v_goal;
 			int iFlagID;
 
-			if ( CDODMod::m_Flags.getRandomEnemyControlledFlag(this,&vGoal,getTeam(),&iFlagID) )
+			if ( CDODMod::m_Flags.getRandomEnemyControlledFlag(this,&v_goal,getTeam(),&iFlagID) )
 			{
 				int iGoalWaypoint = CDODMod::m_Flags.getWaypointAtFlag(iFlagID);
 
@@ -2678,10 +2681,10 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 				if ( (pRoute == nullptr) && (randomFloat(0.0f,MAX_BELIEF) < m_pNavigator->getBelief(iGoalWaypoint)) )
 				{
 					CWaypoint *pWaypoint;
-					if ( distanceFrom(vGoal) > 1024 ) // outside waypoint bucket of goal
-						pWaypoint = CWaypoints::getPinchPointFromWaypoint(vGoal,vGoal);
+					if ( distanceFrom(v_goal) > 1024 ) // outside waypoint bucket of goal
+						pWaypoint = CWaypoints::getPinchPointFromWaypoint(v_goal,v_goal);
 					else
-						pWaypoint = CWaypoints::getPinchPointFromWaypoint(getOrigin(),vGoal);
+						pWaypoint = CWaypoints::getPinchPointFromWaypoint(getOrigin(),v_goal);
 
 					if ( pWaypoint )
 					{
@@ -2691,7 +2694,7 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 				}
 
 				attack->addTask(new CFindPathTask(iGoalWaypoint));
-				attack->addTask(new CBotDODAttackPoint(iFlagID,vGoal,150.0f));
+				attack->addTask(new CBotDODAttackPoint(iFlagID,v_goal,150.0f));
 				// add defend task
 				m_pSchedules->add(attack);
 				
@@ -2718,16 +2721,16 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 
 			return true;
 		}
-		break;
+		//break;
 	case BOT_UTIL_FOLLOW_SQUAD_LEADER:
 		{
-			Vector pos = m_pSquad->GetFormationVector(m_pEdict);
+			Vector pos = m_pSquad->GetFormationVector(m_pEdict); // `pos` Unused? [APG]RoboCop[CL]
 
 			m_pSchedules->add(new CBotSchedule(new CBotFollowSquadLeader(m_pSquad)));
 
 			return true;
 		}
-		break;
+		//break;
 	case BOT_UTIL_ROAM:
 		{
 		// roam			
@@ -2767,7 +2770,6 @@ void CDODBot :: reachedCoverSpot (int flags)
 
 		m_pButtons->tap(IN_RELOAD);
 	}
-
 
 	//m_fFixWeaponTime = engine->Time() + 1.0f;
 	//}
@@ -3021,16 +3023,16 @@ void CDODBot :: getTasks (unsigned int iIgnore)
 {
 	static CBotUtilities utils;
 	static CBotUtility *next;
-	static CBotWeapon *grenade;
+	static CBotWeapon *grenade; //Unused? [APG]RoboCop[CL]
 	static CBotWeapon *pWeapon;
 	static float fAttackUtil;
 	static float fDefendUtil;
-	static int numPlayersOnTeam;
-	static int numClassOnTeam;
+	static int numPlayersOnTeam; //Unused? [APG]RoboCop[CL]
+	static int numClassOnTeam; //Unused? [APG]RoboCop[CL]
 	static bool bCheckCurrent;
 	static int iFlagID;
 	static int iFlagsOwned;
-	static int iEnemyFlagsOwned;
+	static int iEnemyFlagsOwned; //Unused? [APG]RoboCop[CL]
 	static int iNumFlags;
 	static bool bCanMessAround;
 
@@ -3073,7 +3075,7 @@ void CDODBot :: getTasks (unsigned int iIgnore)
 		{
 			//caxanga334: SDK 2013 doesn't like to create a Vector from an int
 			//TODO: Proper fix
-			#if SOURCE_ENGINE == SE_SDK2013 || SOURCE_ENGINE == SE_BMS
+			#if SOURCE_ENGINE == SE_SDK2013 || SOURCE_ENGINE == SE_BMS || SOURCE_ENGINE == SE_TF2
 			iFlagID = CDODMod::m_Flags.findNearestObjective(Vector(m_pSquad->GetFormationPosition(m_pEdict)));
 			#else
 			iFlagID = CDODMod::m_Flags.findNearestObjective(m_pSquad->GetFormationPosition(m_pEdict));
@@ -3423,14 +3425,14 @@ void CDODBot :: modAim ( edict_t *pEntity, Vector &v_origin,
 	//static Vector vAim;
 	//static bool bProne;
 
-	static float fStamina;
+	static float fStamina; //Unused? [APG]RoboCop[CL]
 	static CBotWeapon *pWp;
 	static Vector vel;
 	static int index;
 	bool bIsEnemyProne;
 	float fEnemyStamina;
 
-	bool bAddHeadHeight = false;
+	bool bAddHeadHeight = false; //Unused? [APG]RoboCop[CL]
 
 	CBot::modAim(pEntity,v_origin,v_desired_offset,v_size,fDist,fDist2D);
 
@@ -3475,7 +3477,7 @@ void CDODBot :: modAim ( edict_t *pEntity, Vector &v_origin,
 				{
 					const float fTime = fDist2D/pWp->getProjectileSpeed();
 				//TODO: Improve on the floating point precision conversion [APG]RoboCop[CL]
-				v_desired_offset->z = (std::pow(2, fTime) * (sv_gravity.GetFloat() * rcbot_projectile_tweak.GetFloat()));// - (getOrigin().z - v_origin.z);
+				v_desired_offset->z = std::pow(2, fTime) * (sv_gravity.GetFloat() * rcbot_projectile_tweak.GetFloat());// - (getOrigin().z - v_origin.z);
 			}
 			//v_desired_offset->z += (distanceFrom(pEntity) * (randomFloat(0.05,0.15)*m_pProfile->m_fAimSkill));
 		}
@@ -3505,8 +3507,8 @@ void CDODBot :: modAim ( edict_t *pEntity, Vector &v_origin,
 
 bool CDODBot :: isVisibleThroughSmoke ( edict_t *pSmoke, edict_t *pCheck )
 {
-	static float fTime = 0.0f;
-	static float fProb = 0.0f;
+	static float fTime = 0.0f; //Unused? [APG]RoboCop[CL]
+	static float fProb = 0.0f; //Unused? [APG]RoboCop[CL]
 
 	static short int iSlot;
 
@@ -3527,36 +3529,36 @@ bool CDODBot :: isVisibleThroughSmoke ( edict_t *pSmoke, edict_t *pCheck )
 			smokeinfo->bVisible = true;
 			smokeinfo->bInSmoke = false;
 
-				vSmoke = CBotGlobals::entityOrigin(pSmoke);
-				fSmokeDist = distanceFrom(vSmoke);
+			vSmoke = CBotGlobals::entityOrigin(pSmoke);
+			fSmokeDist = distanceFrom(vSmoke);
 
-				// I'm outside smoke -- but maybe the enemy is inside the smoke
-				if ( fSmokeDist > SMOKE_RADIUS )
+			// I'm outside smoke -- but maybe the enemy is inside the smoke
+			if ( fSmokeDist > SMOKE_RADIUS )
+			{
+				fDist = (CBotGlobals::entityOrigin(pCheck) - vSmoke).Length();
+
+				// enemy outside the smoke radius
+				if ( fDist > SMOKE_RADIUS )
 				{
-					fDist = (CBotGlobals::entityOrigin(pCheck) - vSmoke).Length();
+					static Vector vCheckComp;
+					// check if enemy is behind the smoke from my perspective
+					vCheckComp = CBotGlobals::entityOrigin(pCheck) - getOrigin();
+					vCheckComp = (vCheckComp / vCheckComp.Length())*fSmokeDist;
 
-					// enemy outside the smoke radius
-					if ( fDist > SMOKE_RADIUS )
-					{
-						static Vector vCheckComp;
-						// check if enemy is behind the smoke from my perspective
-						vCheckComp = CBotGlobals::entityOrigin(pCheck) - getOrigin();
-						vCheckComp = (vCheckComp / vCheckComp.Length())*fSmokeDist;
-
-						fDist = (vSmoke - (getOrigin() + vCheckComp)).Length();
-					}
+					fDist = (vSmoke - (getOrigin() + vCheckComp)).Length();
 				}
-				else
-					fDist = fSmokeDist;
+			}
+			else
+				fDist = fSmokeDist;
 
-				if ( fDist <= SMOKE_RADIUS ) 
-					// smoke gets heavy at 1.0 seconds and diminishes at 10 secs
-				{
-					smokeinfo->fProb = 1.0f-(fDist/SMOKE_RADIUS);
-					smokeinfo->bVisible = (randomFloat(0.0f,0.33f) > smokeinfo->fProb ); 
-					// smoke gets pretty heavy half way into the smoke grenade
-					smokeinfo->bInSmoke = true;
-				}
+			if ( fDist <= SMOKE_RADIUS ) 
+				// smoke gets heavy at 1.0 seconds and diminishes at 10 secs
+			{
+				smokeinfo->fProb = 1.0f-(fDist/SMOKE_RADIUS);
+				smokeinfo->bVisible = (randomFloat(0.0f,0.33f) > smokeinfo->fProb ); 
+				// smoke gets pretty heavy half way into the smoke grenade
+				smokeinfo->bInSmoke = true;
+			}
 				
 			#ifdef _DEBUG
 				if ( CClients::clientsDebugging(BOT_DEBUG_THINK) )

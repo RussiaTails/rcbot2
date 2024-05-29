@@ -257,39 +257,38 @@ void CTeamFortress2Mod :: mapInit ()
 	m_iCapturePointWptID = -1;
 	m_iFlagPointWptID = -1;
 
-	if (std::strncmp(szmapname, "ctf_", 4) == 0 || std::strncmp(szmapname, "stt_", 4) == 0 || std::strncmp(szmapname, "quake_turbine", 13) == 0 ) // For the future gamemode "Stop That Tank" RussiaTails
+	if ( std::strncmp(szmapname,"ctf_",4) == 0 || std::strncmp(szmapname, "stt_", 4) == 0 || std::strncmp(szmapname, "quake_turbine", 13) == 0 ) // For the future gamemode "Stop That Tank" RussiaTails
 		m_MapType = TF_MAP_CTF; // capture the flag
-	else if (std::strncmp(szmapname, "cp_", 3) == 0 || std::strncmp(szmapname, "cqt_", 4) == 0 || std::strncmp(szmapname, "conquest_", 9) == 0 ) // RussiaTails
+	else if ( std::strncmp(szmapname,"cp_",3) == 0 || std::strncmp(szmapname, "cqt_", 4) == 0 || std::strncmp(szmapname, "conquest_", 9) == 0 ) // RussiaTails
 		m_MapType = TF_MAP_CP; // control point
-	else if (std::strncmp(szmapname, "tc_", 3) == 0 )
+	else if ( std::strncmp(szmapname,"tc_",3) == 0 )
 		m_MapType = TF_MAP_TC; // territory control
-	else if (std::strncmp(szmapname, "pl_", 3) == 0 )
+	else if ( std::strncmp(szmapname,"pl_",3) == 0 )
 		m_MapType = TF_MAP_CART; // pipeline
-	else if (std::strncmp(szmapname, "plr_", 4) == 0 || std::strncmp(szmapname, "arena_tinyrock", 14) == 0 || std::strncmp(szmapname, "arena_hailstone", 15) == 0 || std::strncmp(szmapname, "pdr_", 4) == 0 ) // to make bots push payloads on this map RussiaTails
+	else if ( std::strncmp(szmapname,"plr_",4) == 0 || std::strncmp(szmapname, "arena_tinyrock", 14) == 0 || std::strncmp(szmapname, "arena_hailstone", 15) == 0 || std::strncmp(szmapname, "pdr_", 4) == 0) // to make bots push payloads on this map RussiaTails
 		m_MapType = TF_MAP_CARTRACE; // pipeline racing
-	else if (std::strncmp(szmapname, "arena_", 6) == 0 || std::strncmp(szmapname, "vsh_", 4) == 0 )  // pongo1321
+	else if ( std::strncmp(szmapname,"arena_",6) == 0 || std::strncmp(szmapname,"vsh_",4) == 0 )  // pongo1321
 		m_MapType = TF_MAP_ARENA; // arena mode (also fallback for VS Saxton Hale gamemode)
 	//else if ( std::strncmp(szmapname,"arena_",6) == 0 )
 	//	m_MapType = TF_MAP_ARENA; // arena mode
-	else if (std::strncmp(szmapname, "koth_", 5) == 0 || std::strncmp(szmapname, "2koth_", 6) == 0 )  // RussiaTails
+	else if ( std::strncmp(szmapname,"koth_",5) == 0 || std::strncmp(szmapname, "2koth_", 6) == 0 )  // RussiaTails
 		m_MapType = TF_MAP_KOTH; // king of the hill
-	else if (std::strncmp(szmapname, "sd_", 3) == 0 || std::strncmp(szmapname, "sdr_", 4) == 0 || std::strncmp(szmapname, "od_", 3) == 0 )  // RussiaTails
+	else if ( std::strncmp(szmapname,"sd_",3) == 0 || std::strncmp(szmapname, "sdr_", 4) == 0 || std::strncmp(szmapname, "od_", 3) == 0 )  // RussiaTails
 		m_MapType = TF_MAP_SD; // special delivery
-	else if (std::strncmp(szmapname, "tr_", 3) == 0 )
+	else if ( std::strncmp(szmapname,"tr_",3) == 0 )
 		m_MapType = TF_MAP_TR; // training mode
-	else if (std::strncmp(szmapname, "mvm_", 4) == 0 )
+	else if ( std::strncmp(szmapname,"mvm_",4) == 0 )
 		m_MapType = TF_MAP_MVM; // mann vs machine
-	else if (std::strncmp(szmapname, "rd_", 3) == 0 )
+	else if ( std::strncmp(szmapname,"rd_",3) == 0 )
 		m_MapType = TF_MAP_RD; // robot destruction
-	else if (std::strncmp(szmapname, "pd_", 3) == 0 )
+	else if ( std::strncmp(szmapname,"pd_",3) == 0 )
 		m_MapType = TF_MAP_PD; // player destruction
-	else if (std::strncmp(szmapname, "zi_", 3) == 0 )
+	else if (std::strncmp(szmapname, "zi_", 3) == 0)
 		m_MapType = TF_MAP_ZI; // Zombie Infection //TODO: add support for those gamemodes [APG]RoboCop[CL]
-	else if (std::strncmp(szmapname, "pass_", 5) == 0 )
+	else if (std::strncmp(szmapname, "pass_", 5) == 0)
 		m_MapType = TF_MAP_PASS; // PASS Time
 	else
 		m_MapType = TF_MAP_DM; // deathmatch //TODO: to prevent bots from idling in their spawns by giving them basic tasks [APG]RoboCop[CL]
-
 
 	m_iArea = 0;
 
@@ -341,31 +340,31 @@ int CTeamFortress2Mod :: getTeleporterWaypoint ( edict_t *pTele )
 bool CTeamFortress2Mod :: TF2_IsPlayerZoomed(edict_t *pPlayer)
 {
 	const int pcond = CClassInterface :: getTF2Conditions(pPlayer);
-    return (pcond & TF2_PLAYER_ZOOMED) == TF2_PLAYER_ZOOMED;
+	return (pcond & TF2_PLAYER_ZOOMED) == TF2_PLAYER_ZOOMED;
 }
 
 bool CTeamFortress2Mod :: TF2_IsPlayerSlowed(edict_t *pPlayer)
 {
 	const int pcond = CClassInterface :: getTF2Conditions(pPlayer);
-    return (pcond & TF2_PLAYER_SLOWED) == TF2_PLAYER_SLOWED;
+	return (pcond & TF2_PLAYER_SLOWED) == TF2_PLAYER_SLOWED;
 }
 
 bool CTeamFortress2Mod :: TF2_IsPlayerDisguised(edict_t *pPlayer)
 {
 	const int pcond = CClassInterface :: getTF2Conditions(pPlayer);
-    return (pcond & TF2_PLAYER_DISGUISED) == TF2_PLAYER_DISGUISED;
+	return (pcond & TF2_PLAYER_DISGUISED) == TF2_PLAYER_DISGUISED;
 }
 
 bool CTeamFortress2Mod :: TF2_IsPlayerTaunting ( edict_t *pPlayer )
 {
 	const int pcond = CClassInterface :: getTF2Conditions(pPlayer);
-    return (pcond & TF2_PLAYER_TAUNTING) == TF2_PLAYER_TAUNTING;
+	return (pcond & TF2_PLAYER_TAUNTING) == TF2_PLAYER_TAUNTING;
 }
 
 bool CTeamFortress2Mod :: TF2_IsPlayerCloaked(edict_t *pPlayer)
 {
 	const int pcond = CClassInterface :: getTF2Conditions(pPlayer);
-    return (pcond & TF2_PLAYER_CLOAKED) == TF2_PLAYER_CLOAKED;
+	return (pcond & TF2_PLAYER_CLOAKED) == TF2_PLAYER_CLOAKED;
 }
 
 bool CTeamFortress2Mod :: TF2_IsPlayerKrits(edict_t *pPlayer)
@@ -373,7 +372,7 @@ bool CTeamFortress2Mod :: TF2_IsPlayerKrits(edict_t *pPlayer)
 	const int pcond = CClassInterface :: getTF2Conditions(pPlayer);
 	return (pcond & TF2_PLAYER_KRITS) == TF2_PLAYER_KRITS;
 
-	return false; //Unreachable? [APG]RoboCop[CL]
+	//return false; //Unreachable? [APG]RoboCop[CL]
 }
 
 bool CTeamFortress2Mod :: TF2_IsPlayerInvuln(edict_t *pPlayer)
@@ -390,7 +389,7 @@ bool CTeamFortress2Mod :: TF2_IsPlayerInvuln(edict_t *pPlayer)
 bool CTeamFortress2Mod :: TF2_IsPlayerOnFire(edict_t *pPlayer)
 {
 	const int pcond = CClassInterface :: getTF2Conditions(pPlayer);
-    return (pcond & TF2_PLAYER_ONFIRE) == TF2_PLAYER_ONFIRE;
+	return (pcond & TF2_PLAYER_ONFIRE) == TF2_PLAYER_ONFIRE;
 }
 
 int CTeamFortress2Mod ::numClassOnTeam( int iTeam, int iClass )
@@ -439,15 +438,15 @@ float CTeamFortress2Mod :: TF2_GetClassSpeed(int iClass)
 { 
 switch (iClass) 
 { 
-case TF_CLASS_SCOUT: return 133.0f; 
-case TF_CLASS_SOLDIER: return 80.0f; 
-case TF_CLASS_DEMOMAN: return 93.0f; 
-case TF_CLASS_MEDIC: return 109.0f; 
-case TF_CLASS_PYRO: return 100.0f; 
-case TF_CLASS_SPY: return 109.0f; 
-case TF_CLASS_ENGINEER: return 100.0f;
-case TF_CLASS_HWGUY: return 77.0f;
-case TF_CLASS_SNIPER: return 100.0f; 
+	case TF_CLASS_SCOUT: return 133.0f; 
+	case TF_CLASS_SOLDIER: return 80.0f; 
+	case TF_CLASS_DEMOMAN: return 93.0f; 
+	case TF_CLASS_MEDIC: return 109.0f; 
+	case TF_CLASS_PYRO: return 100.0f; 
+	case TF_CLASS_SPY: return 109.0f; 
+	case TF_CLASS_ENGINEER: return 100.0f;
+	case TF_CLASS_HWGUY: return 77.0f;
+	case TF_CLASS_SNIPER: return 100.0f; 
 } 
 return 0.0f; 
 } 

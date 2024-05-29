@@ -29,29 +29,30 @@
  *
  */
 
-CBotCommandInline GameEventVersion("event_version", CMD_ACCESS_CONFIG, [](CClient *pClient, const char *pcmd, const char *arg1, const char *arg2, const char *arg3, const char *arg4, const char *arg5)
+CBotCommandInline GameEventVersion("event_version", CMD_ACCESS_CONFIG, [](CClient *pClient, const BotCommandArgs& args)
 {
-	if ( !pcmd || !*pcmd )
+	if ( !args[0] || !*args[0] )
 		return COMMAND_ERROR;
 
-	CBotGlobals::setEventVersion(atoi(pcmd));
+	CBotGlobals::setEventVersion(std::atoi(args[0]));
 	
 	return COMMAND_ACCESSED;
 });
 
-CBotCommandInline MaxBotsCommand("max_bots", CMD_ACCESS_CONFIG | CMD_ACCESS_DEDICATED, [](CClient *pClient, const char *pcmd, const char *arg1, const char *arg2, const char *arg3, const char *arg4, const char *arg5)
+CBotCommandInline MaxBotsCommand("max_bots", CMD_ACCESS_CONFIG | CMD_ACCESS_DEDICATED, [](CClient *pClient,
+                                 const BotCommandArgs& args)
 {
-	edict_t *pEntity = NULL;
+	edict_t *pEntity = nullptr;
 
 	if ( pClient )
 		pEntity = pClient->getPlayer();
 
-	if ( pcmd && *pcmd )
+	if ( args[0] && *args[0] )
 	{
-		int max = atoi(pcmd);
+		int max = std::atoi(args[0]);
 
 		bool err = false;
-		int min_bots = CBots::getMinBots();
+		const int min_bots = CBots::getMinBots();
 
 		if ( max <= -1 )// skip check for disabling max bots (require <=)
 			max = -1;
@@ -77,17 +78,18 @@ CBotCommandInline MaxBotsCommand("max_bots", CMD_ACCESS_CONFIG | CMD_ACCESS_DEDI
 	return COMMAND_ACCESSED;
 });
 
-CBotCommandInline MinBotsCommand("min_bots", CMD_ACCESS_CONFIG | CMD_ACCESS_DEDICATED, [](CClient *pClient, const char *pcmd, const char *arg1, const char *arg2, const char *arg3, const char *arg4, const char *arg5)
+CBotCommandInline MinBotsCommand("min_bots", CMD_ACCESS_CONFIG | CMD_ACCESS_DEDICATED, [](CClient *pClient,
+                                 const BotCommandArgs& args)
 {
-	edict_t *pEntity = NULL;
+	edict_t *pEntity = nullptr;
 
 	if ( pClient )
 		pEntity = pClient->getPlayer();
 
-	if ( pcmd && *pcmd )
+	if ( args[0] && *args[0] )
 	{
-		int min = atoi(pcmd);
-		int max_bots = CBots::getMaxBots();
+		int min = std::atoi(args[0]);
+		const int max_bots = CBots::getMaxBots();
 
 		bool err = false;
 

@@ -35,21 +35,33 @@
 static CTF2Conditions s_tf2_conditions;
 CTF2Conditions *tf2_conditions = &s_tf2_conditions;
 
+/// @brief Checks if the player is in a specific condition
+/// @param client Client/Player entity index to check
+/// @param cond Condition number to check
+/// @return TRUE if the given condition is active on the player
 bool CTF2Conditions::TF2_IsPlayerInCondition(int client, TFCond cond)
 {
-	int iCond = static_cast<int>(cond);
+	const int iCond = cond;
+
+	char nPlayerCond1[] = "m_nPlayerCond";
+	char nPlayerCond2[] = "_condition_bits";
+
+	char nPlayerCondEx1[] = "m_nPlayerCondEx";
+	char nPlayerCondEx2[] = "m_nPlayerCondEx2";
+	char nPlayerCondEx3[] = "m_nPlayerCondEx3";
+	char nPlayerCondEx4[] = "m_nPlayerCondEx4";
 
 	switch (iCond / 32)
 	{
 		case 0:
 		{
-			int bit = 1 << iCond;
-			if ((entprops->GetEntProp(client, Prop_Send, "m_nPlayerCond") & bit) == bit)
+			const int bit = 1 << iCond;
+			if ((entprops->GetEntProp(client, Prop_Send, nPlayerCond1) & bit) == bit)
 			{
 				return true;
 			}
 
-			if ((entprops->GetEntProp(client, Prop_Send, "_condition_bits") & bit) == bit)
+			if ((entprops->GetEntProp(client, Prop_Send, nPlayerCond2) & bit) == bit)
 			{
 				return true;
 			}
@@ -57,8 +69,8 @@ bool CTF2Conditions::TF2_IsPlayerInCondition(int client, TFCond cond)
 		}
 		case 1:
 		{
-			int bit = (1 << (iCond - 32));
-			if ((entprops->GetEntProp(client, Prop_Send, "m_nPlayerCondEx") & bit) == bit)
+			const int bit = (1 << (iCond - 32));
+			if ((entprops->GetEntProp(client, Prop_Send, nPlayerCondEx1) & bit) == bit)
 			{
 				return true;
 			}
@@ -66,8 +78,8 @@ bool CTF2Conditions::TF2_IsPlayerInCondition(int client, TFCond cond)
 		}
 		case 2:
 		{
-			int bit = (1 << (iCond - 64));
-			if ((entprops->GetEntProp(client, Prop_Send, "m_nPlayerCondEx2") & bit) == bit)
+			const int bit = (1 << (iCond - 64));
+			if ((entprops->GetEntProp(client, Prop_Send, nPlayerCondEx2) & bit) == bit)
 			{
 				return true;
 			}
@@ -75,8 +87,8 @@ bool CTF2Conditions::TF2_IsPlayerInCondition(int client, TFCond cond)
 		}
 		case 3:
 		{
-			int bit = (1 << (iCond - 96));
-			if ((entprops->GetEntProp(client, Prop_Send, "m_nPlayerCondEx3") & bit) == bit)
+			const int bit = (1 << (iCond - 96));
+			if ((entprops->GetEntProp(client, Prop_Send, nPlayerCondEx3) & bit) == bit)
 			{
 				return true;
 			}
@@ -84,8 +96,8 @@ bool CTF2Conditions::TF2_IsPlayerInCondition(int client, TFCond cond)
 		}
 		case 4:
 		{
-			int bit = (1 << (iCond - 128));
-			if ((entprops->GetEntProp(client, Prop_Send, "m_nPlayerCondEx4") & bit) == bit)
+			const int bit = (1 << (iCond - 128));
+			if ((entprops->GetEntProp(client, Prop_Send, nPlayerCondEx4) & bit) == bit)
 			{
 				return true;
 			}
@@ -95,7 +107,7 @@ bool CTF2Conditions::TF2_IsPlayerInCondition(int client, TFCond cond)
 		{
 			logger->Log(LogLevel::ERROR, "Invalid TFCond value %d", iCond);
 			return false;
-			break;
+			//break;
 		}
 	}
 

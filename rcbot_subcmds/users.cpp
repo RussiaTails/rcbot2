@@ -28,9 +28,10 @@
  *    version.
  */
 
-CBotCommandInline ShowUsersCommand("show", CMD_ACCESS_USERS | CMD_ACCESS_DEDICATED, [](CClient *pClient, const char *pcmd, const char *arg1, const char *arg2, const char *arg3, const char *arg4, const char *arg5)
+CBotCommandInline ShowUsersCommand("show", CMD_ACCESS_USERS | CMD_ACCESS_DEDICATED, [](CClient *pClient,
+                                   const BotCommandArgs& args)
 {
-	edict_t *pEntity = NULL;
+	edict_t *pEntity = nullptr;
 
 	if ( pClient )
 		pEntity = pClient->getPlayer();

@@ -46,6 +46,7 @@ class CWaypointVisibilityTable;
 class IBotTaskInterrupt
 {
 public:
+	virtual ~IBotTaskInterrupt() = default;
 	virtual bool isInterrupted ( CBot *pBot, bool *bFailed, bool *bCompleted ) = 0;
 };
 
@@ -298,8 +299,11 @@ private:
 	float m_fNextAttack;
 };
 
-#define TASK_TF2_DEMO_STATE_LAY_BOMB 0
-#define TASK_TF2_DEMO_STATE_RUN_UP   1
+enum
+{
+	TASK_TF2_DEMO_STATE_LAY_BOMB = 0,
+	TASK_TF2_DEMO_STATE_RUN_UP = 1
+};
 
 class CBotTF2DemomanPipeJump : public CBotTask
 {
@@ -378,7 +382,6 @@ private:
 
 };
 
-
 class CBotTF2FindPipeWaypoint : public CBotTask
 {
 public:
@@ -434,8 +437,11 @@ private:
 
 };
 
-#define CHARGER_HEALTH 0
-#define CHARGER_ARMOR 1
+enum
+{
+	CHARGER_HEALTH = 0,
+	CHARGER_ARMOR = 1
+};
 
 class CBotHL2DMUseCharger : public CBotTask
 {
@@ -618,7 +624,6 @@ private:
 	Vector m_vPos;
 	Vector m_vForward;
 };
-
 
 class CBotNest : public CBotTask
 {
@@ -947,7 +952,6 @@ private:
 	bool m_bProne;
 };
 
-
 class CBotTF2AttackPoint : public CBotTask
 {
 public:
@@ -964,7 +968,6 @@ private:
 	int m_iRadius;
 };
 
-
 class CBotTF2ShootLastEnemyPosition : public CBotTask
 {
 public:
@@ -973,11 +976,10 @@ public:
 
 	void debugString ( char *string ) override;
 private:
-    MyEHandle m_pEnemy;
+	MyEHandle m_pEnemy;
 	Vector m_vPosition;
 	float m_fTime;
 };
-
 
 class CBotTF2DefendPoint : public CBotTask
 {
@@ -1379,7 +1381,6 @@ private:
 	int m_iType; // 0 = attack friendly , 1 = taunt, 2 = random voice command
 };
 
-
 class CFindLastEnemy : public CBotTask
 {
 public:
@@ -1406,7 +1407,6 @@ public:
 	void init () override;
 
 	void execute ( CBot *pBot, CBotSchedule *pSchedule ) override;
-
 
 	void debugString ( char *string ) override
 	{
@@ -1447,7 +1447,6 @@ private:
 	Vector m_vLastSeeVector;
 	Vector m_vLastSeeVelocity;
 };
-
 
 class CCrouchHideTask : public CBotTask
 {

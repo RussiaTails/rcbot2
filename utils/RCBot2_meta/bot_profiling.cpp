@@ -46,13 +46,16 @@ CProfileTimer("updateVisibles()") // BOT_VISION_TIMER
 // initialise update time
 float CProfileTimers::m_fNextUpdate = 0;
 
+// Nuke this on x64
+#if !defined(PLATFORM_64BITS)
+
 // if windows USE THE QUERYPERFORMANCECOUNTER
 #ifdef _WIN32
 inline unsigned __int64 RDTSC()
-    {
-            _asm    _emit 0x0F
-            _asm    _emit 0x31
-    }
+	{
+			_asm    _emit 0x0F
+			_asm    _emit 0x31
+	}
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #else
@@ -63,10 +66,12 @@ inline unsigned __int64 RDTSC()
 //    }
    extern __inline__ unsigned long long int rdtsc()
    {
-     unsigned long long int x;
-     __asm__ volatile (".byte 0x0f, 0x31" : "=A" (x));
-     return x;
+	 unsigned long long int x;
+	 __asm__ volatile (".byte 0x0f, 0x31" : "=A" (x));
+	 return x;
    }
+#endif
+
 #endif
 
 CProfileTimer :: CProfileTimer (const char *szFunction)
@@ -85,22 +90,29 @@ CProfileTimer :: CProfileTimer (const char *szFunction)
 // "Begin" Timer i.e. update time
 void CProfileTimer :: Start()
 {
+// TODO: Proper x64 fix
+#if !defined(PLATFORM_64BITS)
+
 #ifdef _WIN32
-    QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&start_cycle));
+	QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&start_cycle));
 #else
-        start_cycle = rdtsc();
+		start_cycle = rdtsc();
+#endif
+
 #endif
 
 }
 // Stop Timer, work out min/max values and set invoked
 void CProfileTimer :: Stop()
 {
+#if !defined(PLATFORM_64BITS)
+
 #ifdef _WIN32
-    unsigned __int64 end_cycle;
-    QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&end_cycle));
+	//unsigned __int64 end_cycle;
+	QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&end_cycle));
 #else
-    unsigned long long end_cycle;
-    end_cycle = rdtsc();
+	//unsigned long long end_cycle;
+	end_cycle = rdtsc();
 #endif
 
 	m_last = end_cycle - start_cycle;
@@ -113,6 +125,8 @@ void CProfileTimer :: Stop()
 	m_overall = m_overall + m_last;
 
 	m_iInvoked ++;
+
+#endif
 }
 
 
@@ -129,7 +143,7 @@ void CProfileTimer :: print (const double* high)
 
 		const double percent = static_cast<double>(m_overall) / *high * 100.0;
 		
-		std::sprintf(str,"%17s|%13lld|%10lld|%10lld|%10lld|%6.1f",m_szFunction,m_overall,m_min,m_max,m_average,percent);			
+		snprintf(str, 256, "%17s|%13lld|%10lld|%10lld|%10lld|%6.1f", m_szFunction, m_overall, m_min, m_max, m_average, percent);
 
 		CClients::clientDebugMsg(BOT_DEBUG_PROFILE,str);
 

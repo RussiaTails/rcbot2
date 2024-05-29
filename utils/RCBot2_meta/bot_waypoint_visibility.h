@@ -59,7 +59,7 @@ public:
 
 	void init ()
 	{
-		const int iSize = g_iMaxVisibilityByte;
+		constexpr int iSize = g_iMaxVisibilityByte;
 
 		/////////////////////////////
 		// for "concurrent" reading of 

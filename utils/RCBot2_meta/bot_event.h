@@ -44,6 +44,8 @@ class IGameEvent;
 class CBotEvent
 {
 public:
+	virtual ~CBotEvent() = default;
+
 	CBotEvent()
 	{
 		m_pActivator = nullptr;
@@ -492,7 +494,7 @@ public:
 class CBossSummonedEvent : public CBotEvent
 {
 public:
-	CBossSummonedEvent(char *psztype)
+	CBossSummonedEvent(const char *psztype)
 	{
 		setType(psztype);
 	}
@@ -503,7 +505,7 @@ public:
 class CBossKilledEvent : public CBotEvent
 {
 public:
-	CBossKilledEvent(char *psztype)
+	CBossKilledEvent(const char *psztype)
 	{
 		setType(psztype);
 	}
@@ -707,6 +709,7 @@ typedef enum
 class IBotEventInterface
 {
 public:
+	virtual ~IBotEventInterface() = default;
 	virtual float getFloat ( const char *keyName = nullptr, float defaultValue = 0 ) = 0;
 	virtual int getInt ( const char *keyName = nullptr, int defaultValue = 0 ) = 0;
 	virtual const char *getString ( const char *keyName = nullptr, const char *defaultValue = nullptr ) = 0;

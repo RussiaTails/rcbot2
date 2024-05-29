@@ -41,10 +41,13 @@ class CBotTask;
 class CAttackEntityTask;
 class IBotTaskInterrupt;
 
-#define BITS_SCHED_PASS_INT		(1<<0)
-#define BITS_SCHED_PASS_FLOAT	(1<<1)
-#define BITS_SCHED_PASS_VECTOR	(1<<2)
-#define BITS_SCHED_PASS_EDICT	(1<<3)
+enum
+{
+	BITS_SCHED_PASS_INT = 1<<0,
+	BITS_SCHED_PASS_FLOAT = 1<<1,
+	BITS_SCHED_PASS_VECTOR = 1<<2,
+	BITS_SCHED_PASS_EDICT = 1<<3
+};
 
 typedef enum
 {
@@ -119,8 +122,11 @@ public:
 	CBotSchedule();
 
 	void _init ();
+
 	virtual void init () {
 	} // nothing, used by sub classes
+
+	virtual ~CBotSchedule() = default; //TODO: experimental [APG]RoboCop[CL]
 
 	void addTask( CBotTask *pTask );
 
@@ -178,7 +184,6 @@ public:
 
 	void setID ( eBotSchedule iId ) { m_iSchedId = iId; }
 
-
 private:
 	std::deque<CBotTask*> m_Tasks;
 	bool m_bFailed;
@@ -203,7 +208,7 @@ public:
 				return true;
 			}
 		}
-		return false;
+		return false; 
 	}
 
 	bool isCurrentSchedule ( eBotSchedule iSchedule ) const
@@ -216,7 +221,7 @@ public:
 	// remove the first schedule in the queue matching this schedule identifier
 	void removeSchedule ( eBotSchedule iSchedule )
 	{
-		for (auto it = m_Schedules.begin(); it != m_Schedules.end(); ) {
+		for (std::deque<CBotSchedule*>::iterator it = m_Schedules.begin(); it != m_Schedules.end(); ) {
 			if ((*it)->isID(iSchedule)) {
 				m_Schedules.erase(it);
 				return;
@@ -313,10 +318,7 @@ public:
 class CBotTF2DemoPipeEnemySched : public CBotSchedule
 {
 public:
-	CBotTF2DemoPipeEnemySched ( 
-		CBotWeapon *pLauncher,
-		Vector vStand, 
-		edict_t *pEnemy );
+	CBotTF2DemoPipeEnemySched ( CBotWeapon *pLauncher, Vector vStand, edict_t *pEnemy );
 
 	void init() override;
 };

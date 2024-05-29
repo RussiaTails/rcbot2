@@ -94,13 +94,13 @@ public:
 
 	static void Clear ()
 	{
-		for ( int i = 0; i < MAX_WPT_BUCKETS; i ++ )
+		for (WaypointList (&m_iLocation)[64][64] : m_iLocations)
 		{
-			for ( int j = 0; j < MAX_WPT_BUCKETS; j ++ )
+			for (WaypointList (&j)[64] : m_iLocation)
 			{
-				for ( int k = 0; k < MAX_WPT_BUCKETS; k ++ )
+				for (WaypointList& k : j)
 				{
-					m_iLocations[i][j][k].clear();
+					k.clear();
 				}
 			}
 		}

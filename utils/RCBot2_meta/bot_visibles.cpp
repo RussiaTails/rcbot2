@@ -104,7 +104,7 @@ CBotVisibles :: CBotVisibles ( CBot *pBot )
 	m_pBot = pBot;
 	m_iMaxIndex = m_pBot->maxEntityIndex();
 	m_iMaxSize = m_iMaxIndex/8+1;
-	m_iIndicesVisible = new unsigned char [m_iMaxSize];
+	m_iIndicesVisible = new unsigned char[static_cast<size_t>(m_iMaxSize)];
 	reset();
 }
 
@@ -193,9 +193,11 @@ void CBotVisibles :: checkVisible (edict_t* pEntity, int* iTicks, bool* bVisible
 			else
 			vEntityOrigin = CBotGlobals::entityOrigin(pEntity);
 
+			constexpr int Z_OFFSET = 32;
+
 			// for some reason the origin is their feet. add body height
 			if ( iIndex <= gpGlobals->maxClients )
-				vEntityOrigin + Vector(0,0,32);
+				vEntityOrigin + Vector(0, 0, Z_OFFSET);
 
 			playerInPVS = engine->CheckOriginInPVS(vEntityOrigin,m_bPvs,sizeof m_bPvs);//engine->CheckBoxInPVS( vectorSurroundMins, vectorSurroundMaxs, m_bPvs, sizeof( m_bPvs ) );
 
