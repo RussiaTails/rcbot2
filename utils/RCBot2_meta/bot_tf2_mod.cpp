@@ -257,7 +257,7 @@ void CTeamFortress2Mod :: mapInit ()
 	m_iCapturePointWptID = -1;
 	m_iFlagPointWptID = -1;
 
-	if (std::strncmp(szmapname, "ctf_", 4) == 0 || std::strncmp(szmapname, "stt_", 4) == 0 || std::strncmp(szmapname, "quake_turbine", 13) == 0 || std::strncmp(szmapname, "cp_dustcity", 11) == 0 || std::strncmp(szmapname, "pass_", 5) == 0 || std::strncmp(szmapname, "pd_", 3) == 0 || std::strncmp(szmapname, "od_", 3) == 0) // For the future gamemode "Stop That Tank". Quake Turbine is CTF. - RussiaTails
+	if (std::strncmp(szmapname, "ctf_", 4) == 0 || std::strncmp(szmapname, "quake_turbine", 13) == 0 || std::strncmp(szmapname, "cp_dustcity", 11) == 0 || std::strncmp(szmapname, "pass_", 5) == 0 || std::strncmp(szmapname, "pd_", 3) == 0 || std::strncmp(szmapname, "od_", 3) == 0) // Quake Turbine is CTF. - RussiaTails
 		m_MapType = TF_MAP_CTF; // capture the flag
 	else if (std::strncmp(szmapname, "cp_", 3) == 0 || std::strncmp(szmapname, "cqt_", 4) == 0 || std::strncmp(szmapname, "conquest_", 9) == 0 || std::strncmp(szmapname, "dom_", 4) == 0 || std::strncmp(szmapname, "2koth_", 6) == 0 || std::strncmp(szmapname, "ctf_chouhen", 11) == 0 || std::strncmp(szmapname, "ctf_haarp", 9) == 0) // Conquest, 2koth and DOM works fine as CP_. - RussiaTails
 		m_MapType = TF_MAP_CP; // control point
@@ -277,7 +277,7 @@ void CTeamFortress2Mod :: mapInit ()
 		m_MapType = TF_MAP_SD; // special delivery
 	else if (std::strncmp(szmapname, "tr_", 3) == 0)
 		m_MapType = TF_MAP_TR; // training mode
-	else if (std::strncmp(szmapname, "mvm_", 4) == 0)
+	else if (std::strncmp(szmapname, "mvm_", 4) == 0 || std::strncmp(szmapname, "gd_", 3) == 0 || std::strncmp(szmapname, "stt_", 4) == 0) // gd is MvM Guardian, for now there are only two maps exist with this prefix. Moved stt to mvm to make bots attack a tank - RussiaTails
 		m_MapType = TF_MAP_MVM; // mann vs machine
 	else if (std::strncmp(szmapname, "rd_", 3) == 0)
 		m_MapType = TF_MAP_RD; // robot destruction
