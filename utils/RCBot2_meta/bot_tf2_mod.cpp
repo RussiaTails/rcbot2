@@ -263,7 +263,7 @@ void CTeamFortress2Mod :: mapInit ()
 		m_MapType = TF_MAP_CP; // control point
 	else if (std::strncmp(szmapname, "tc_", 3) == 0)
 		m_MapType = TF_MAP_TC; // territory control
-	else if (std::strncmp(szmapname, "pl_", 3) == 0 || std::strncmp(szmapname, "tow_", 4) == 0) // Tug of War works fine as Payload - RussiaTails
+	else if (std::strncmp(szmapname, "pl_", 3) == 0 || std::strncmp(szmapname, "tow_", 4) == 0 || std::strncmp(szmapname, "cp_helmsdeep_v2", 15) == 0) // Tug of War works fine as Payload. cp_helmsdeep_v2 has two payloads - RussiaTails
 		m_MapType = TF_MAP_CART; // pipeline
 	else if (std::strncmp(szmapname, "plr_", 4) == 0 || std::strncmp(szmapname, "arena_tinyrock", 14) == 0 || std::strncmp(szmapname, "arena_hailstone", 15) == 0) // to make bots push payloads on these maps. - RussiaTails
 		m_MapType = TF_MAP_CARTRACE; // pipeline racing
