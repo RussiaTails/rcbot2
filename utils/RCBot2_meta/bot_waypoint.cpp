@@ -1276,7 +1276,7 @@ void CWaypointNavigator :: updatePosition ()
 
 	if ( m_iCurrentWaypoint == -1 ) // invalid
 	{
-		m_pBot->stopMoving();
+		m_pBot->stopMoving();	
 		m_bOffsetApplied = false;
 		return;
 	}
@@ -1425,17 +1425,14 @@ bool CWaypointNavigator :: routeFound ()
 /////////////////////////////////////////////////////////
 
 // draw paths from this waypoint (if waypoint drawing is on)
-void CWaypoint :: drawPaths (edict_t* pEdict, const unsigned short int iDrawType) const
+void CWaypoint::drawPaths(edict_t* pEdict, const unsigned short int iDrawType) const
 {
-	const int iPaths = numPaths();
-
-	for ( int i = 0; i < iPaths; i ++ ) //TODO: Improve loop [APG]RoboCop[CL]
+	for (const int iWpt : *this)
 	{
-		const int iWpt = getPath(i);
-
-		CWaypoint* pWpt = CWaypoints::getWaypoint(iWpt);
-
-		drawPathBeam(pWpt,iDrawType);
+		if (CWaypoint* pWpt = CWaypoints::getWaypoint(iWpt))
+		{
+			drawPathBeam(pWpt, iDrawType);
+		}
 	}
 }
 // draws one path beam
@@ -3056,8 +3053,7 @@ bool CWaypoint ::isAiming() const
 		CWaypointTypes::W_FL_DOUBLEJUMP | 
 		CWaypointTypes::W_FL_SENTRY | // or machine gun (DOD)
 		CWaypointTypes::W_FL_SNIPER | 
-		CWaypointTypes::W_FL_TELE_EXIT |
-		CWaypointTypes::W_FL_HOOK |
+		CWaypointTypes::W_FL_TELE_EXIT | 
 		CWaypointTypes::W_FL_TELE_ENTRANCE )) > 0;
 }
 
@@ -3186,8 +3182,6 @@ void CWaypointTypes :: setup ()
 	addType(new CWaypointType(W_FL_NO_HOSTAGES, "nohostages", "CSS CT bots escorting hostages can't use this waypoint", WptColor(200,230,20), (1<<MOD_CSS)));
 
 	//addType(new CWaypointType(W_FL_ATTACKPOINT,"squad_attackpoint","Tactical waypoint -- each squad will go to different attack points and signal others to go",WptColor(90,90,90)));
-
-	addType(new CWaypointType(W_FL_HOOK, "grappinghook", "TF2 bot will use grapping hook here", WptColor(100, 100, 0), (1 << MOD_TF2)));
 }
 
 void CWaypointTypes :: freeMemory ()

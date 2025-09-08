@@ -1032,7 +1032,6 @@ private:
 	bool m_bIsCarryingSentry;
 	bool m_bIsCarryingDisp;
 	bool m_bIsCarryingTeleEnt;
-	bool m_bIsCarryingBall;
 	bool m_bIsCarryingObj;
 
 	float m_fCarryTime;
