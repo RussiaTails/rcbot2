@@ -284,7 +284,6 @@ typedef enum : std::uint8_t
 	TF_CLASS_PYRO,
 	TF_CLASS_SPY,
 	TF_CLASS_ENGINEER,
-	//TF_CLASS_CIVILIAN,
 	TF_CLASS_MAX
 }TF_Class;
 
@@ -1033,6 +1032,7 @@ private:
 	bool m_bIsCarryingSentry;
 	bool m_bIsCarryingDisp;
 	bool m_bIsCarryingTeleEnt;
+	bool m_bIsCarryingBall;
 	bool m_bIsCarryingObj;
 
 	float m_fCarryTime;
@@ -1051,13 +1051,13 @@ private:
 class CBotFF : public CBotFortress
 {
 public:
-	CBotFF() = default;
+	CBotFF() { CBotFortress(); } //TODO: unused object [APG]RoboCop[CL]
 
-	void modThink() override;
+	void modThink () override;
 
-	bool isEnemy(edict_t* pEdict, bool bCheckWeapons = true) override;
+	bool isEnemy ( edict_t *pEdict,bool bCheckWeapons = true ) override;
 
-	bool isTF() override { return true; }
+	bool isTF () override { return true; }
 
 };
 

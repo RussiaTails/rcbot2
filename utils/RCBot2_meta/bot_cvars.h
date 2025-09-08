@@ -93,7 +93,6 @@ extern ConVar rcbot_bot_quota_interval;
 //extern ConVar rcbot_const_point_master_offset;
 extern ConVar rcbot_util_learning;
 
-
 //Synergy Cvars
 extern ConVar rcbot_runplayercmd_syn;
 extern ConVar rcbot_syn_use_search_range;
@@ -114,10 +113,6 @@ extern ConVarRef mp_stalemate_enable;
 // For CS:S
 extern ConVarRef mp_roundtime;
 extern ConVarRef mp_c4timer;
-
-/** Heapons **/
-extern ConVarRef sig_mvm_changeclass_anytime;
-extern ConVar rcbot_waypoint_ignore_map_mismatch;
 
 void RCBOT2_Cvar_setup (ICvar* cvar);
 
