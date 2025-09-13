@@ -1639,7 +1639,10 @@ void CBotInvestigateTask :: execute (CBot *pBot,CBotSchedule *pSchedule)
 	}
 
 	if ( m_fTime < engine->Time() )
+	{
 		complete();
+		return;
+	}
 
 	if (!m_InvPoints.empty())
 	{
