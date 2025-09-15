@@ -37,23 +37,20 @@
 // Command to show users
 CBotCommandInline ShowUsersCommand("show", CMD_ACCESS_USERS | CMD_ACCESS_DEDICATED, [](const CClient* pClient,
 	const BotCommandArgs& args)
-{
-	edict_t* pEntity;
+	{
+		if (!pClient)
+		{
+			logger->Log(LogLevel::ERROR, "Error: pClient is null");
+			return COMMAND_ERROR;
+		}
 
-	if (pClient) {
-		pEntity = pClient->getPlayer();
-	}
-	else {
-		logger->Log(LogLevel::ERROR, "Error: pClient is null");
-		return COMMAND_ERROR;
-	}
+		edict_t* pEntity = pClient->getPlayer();
+		CAccessClients::showUsers(pEntity);
 
-	CAccessClients::showUsers(pEntity);
-
-	return COMMAND_ACCESSED;
-});
+		return COMMAND_ACCESSED;
+	});
 
 // Subcommands for user-related commands
 CBotSubcommands UserSubcommands("users", CMD_ACCESS_DEDICATED, {
 	&ShowUsersCommand
-});
+	});

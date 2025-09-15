@@ -433,19 +433,20 @@ public:
 			}
 			iTeamPoseParam = 0;
 		}
-
 		string_t	iszCapSound;
 		string_t	iszModel;
+		string_t	iszIcon;
+		string_t	iszOverlay;
+		string_t	iszPreviousPoint[MAX_PREVIOUS_POINTS];
+
 		int			iModelBodygroup;
 		int			iTeamPoseParam;
 		int			iIcon;
-		string_t	iszIcon;
 		int			iOverlay;
-		string_t	iszOverlay;
 		int			iPlayersRequired;
 		int			iTimedPoints;
-		string_t	iszPreviousPoint[MAX_PREVIOUS_POINTS];
 	};
+
 	CUtlVector<perteamdata_t>	m_TeamData;
 
 	CBaseEntityOutput	m_OnCapReset;

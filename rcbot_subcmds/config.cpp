@@ -34,6 +34,7 @@
 #pragma push_macro("clamp") //Fix for C++17 [APG]RoboCop[CL]
 #undef clamp
 #include <algorithm>
+#include <functional>
 #pragma pop_macro("clamp")
 
 //caxanga334: SDK 2013 contains macros for std::min and std::max which causes errors when compiling
@@ -44,91 +45,72 @@
 constexpr int INVALID_BOT_COUNT = -1;
 
 CBotCommandInline GameEventVersion("event_version", CMD_ACCESS_CONFIG, [](CClient* pClient, const BotCommandArgs& args)
+	{
+		if (!args[0] || !*args[0])
+			return COMMAND_ERROR;
+
+		CBotGlobals::setEventVersion(std::atoi(args[0]));
+
+		return COMMAND_ACCESSED;
+	});
+
+namespace
 {
-	if (!args[0] || !*args[0])
-		return COMMAND_ERROR;
+	void SetBotLimit(const CClient* pClient, const BotCommandArgs& args, const char* commandName,
+		const std::function<void(int)>& setter, const std::function<int()>& getter,
+		const std::function<bool(int, int)>& validation, const char* validationMessage)
+	{
+		edict_t* pEntity = pClient ? pClient->getPlayer() : nullptr;
 
-	CBotGlobals::setEventVersion(std::atoi(args[0]));
+		if (args[0] && *args[0])
+		{
+			int value = std::atoi(args[0]);
+			bool hasError = false;
 
-	return COMMAND_ACCESSED;
-});
+			if (value <= INVALID_BOT_COUNT)
+			{
+				value = INVALID_BOT_COUNT;
+			}
+			else if (validation(value, getter()))
+			{
+				CBotGlobals::botMessage(pEntity, 0, validationMessage, getter());
+				hasError = true;
+			}
+
+			value = std::min(value, CBotGlobals::maxClients());
+
+			if (!hasError)
+			{
+				setter(value);
+				CBotGlobals::botMessage(pEntity, 0, "%s set to %d", commandName, value);
+			}
+		}
+		else
+		{
+			CBotGlobals::botMessage(pEntity, 0, "%s is currently %d", commandName, getter());
+		}
+	}
+}
 
 CBotCommandInline MaxBotsCommand("max_bots", CMD_ACCESS_CONFIG | CMD_ACCESS_DEDICATED, [](const CClient* pClient, const BotCommandArgs& args)
-{
-	edict_t* pEntity = nullptr;
-
-	if (pClient)
-		pEntity = pClient->getPlayer();
-
-	if (args[0] && *args[0])
 	{
-		int maxBots = std::atoi(args[0]);
-		bool hasError = false;
-		const int minBots = CBots::getMinBots();
+		SetBotLimit(pClient, args, "max_bots",
+			CBots::setMaxBots, CBots::getMinBots,
+			[](int maxBots, int minBots) { return (minBots >= 0) && (maxBots <= minBots); },
+			"max_bots must be greater than min_bots (min_bots is currently: %d)");
 
-		if (maxBots <= INVALID_BOT_COUNT) // skip check for disabling max bots (require <=)
-		{
-			maxBots = INVALID_BOT_COUNT;
-		}
-		else if ((minBots >= 0) && (maxBots <= minBots))
-		{
-			CBotGlobals::botMessage(pEntity, 0, "max_bots must be greater than min_bots (min_bots is currently: %d)", minBots);
-			hasError = true;
-		}
-		maxBots = std::min(maxBots, CBotGlobals::maxClients());
-
-		if (!hasError)
-		{
-			CBots::setMaxBots(maxBots);
-			CBotGlobals::botMessage(pEntity, 0, "max_bots set to %d", maxBots);
-		}
-	}
-	else
-	{
-		CBotGlobals::botMessage(pEntity, 0, "max_bots is currently %d", CBots::getMaxBots());
-	}
-
-	return COMMAND_ACCESSED;
-});
+		return COMMAND_ACCESSED;
+	});
 
 CBotCommandInline MinBotsCommand("min_bots", CMD_ACCESS_CONFIG | CMD_ACCESS_DEDICATED, [](const CClient* pClient, const BotCommandArgs& args)
-{
-	edict_t* pEntity = nullptr;
-
-	if (pClient)
-		pEntity = pClient->getPlayer();
-
-	if (args[0] && *args[0])
 	{
-		int minBots = std::atoi(args[0]);
-		const int maxBots = CBots::getMaxBots();
-		bool hasError = false;
+		SetBotLimit(pClient, args, "min_bots",
+			CBots::setMinBots, CBots::getMaxBots,
+			[](int minBots, int maxBots) { return (maxBots >= 0) && (minBots >= maxBots); },
+			"min_bots must be less than max_bots (max_bots is currently: %d)");
 
-		minBots = std::min(minBots, CBotGlobals::maxClients());
-
-		if (minBots <= INVALID_BOT_COUNT) // skip check for disabling min bots (require <=)
-		{
-			minBots = INVALID_BOT_COUNT;
-		}
-		else if ((maxBots >= 0) && (minBots >= maxBots))
-		{
-			CBotGlobals::botMessage(pEntity, 0, "min_bots must be less than max_bots (max_bots is currently: %d)", maxBots);
-			hasError = true;
-		}
-
-		if (!hasError)
-		{
-			CBots::setMinBots(minBots);
-			CBotGlobals::botMessage(pEntity, 0, "min_bots set to %d", minBots);
-		}
-	}
-	else
-	{
-		CBotGlobals::botMessage(pEntity, 0, "min_bots is currently %d", CBots::getMinBots());
-	}
-
-	return COMMAND_ACCESSED;
-});
+		return COMMAND_ACCESSED;
+	});
 
 CBotSubcommands ConfigSubcommands("config", CMD_ACCESS_DEDICATED, {
 &GameEventVersion,

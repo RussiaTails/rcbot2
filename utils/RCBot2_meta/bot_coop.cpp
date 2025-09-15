@@ -10,6 +10,7 @@
 
 #include <cstring>
 #include <array>
+#include <algorithm>
 
 void CBotCoop::modThink()
 {
@@ -39,13 +40,12 @@ bool CBotCoop::isEnemy(edict_t* pEdict, bool bCheckWeapons)
 			"npc_alyx"
 		};
 
-		for (const char* const& friendly : friendlyNPCs)
+		if (std::any_of(friendlyNPCs.begin(), friendlyNPCs.end(),
+			[&](const char* friendly) { return std::strcmp(classname, friendly) == 0; }))
 		{
-			if (std::strcmp(classname, friendly) == 0)
-			{
-				return false; // ally
-			}
+			return false; // ally
 		}
+
 		return true;
 	}
 

@@ -30,156 +30,157 @@
  *    version.
  */
 
+#include <array>
+#include <string>
+
 CBotCommandInline SearchCommand("search", CMD_ACCESS_UTIL, [](const CClient* pClient, const BotCommandArgs& args)
-{
-	edict_t* pPlayer = pClient->getPlayer();
-
-	for (int i = 0; i < gpGlobals->maxEntities; ++i)
 	{
-		edict_t* pEdict = INDEXENT(i);
+		edict_t* pPlayer = pClient->getPlayer();
 
-		if (pEdict && !pEdict->IsFree() && pEdict->m_pNetworkable && pEdict->GetIServerEntity())
+		for (int i = 0; i < gpGlobals->maxEntities; ++i)
 		{
-			float fDistance = (CBotGlobals::entityOrigin(pEdict) - CBotGlobals::entityOrigin(pPlayer)).Length();
-			if (fDistance < 128)
+			edict_t* pEdict = INDEXENT(i);
+
+			if (pEdict && !pEdict->IsFree() && pEdict->m_pNetworkable && pEdict->GetIServerEntity())
 			{
-				float fVelocity;
-				Vector v;
+				float fDistance = (CBotGlobals::entityOrigin(pEdict) - CBotGlobals::entityOrigin(pPlayer)).Length();
+				if (fDistance < 128)
+				{
+					float fVelocity;
+					Vector v;
 
-				if (CClassInterface::getVelocity(pEdict, &v))
-					fVelocity = v.Length();
-				else
-					fVelocity = 0;
+					if (CClassInterface::getVelocity(pEdict, &v))
+						fVelocity = v.Length();
+					else
+						fVelocity = 0;
 
-				string_t model = pEdict->GetIServerEntity()->GetModelName();
+					string_t model = pEdict->GetIServerEntity()->GetModelName();
 
-				CBotGlobals::botMessage(pPlayer, 0, "(%d) D:%0.2f C:'%s', Mid:%d, Mn:'%s' Health=%d, Tm:%d, Fl:%d, Spd=%0.2f",
-					i, fDistance, pEdict->GetClassName(), pEdict->GetIServerEntity()->GetModelIndex(), model.ToCStr(),
-					static_cast<int>(CClassInterface::getPlayerHealth(pEdict)), CClassInterface::getTeam(pEdict),
-					pEdict->m_fStateFlags, fVelocity);
+					CBotGlobals::botMessage(pPlayer, 0, "(%d) D:%.2f C:'%s', Mid:%d, Mn:'%s' Health=%d, Tm:%d, Fl:%d, Spd=%.2f",
+						i, fDistance, pEdict->GetClassName(), pEdict->GetIServerEntity()->GetModelIndex(), model.ToCStr(),
+						static_cast<int>(CClassInterface::getPlayerHealth(pEdict)), CClassInterface::getTeam(pEdict),
+						pEdict->m_fStateFlags, fVelocity);
+				}
 			}
 		}
-	}
 
-	return COMMAND_ACCESSED;
-});
+		return COMMAND_ACCESSED;
+	});
 
 CBotCommandInline SetTeleportUtilCommand("set_teleport", CMD_ACCESS_UTIL, [](CClient* pClient, const BotCommandArgs& args)
-{
-	if (pClient)
 	{
-		pClient->setTeleportVector();
-		engine->ClientPrintf(pClient->getPlayer(), "Teleport Position Remembered!");
-		return COMMAND_ACCESSED;
-	}
-
-	return COMMAND_ERROR;
-}, "usage: remembers where you want to teleport");
-
-CBotCommandInline TeleportUtilCommand("teleport", CMD_ACCESS_UTIL, [](CClient* pClient, const BotCommandArgs& args)
-{
-	if (pClient)
-	{
-		const Vector* vTeleport = pClient->getTeleportVector();
-
-		if (vTeleport != nullptr)
+		if (pClient)
 		{
-			CBotGlobals::teleportPlayer(pClient->getPlayer(), *vTeleport);
-			CBotGlobals::botMessage(pClient->getPlayer(), 0, "teleported to your remembered location");
-
+			pClient->setTeleportVector();
+			engine->ClientPrintf(pClient->getPlayer(), "Teleport Position Remembered!");
 			return COMMAND_ACCESSED;
 		}
-	}
 
-	return COMMAND_ERROR;
-}, "usage: first use set_teleport, then this command to go there");
+		return COMMAND_ERROR;
+	}, "usage: remembers where you want to teleport");
 
-CBotCommandInline NoClipCommand("noclip", CMD_ACCESS_UTIL, [](const CClient* pClient, const BotCommandArgs& args)
-{
-	if (pClient)
+CBotCommandInline TeleportUtilCommand("teleport", CMD_ACCESS_UTIL, [](CClient* pClient, const BotCommandArgs& args)
 	{
-		if (edict_t* pEntity = pClient->getPlayer())
+		if (pClient)
 		{
-			constexpr unsigned bufferSize = 256; // Adjust the buffer size as needed - [APG]RoboCop[CL]
-			std::string msg(bufferSize, '\0');
+			const Vector* vTeleport = pClient->getTeleportVector();
 
-			byte* movetype = CClassInterface::getMoveTypePointer(pEntity);
-
-			if (constexpr byte MOVETYPE_MASK = 15; (*movetype & MOVETYPE_MASK) != MOVETYPE_NOCLIP)
+			if (vTeleport != nullptr)
 			{
-				*movetype &= ~MOVETYPE_MASK;
-				*movetype |= MOVETYPE_NOCLIP;
+				CBotGlobals::teleportPlayer(pClient->getPlayer(), *vTeleport);
+				CBotGlobals::botMessage(pClient->getPlayer(), 0, "teleported to your remembered location");
+
+				return COMMAND_ACCESSED;
 			}
 			else
 			{
-				*movetype &= ~15;
-				*movetype |= MOVETYPE_WALK;
+				CBotGlobals::botMessage(pClient->getPlayer(), 0, "You need to set a teleport location first with set_teleport.");
 			}
-			// Ensure pClient is valid before accessing its methods
-			snprintf(msg.data(), bufferSize, "%s used no_clip %d on self\n", pClient->getName(), ((*movetype & 15) == MOVETYPE_NOCLIP));
-
-			CBotGlobals::botMessage(pEntity, 0, msg.c_str());
-			return COMMAND_ACCESSED;
 		}
-	}
-	return COMMAND_ERROR;
-}, "fly through walls , yeah!");
+
+		return COMMAND_ERROR;
+	}, "usage: first use set_teleport, then this command to go there");
+
+CBotCommandInline NoClipCommand("noclip", CMD_ACCESS_UTIL, [](const CClient* pClient, const BotCommandArgs& args)
+	{
+		if (pClient)
+		{
+			if (edict_t* pEntity = pClient->getPlayer())
+			{
+				byte* movetype = CClassInterface::getMoveTypePointer(pEntity);
+				if (!movetype)
+					return COMMAND_ERROR;
+
+				constexpr byte MOVETYPE_MASK = 15;
+				bool bNoClipEnabled;
+
+				if ((*movetype & MOVETYPE_MASK) != MOVETYPE_NOCLIP)
+				{
+					*movetype &= ~MOVETYPE_MASK;
+					*movetype |= MOVETYPE_NOCLIP;
+					bNoClipEnabled = true;
+				}
+				else
+				{
+					*movetype &= ~MOVETYPE_MASK;
+					*movetype |= MOVETYPE_WALK;
+					bNoClipEnabled = false;
+				}
+
+				std::array<char, 256> msg;
+				snprintf(msg.data(), msg.size(), "%s used no_clip, which is now %s", pClient->getName(), bNoClipEnabled ? "enabled" : "disabled");
+
+				CBotGlobals::botMessage(pEntity, 0, msg.data());
+				return COMMAND_ACCESSED;
+			}
+		}
+		return COMMAND_ERROR;
+	}, "fly through walls , yeah!");
 
 CBotCommandInline GodModeUtilCommand("god", CMD_ACCESS_UTIL, [](const CClient* pClient, const BotCommandArgs& args)
-{
-	if (pClient)
 	{
-		if (edict_t* pEntity = pClient->getPlayer())
+		if (pClient)
 		{
-			if (int* playerflags = CClassInterface::getPlayerFlagsPointer(pEntity))
+			if (edict_t* pEntity = pClient->getPlayer())
 			{
-				constexpr unsigned bufferSize = 256;
-				std::string msg(bufferSize, '\0');
+				if (int* playerflags = CClassInterface::getPlayerFlagsPointer(pEntity))
+				{
+					*playerflags ^= FL_GODMODE;
 
-				if (*playerflags & FL_GODMODE)
-					*playerflags &= ~FL_GODMODE;
-				else
-					*playerflags |= FL_GODMODE;
+					std::array<char, 256> msg;
+					snprintf(msg.data(), msg.size(), "god mode %s", (*playerflags & FL_GODMODE) ? "enabled" : "disabled");
 
-				snprintf(msg.data(), bufferSize, "god mode %s", (*playerflags & FL_GODMODE) ? "enabled" : "disabled");
+					CBotGlobals::botMessage(pEntity, 0, msg.data());
 
-				CBotGlobals::botMessage(pEntity, 0, msg.c_str());
-
-				return COMMAND_ACCESSED;
-
+					return COMMAND_ACCESSED;
+				}
 			}
 		}
-	}
 
-	return COMMAND_ERROR;
-}, "usage: toggle for invulnerability!");
+		return COMMAND_ERROR;
+	}, "usage: toggle for invulnerability!");
 
 CBotCommandInline NoTouchCommand("notouch", CMD_ACCESS_UTIL, [](const CClient* pClient, const BotCommandArgs& args)
-{
-	if (pClient)
 	{
-		if (edict_t* pEntity = pClient->getPlayer())
+		if (pClient)
 		{
-			if (int* playerflags = CClassInterface::getPlayerFlagsPointer(pEntity))
+			if (edict_t* pEntity = pClient->getPlayer())
 			{
-				constexpr unsigned bufferSize = 256; // Adjust the buffer size as needed - [APG]RoboCop[CL]
-				std::string msg(bufferSize, '\0');
+				if (int* playerflags = CClassInterface::getPlayerFlagsPointer(pEntity))
+				{
+					*playerflags ^= FL_DONTTOUCH;
 
-				if (*playerflags & FL_DONTTOUCH)
-					*playerflags &= ~FL_DONTTOUCH;
-				else
-					*playerflags |= FL_DONTTOUCH;
+					std::array<char, 256> msg;
+					snprintf(msg.data(), msg.size(), "notouch mode %s", (*playerflags & FL_DONTTOUCH) ? "enabled" : "disabled");
+					CBotGlobals::botMessage(pEntity, 0, msg.data());
 
-				snprintf(msg.data(), bufferSize, "notouch mode %s", (*playerflags & FL_DONTTOUCH) ? "enabled" : "disabled");
-				CBotGlobals::botMessage(nullptr, 0, msg.c_str());
-
-				return COMMAND_ACCESSED;
+					return COMMAND_ACCESSED;
+				}
 			}
 		}
-	}
 
-	return COMMAND_ERROR;
-}, "don't set off capture points etc");
+		return COMMAND_ERROR;
+	}, "don't set off capture points etc");
 
 CBotSubcommands UtilSubcommands("util", CMD_ACCESS_DEDICATED, {
 	&SearchCommand,
@@ -188,4 +189,4 @@ CBotSubcommands UtilSubcommands("util", CMD_ACCESS_DEDICATED, {
 	&NoClipCommand,
 	&GodModeUtilCommand,
 	&NoTouchCommand
-});
+	});

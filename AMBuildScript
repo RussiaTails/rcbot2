@@ -156,7 +156,7 @@ class MMSConfig(object):
       ]
 
     # Optimization
-    if builder.options.opt == '1':
+    if builder.options.opt:
       cxx.defines += ['NDEBUG']
       if cxx.behavior == 'gcc':
         cxx.cflags += ['-O3']
@@ -165,7 +165,7 @@ class MMSConfig(object):
         cxx.linkflags += ['/OPT:ICF', '/OPT:REF']
 
     # Debugging
-    if builder.options.debug == '1':
+    if builder.options.debug:
       cxx.defines += ['DEBUG', '_DEBUG']
       if cxx.behavior == 'gcc':
         cxx.cflags += ['-g3']

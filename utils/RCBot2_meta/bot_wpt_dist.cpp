@@ -37,7 +37,7 @@ void CWaypointDistances::load()
 
 		if ((hdr.maxwaypoints == CWaypoints::MAX_WAYPOINTS) && (hdr.numwaypoints == CWaypoints::numWaypoints()) && (hdr.version == WPT_DIST_VER))
 		{
-			bfp.read(reinterpret_cast<char*>(m_Distances), static_cast<std::streamsize>(sizeof(int) * CWaypoints::MAX_WAYPOINTS) * CWaypoints::MAX_WAYPOINTS);
+			bfp.read(reinterpret_cast<char*>(m_Distances), sizeof(m_Distances));
 		}
 
 		m_fSaveTime = engine->Time() + 100.0f;
@@ -69,7 +69,7 @@ void CWaypointDistances::save()
 
 		bfp.write(reinterpret_cast<char*>(&hdr), sizeof(wpt_dist_hdr_t));
 
-		bfp.write(reinterpret_cast<char*>(m_Distances), static_cast<std::streamsize>(sizeof(int) * CWaypoints::MAX_WAYPOINTS) * CWaypoints::MAX_WAYPOINTS);
+		bfp.write(reinterpret_cast<char*>(m_Distances), sizeof(m_Distances));
 
 		m_fSaveTime = engine->Time() + 100.0f;
 	}

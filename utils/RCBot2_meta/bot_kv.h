@@ -1,26 +1,19 @@
 #ifndef __RCBOT_KEY_VAL__
 #define __RCBOT_KEY_VAL__
 
-constexpr int RCBOT_MAX_KV_LEN = 256;
-
-#include <fstream>
 #include <vector>
+#include <fstream>
+#include <memory>
+
+constexpr int RCBOT_MAX_KV_LEN = 128;
 
 class CRCBotKeyValue
 {
 public:
-	CRCBotKeyValue(const char *szKey, const char *szValue);
+	CRCBotKeyValue(const char* szKey, const char* szValue);
 
-	char *getKey ()
-	{
-		return m_szKey;
-	}
-
-	char *getValue ()
-	{
-		return m_szValue;
-	}
-
+	const char* getKey() const { return m_szKey; }
+	const char* getValue() const { return m_szValue; }
 private:
 	char m_szKey[RCBOT_MAX_KV_LEN];
 	char m_szValue[RCBOT_MAX_KV_LEN];
@@ -29,25 +22,17 @@ private:
 class CRCBotKeyValueList
 {
 public:
-	~CRCBotKeyValueList();
+	~CRCBotKeyValueList() = default;
 
 	void parseFile(std::fstream& fp);
 
-	//unsigned size ();
+	CRCBotKeyValue* getKV(const char* key) const;
 
-	//CRCBotKeyValue *getKV ( unsigned iIndex );
-
-	bool getInt ( const char *key, int *val ) const;
-
-	bool getString ( const char *key, const char **val ) const;
-
-	bool getFloat ( const char *key, float *val ) const;
-
+	bool getFloat(const char* key, float* val) const;
+	bool getInt(const char* key, int* val) const;
+	bool getString(const char* key, const char** val) const;
 private:
-
-	CRCBotKeyValue *getKV ( const char *key ) const;
-
-	std::vector <CRCBotKeyValue*> m_KVs;
+	std::vector<std::unique_ptr<CRCBotKeyValue>> m_KVs;
 };
 
 #endif
