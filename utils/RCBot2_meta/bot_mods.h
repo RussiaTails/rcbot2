@@ -406,7 +406,7 @@ public:
 	int getNumBombsRequired (const int iId) const
 	{
 		if ( iId == -1 )
-			return false;
+			return 0;
 
 		return m_iBombsRequired[iId];
 	}
@@ -419,7 +419,7 @@ public:
 	int getNumBombsRemaining (const int iId) const
 	{
 		if ( iId == -1 )
-			return false;
+			return 0;
 
 		return m_iBombsRemaining[iId];
 	}
@@ -565,7 +565,7 @@ public:
 
 	static float getMapStartTime ();
 
-	static bool isBombMap () { return (m_iMapType & DOD_MAPTYPE_BOMB) == DOD_MAPTYPE_BOMB; }
+	static bool isBombMap() { return (m_iMapType & DOD_MAPTYPE_BOMB) == DOD_MAPTYPE_BOMB; } //TODO: both `maphasBombs` and `isBombMap` do the same thing but conflict? [APG]RoboCop[CL]
 	static bool isFlagMap () { return (m_iMapType & DOD_MAPTYPE_FLAG) == DOD_MAPTYPE_FLAG; }
 	static bool mapHasBombs () { return (m_iMapType & DOD_MAPTYPE_BOMB) == DOD_MAPTYPE_BOMB; }
 

@@ -7457,7 +7457,7 @@ int CBotFortress :: getMetal () const
 		}
 	}
 
-	return false;
+	return 0;
 }
 
 bool CBotTF2 :: upgradeBuilding ( edict_t *pBuilding, const bool removesapper )

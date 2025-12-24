@@ -2393,7 +2393,7 @@ int CWaypoints :: addWaypoint (edict_t *pPlayer, const Vector& vOrigin, const in
 	const float fOrigin[3] = {vOrigin.x,vOrigin.y,vOrigin.z};
 
 	CWaypointLocations::AddWptLocation(iIndex,fOrigin);
-	m_pVisibilityTable->workVisibilityForWaypoint(iIndex,true);
+	m_pVisibilityTable->workVisibilityForWaypoint(iIndex,1);
 
 	if ( bAutoPath && !(iFlags & CWaypointTypes::W_FL_UNREACHABLE) )
 	{

@@ -306,9 +306,9 @@ public:
 		}
 	}
 
-	void destroy ()
+	void destroy()
 	{
-		while ( m_Head != nullptr)
+		while (m_Head != nullptr)
 		{
 			const AStarListNode* t = m_Head;
 			m_Head = m_Head->m_Next;
@@ -316,7 +316,7 @@ public:
 			t = nullptr;
 		}
 
-		m_Head = nullptr;
+		//m_Head = nullptr;
 	}
 	
 private:
