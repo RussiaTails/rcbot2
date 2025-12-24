@@ -4159,7 +4159,7 @@ bool CBotTF2::healPlayer(edict_t* pPlayer, edict_t* pPrevPlayer)
 
 		m_fMedicUpdatePosTime = engine->Time() + (fRand * (1.0f - (fSpeed / 320)));
 
-		if (p != nullptr && (p->GetLastUserCommand().buttons & IN_ATTACK))
+		if (p->GetLastUserCommand().buttons & IN_ATTACK)
 		{
 			static QAngle eyes;
 			// keep out of cross fire

@@ -2618,7 +2618,7 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 			
 			if (!CClassInterface::getVelocity(m_pLastEnemy, &vVelocity))
 			{
-				if (pClient != nullptr)
+				//if (pClient != nullptr)
 					vVelocity = pClient->getVelocity();
 			}
 

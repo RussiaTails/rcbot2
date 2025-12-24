@@ -321,7 +321,7 @@ void CPlayerDeathEvent :: execute ( IBotEventInterface *pEvent )
 			CClient *pClient = CClients::get(pAttacker);
 
 			assert(pClient != nullptr);
-			if ( pClient && pClient->autoWaypointOn() )
+			if ( pClient->autoWaypointOn() )
 			{
 				const CWeapon *pWeapon = CWeapons::getWeaponByShortName(weapon);
 
@@ -360,7 +360,7 @@ void CPlayerDeathEvent :: execute ( IBotEventInterface *pEvent )
 			pClient = CClients::get(m_pActivator);
 
 			assert(pClient != nullptr);
-			if ( CBotGlobals::isPlayer(pAttacker) && pClient && pClient->autoWaypointOn() )
+			if ( CBotGlobals::isPlayer(pAttacker) && pClient->autoWaypointOn() )
 			{
 				const CWeapon *pWeapon = CWeapons::getWeaponByShortName(weapon);
 
@@ -538,7 +538,7 @@ void CPlayerHealed ::execute(IBotEventInterface *pEvent)
 				CBotTF2 *pBotTF2 = static_cast<CBotTF2*>(pBot);
 
 				assert(pBotTF2 != nullptr);
-				if ( pBotTF2 && randomInt(0,1) )
+				if ( randomInt(0,1) )
 					pBotTF2->addVoiceCommand(TF_VC_THANKS);
 			}
 		}
@@ -674,7 +674,7 @@ void CTF2BuiltObjectEvent :: execute ( IBotEventInterface *pEvent )
 		CTeamFortress2Mod::teleporterBuilt(m_pActivator,type,pBuilding);
 
 		assert(pClient != nullptr);
-		if ( pClient && pClient->autoWaypointOn() )
+		if ( pClient->autoWaypointOn() )
 		{
 			if ( CTeamFortress2Mod::isTeleporterEntrance(pBuilding,CTeamFortress2Mod::getTeam(m_pActivator)) )
 				pClient->autoEventWaypoint(CWaypointTypes::W_FL_TELE_ENTRANCE,400.0f);
@@ -688,7 +688,7 @@ void CTF2BuiltObjectEvent :: execute ( IBotEventInterface *pEvent )
 		CTeamFortress2Mod::sentryBuilt(m_pActivator,type,pBuilding);
 
 		assert(pClient != nullptr);
-		if ( pClient && pClient->autoWaypointOn() )
+		if ( pClient->autoWaypointOn() )
 		{
 			pClient->autoEventWaypoint(CWaypointTypes::W_FL_SENTRY,400.0f);
 		}
@@ -932,7 +932,7 @@ void CFlagEvent :: execute ( IBotEventInterface *pEvent )
 				CClient* pClient = CClients::get(pPlayer);
 
 				assert(pClient != nullptr);
-				if ( pClient && pClient->autoWaypointOn() )
+				if ( pClient->autoWaypointOn() )
 					pClient->autoEventWaypoint(CWaypointTypes::W_FL_FLAG,200.0f,false);
 			}
 
@@ -1036,7 +1036,7 @@ void CDODPointCaptured :: execute ( IBotEventInterface *pEvent )
 		CClient *pClient = CClients::get(pPlayer);
 
 		assert(pClient != nullptr);
-		if (pClient && pClient->autoWaypointOn())
+		if (pClient->autoWaypointOn())
 		{
 			pClient->autoEventWaypoint(CWaypointTypes::W_FL_CAPPOINT, 150.0f, false, 0, Vector(0, 0, 0), true);
 		}
