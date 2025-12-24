@@ -282,7 +282,7 @@ BuildScripts = [
 if getattr(builder.options, 'enable_tests', False):
     BuildScripts += [] # add tests here
 
-import os
+#import os
 
 if builder.backend == 'amb2':
   BuildScripts += [
