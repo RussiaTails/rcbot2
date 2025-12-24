@@ -7524,7 +7524,6 @@ void CBotTF2::roundWon(int iTeam, const bool bFullRound)
 	removeCondition(CONDITION_COVERT);
 }
 
-// TODO: Needs implemented to avoid bots punting when using ClassRestrictionsForBots.smx? [APG]RoboCop[CL]
 void CBotTF2::changeClass()
 {
 	// Clean up any class-specific schedules before changing
