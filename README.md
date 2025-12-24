@@ -108,7 +108,6 @@ Additionally, `rcbot/logging.{h,cpp}` is released separately under the
 - Bot base code - Botman's HPB Template
 - Linux Conversion and Waypointing - [APG]RoboCop[CL]
 - TF2 support and enhancements - Ducky1231/Pongo
-- Advanced AI and ML upgrade - Ethan Bissborf, Claude
 - SourceMod and AMBuild support - nosoop
 - Synergy, TF2, MvM, CSS and AMBuild support - Anonymous Player/caxanga334
 - TF2 Classic support - Technochips
