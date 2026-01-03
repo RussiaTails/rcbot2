@@ -5991,7 +5991,7 @@ void CBotTask :: _init()
 	m_iFailInterruptConditionsDontHave = 0;
 	m_iCompleteInterruptConditionsHave = 0;
 	m_iCompleteInterruptConditionsDontHave = 0;
-	init();
+	//init(); // may cause an unexpected result at runtime - [APG]RoboCop[CL]
 }
 
 void CBotTask :: init ()

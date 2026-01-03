@@ -907,12 +907,16 @@ void CFlagEvent :: execute ( IBotEventInterface *pEvent )
 
 	edict_t *pPlayer = nullptr;
 	CBot *pBot = nullptr;
-	
+
 	// Crash fix
 	if ( player )
 	{
 		pPlayer = INDEXENT(player);
-		pBot = CBots::getBotPointer(pPlayer);
+
+		if ( pPlayer )
+		{
+			pBot = CBots::getBotPointer(pPlayer);
+		}
 	}
 
 	switch ( type )

@@ -335,6 +335,14 @@ CBotFortress :: CBotFortress()
 	m_fLastCalledMedicTime = 0.0f;
 	m_bIsBeingHealed = false;
 	m_bCanBeUbered = false;
+
+	m_iClass = TF_CLASS_MAX;
+
+	std::memset(m_fClassDisguiseFitness, 0, sizeof(m_fClassDisguiseFitness));
+	std::memset(m_fClassDisguiseTime, 0, sizeof(m_fClassDisguiseTime));
+	std::memset(m_fSpyAttackedList, 0, sizeof(m_fSpyAttackedList));
+	std::memset(m_fSpyLastUncloakedList, 0, sizeof(m_fSpyLastUncloakedList));
+	std::memset(m_fCallMedicTime, 0, sizeof(m_fCallMedicTime));
 }
 
 void CBotFortress :: checkDependantEntities ()
@@ -3814,8 +3822,8 @@ void CBotTF2 ::voiceCommand (const byte voiceCmd)
 	u_VOICECMD vcmd;
 
 	vcmd.voicecmd = voiceCmd;
-	
-	snprintf(scmd, sizeof(scmd), "voicemenu %d %d", vcmd.b1.v1, vcmd.b1.v2);
+
+	snprintf(scmd, sizeof(scmd), "voicemenu %d %d", static_cast<int>(vcmd.b1.v1), static_cast<int>(vcmd.b1.v2));
 
 	helpers->ClientCommand(m_pEdict,scmd);
 }
