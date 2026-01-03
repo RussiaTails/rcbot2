@@ -68,26 +68,26 @@ public:
  */
 #if SOURCE_ENGINE >= SE_LEFT4DEAD
 
-inline int IndexOfEdict(const edict_t *pEdict)
+inline int IndexOfEdict(const edict_t* pEdict)
 {
-	return static_cast<int>(pEdict - gpGlobals->pEdicts);
+	return static_cast<int>(pEdict - engine->PEntityOfEntIndex(0));
 }
-inline edict_t *PEntityOfEntIndex(int iEntIndex)
+inline edict_t* PEntityOfEntIndex(const int iEntIndex)
 {
 	if (iEntIndex >= 0 && iEntIndex < gpGlobals->maxEntities)
 	{
-		return static_cast<edict_t*>(gpGlobals->pEdicts + iEntIndex);
+		return engine->PEntityOfEntIndex(iEntIndex);
 	}
 	return nullptr;
 }
 
 #else
 
-inline int IndexOfEdict(const edict_t *pEdict)
+inline int IndexOfEdict(const edict_t* pEdict)
 {
 	return engine->IndexOfEdict(pEdict);
 }
-inline edict_t *PEntityOfEntIndex(int iEntIndex)
+inline edict_t* PEntityOfEntIndex(const int iEntIndex)
 {
 	return engine->PEntityOfEntIndex(iEntIndex);
 }
