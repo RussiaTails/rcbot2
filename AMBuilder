@@ -71,6 +71,16 @@ compiler_defines = []
 
 # Build with SourceMod extension support if --sm-path was specified
 if builder.options.sm_path:
+  # Validate required SourceMod directories exist
+  required_sm_dirs = [
+    os.path.join(builder.options.sm_path, 'sourcepawn', 'include'),
+    os.path.join(builder.options.sm_path, 'public'),
+  ]
+  
+  for sm_dir in required_sm_dirs:
+    if not os.path.isdir(sm_dir):
+      raise Exception("Required SourceMod directory '{}' not found. Check your --sm-path setting.".format(sm_dir))
+
   include_paths += [
     os.path.join(builder.options.sm_path, 'sourcepawn', 'include'),
     os.path.join(builder.options.sm_path, 'public', 'amtl'),

@@ -29,9 +29,17 @@ class MMSConfig(object):
     self.binaries = []
     self.generated_headers = None
     self.mms_root = builder.options.mms_path
-    self.sm_path = builder.options.sm_path or None
     self.all_targets = []
     self.target_archs = set()
+
+    # Validate sm_path if provided
+    if builder.options.sm_path:
+      if os.path.isdir(builder.options.sm_path):
+        self.sm_path = builder.options.sm_path
+      else:
+        raise Exception("SourceMod path '{}' does not exist or is not a directory".format(builder.options.sm_path))
+    else:
+      self.sm_path = None
 
     if builder.options.targets:
       target_archs = builder.options.targets.split(',')
