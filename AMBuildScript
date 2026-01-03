@@ -1,5 +1,10 @@
 import os, sys
 
+# Force GCC on Linux for legacy support - [APG]RoboCop[CL]
+#if sys.platform.startswith('linux'):
+#    os.environ['CC'] = 'gcc'
+#    os.environ['CXX'] = 'g++'
+
 def ResolveEnvPath(env, folder):
   if env in os.environ:
     path = os.environ[env]
@@ -112,6 +117,7 @@ class MMSConfig(object):
         cxx.cxxflags += ['-Wno-delete-non-virtual-dtor']
       if cxx.family == 'gcc':
         cxx.cflags += ['-mfpmath=sse']
+        cxx.cxxflags += ['-Wno-class-memaccess']
       if cxx.family == 'clang':
         cxx.cxxflags += ['-Wno-implicit-exception-spec-mismatch']
         if cxx.version >= 'clang-3.9' or cxx.version >= 'apple-clang-10.0':

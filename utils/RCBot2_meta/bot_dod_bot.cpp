@@ -3225,7 +3225,7 @@ void CDODBot :: getTasks (unsigned iIgnore)
 
 		if ( iNumEnemyBombsOnMap > 0 )
 		{
-			ADD_UTILITY(BOT_UTIL_DEFEND_POINT,(iFlagsOwned>0)&&(m_pNearestFlag == nullptr)||CDODMod::m_Flags.ownsFlag(iFlagID,m_iTeam),fDefendUtil)
+			ADD_UTILITY(BOT_UTIL_DEFEND_POINT, ((iFlagsOwned > 0) && (m_pNearestFlag == nullptr)) || CDODMod::m_Flags.ownsFlag(iFlagID, m_iTeam), fDefendUtil)
 
 			/*if ( m_pNearestFlag )
 			{
