@@ -24,8 +24,8 @@ jobs:
             os_version: ubuntu-22.04
             package_ext: tar.gz
             dbg_ext: dbg
-            cc: clang
-            cxx: clang++
+            cc: gcc
+            cxx: g++
             vs_arch: unused
             am_arch: x86,x86_64
             
@@ -90,7 +90,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.11'
 
     - name: Setup ambuild
       run: |
