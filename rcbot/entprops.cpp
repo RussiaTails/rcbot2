@@ -505,7 +505,7 @@ int CBotEntProp::GetEntProp(const int entity, const PropType proptype, const cha
 		}
 		return *reinterpret_cast<int8_t*>(reinterpret_cast<uint8_t*>(pEntity) + static_cast<std::size_t>(offset));
 	}
-	return reinterpret_cast<bool*>(reinterpret_cast<uint8_t*>(pEntity) + static_cast<std::size_t>(offset)) ? 1 : 0;
+	return *reinterpret_cast<bool*>(reinterpret_cast<uint8_t*>(pEntity) + static_cast<std::size_t>(offset)) ? 1 : 0;
 }
 
 /// @brief Retrieves an integer pointer in an entity's property.

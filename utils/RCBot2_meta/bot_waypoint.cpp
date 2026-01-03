@@ -1741,22 +1741,21 @@ bool CWaypoints :: save (const bool bVisiblityMade, const edict_t* pPlayer, cons
 	header.iNumWaypoints = iSize;
 	header.iVersion = WAYPOINT_VERSION;
 
-	if ( pszAuthor != nullptr)
-		std::strncpy(authorinfo.szAuthor,pszAuthor,31);
+	if (pszAuthor != nullptr)
+		std::strncpy(authorinfo.szAuthor, pszAuthor, sizeof(authorinfo.szAuthor) - 1);
 	else
 	{
-		std::strncpy(authorinfo.szAuthor,CWaypoints::getAuthor(),31);
+		std::strncpy(authorinfo.szAuthor, CWaypoints::getAuthor(), sizeof(authorinfo.szAuthor) - 1);
 	}
+	authorinfo.szAuthor[sizeof(authorinfo.szAuthor) - 1] = '\0';
 
-	if ( pszModifier != nullptr)
-		std::strncpy(authorinfo.szModifiedBy,pszModifier,31);
+	if (pszModifier != nullptr)
+		std::strncpy(authorinfo.szModifiedBy, pszModifier, sizeof(authorinfo.szModifiedBy) - 1);
 	else
 	{
-		std::strncpy(authorinfo.szModifiedBy,CWaypoints::getModifier(),31);
+		std::strncpy(authorinfo.szModifiedBy, CWaypoints::getModifier(), sizeof(authorinfo.szModifiedBy) - 1);
 	}
-
-	authorinfo.szAuthor[31] = 0;
-	authorinfo.szModifiedBy[31] = 0;
+	authorinfo.szModifiedBy[sizeof(authorinfo.szModifiedBy) - 1] = '\0';
 
 	if ( !bVisiblityMade && pszAuthor== nullptr && pszModifier== nullptr)
 	{
