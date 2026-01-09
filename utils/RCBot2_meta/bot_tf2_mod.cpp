@@ -282,8 +282,10 @@ void CTeamFortress2Mod :: mapInit ()
 			 std::strncmp(szmapname, "vip_", 4) == 0 ||
 			 std::strncmp(szmapname, "vipr_", 5) == 0 ||
 			 std::strncmp(szmapname, "szf_", 4) == 0 ||
+			 std::strncmp(szmapname, "rush_", 5) == 0 ||
 			 std::strncmp(szmapname, "workshop/cp_", 12) == 0 ||
 			 std::strncmp(szmapname, "workshop/vip_", 13) == 0 ||
+			 std::strncmp(szmapname, "workshop/rush_", 14) == 0 ||
 			 std::strncmp(szmapname, "zf_", 3) == 0)
 		// Conquest, 2koth and DOM works fine as CP_. Moved stt to cp to make bots attack a tank - RussiaTails
 		m_MapType = TF_MAP_CP; // control point
