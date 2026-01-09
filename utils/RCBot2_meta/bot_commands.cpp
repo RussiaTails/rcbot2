@@ -128,14 +128,21 @@ CBotCommandInline KickBotCommand("kickbot", CMD_ACCESS_BOT | CMD_ACCESS_DEDICATE
 {
 	if (!args[0] || !*args[0])
 	{
-		//remove random bot
-		CBots::kickRandomBot();
+		if (rcbot_nonrandom_kicking.GetBool()) {
+			CBots::kickChosenBot();
+		} else {
+			CBots::kickRandomBot();
+		}
 	}
 	else
 	{
 		const int team = std::atoi(args[0]);
 
-		CBots::kickRandomBotOnTeam(team);
+		if (rcbot_nonrandom_kicking.GetBool()) {
+			CBots::kickChosenBotOnTeam(team);
+		} else {
+			CBots::kickRandomBotOnTeam(team);
+		}
 	}
 
 	return COMMAND_ACCESSED;

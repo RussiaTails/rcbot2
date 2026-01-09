@@ -95,10 +95,11 @@ Additionally, `rcbot/logging.{h,cpp}` is released separately under the
 - To improve game detection for non-listed Source gamemods
 - To add proper support for the new Zombie Infection TF2 maps since Scream Fortress XV update
 - To add proper support for Robot Destruction gameplay by destroying bots when not ubered
-- To prevent EngiBots from facing their SG Turrets the wrong way
+- To prevent EngiBots from facing their SG Turrets the wrong way - Testing in progress!
+- To allow DemoBots to sticky jump again - might need to check with using RCBot2 v1.7-beta versions
 - To improve on how Medic and Spy bots behave smarter and adequately when interacting with SG Turrets and Healing/Ubering
 - Bots need to understand how to play Kart games from sd_doomsday_event as they only wonder around those minigames
-- CBotTF2::changeClass needs to be implemented to avoid bots punting when using ClassRestrictionsForBots.smx and `rcbot_change_classes 1`
+- CBotTF2::changeClass needs to be implemented to avoid bots punting when using ClassRestrictionsForBots.smx and `rcbot_change_classes 1` - Testing in progress!
 - To add TF2C support along with Black Mesa Source, Counter-Strike: Source, Synergy and Dystopia
 
 ## Credits:-

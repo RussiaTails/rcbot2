@@ -35,7 +35,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#if defined _MSC_VER
+#ifdef _MSC_VER
 #define DLL_EXPORT extern "C" __declspec(dllexport)
 #define openlib(lib) LoadLibrary(lib)
 #define closelib(lib) FreeLibrary(lib)
@@ -350,7 +350,7 @@ DLL_EXPORT void UnloadInterface_MMS()
 	}
 }
 
-#if defined _MSC_VER
+#ifdef _MSC_VER
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, const DWORD fdwReason, LPVOID lpReserved)
 {
 	if (fdwReason == DLL_PROCESS_DETACH)

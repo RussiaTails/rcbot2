@@ -82,7 +82,7 @@ enum MessageColorizationMode : std::uint8_t
 
 MessageColorizationMode GetMessageColorizationMode()
 {
-#if defined _LINUX
+#ifdef _LINUX
 	if (!engine->IsDedicatedServer())
 	{
 		return Colorize_ClientConsole;

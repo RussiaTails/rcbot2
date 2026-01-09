@@ -5,7 +5,7 @@
 #include <fstream>
 #include <memory>
 
-constexpr int RCBOT_MAX_KV_LEN = 128;
+constexpr int RCBOT_MAX_KV_LEN = 128; //Was 256 [APG]RoboCop[CL]
 
 class CRCBotKeyValue
 {

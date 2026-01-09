@@ -534,8 +534,8 @@ public:
 
 	static void getAnimatingInfo ( edict_t *edict, float *flCycle, int *iSequence ) 
 	{	
-		*flCycle = g_GetProps[GETPROP_CYCLE].getFloat(edict,0);
-		*iSequence = g_GetProps[GETPROP_SEQUENCE].getInt(edict,false);
+		*flCycle = g_GetProps[GETPROP_CYCLE].getFloat(edict,0.0f);
+		*iSequence = g_GetProps[GETPROP_SEQUENCE].getInt(edict,0);
 	}
 
 	static int getPlayerFlags (edict_t *player) { return g_GetProps[GETPROP_ENTITYFLAGS].getInt(player,0);}

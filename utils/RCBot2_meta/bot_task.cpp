@@ -4542,6 +4542,7 @@ void CBotTF2DemomanPipeJump :: execute (CBot *pBot, CBotSchedule *pSchedule)
 			v_comp = v_comp / v_comp.Length();
 
 			const Vector v_pipe = CBotGlobals::entityOrigin(pPipeBomb);
+
 			Vector v_startrunup = v_pipe - v_comp * rcbot_demo_runup_dist.GetFloat();
 			v_startrunup.z = v_pipe.z;
 
@@ -4562,6 +4563,7 @@ void CBotTF2DemomanPipeJump :: execute (CBot *pBot, CBotSchedule *pSchedule)
 		{
 			Vector v_comp = m_vEnd - m_vStart;
 			v_comp = v_comp / v_comp.Length();
+
 			const Vector v_pipe = CBotGlobals::entityOrigin(pPipeBomb);
 
 			Vector v_endrunup = v_pipe + v_comp * rcbot_demo_runup_dist.GetFloat();
@@ -4612,7 +4614,7 @@ void CBotTF2DemomanPipeJump :: execute (CBot *pBot, CBotSchedule *pSchedule)
 
 //////////////////////////////////////////
 CBotTF2DemomanPipeEnemy::CBotTF2DemomanPipeEnemy(CBotWeapon* pPipeLauncher, const Vector& vEnemy,
-												 edict_t* pEnemy) : m_vEnemy(vEnemy), m_vAim(vEnemy)
+												 edict_t* pEnemy) : m_vStand(vEnemy), m_vEnemy(vEnemy), m_vAim(vEnemy)
 {
 	m_pEnemy = MyEHandle(pEnemy);
 	m_fTime = 0.0f;
@@ -5309,13 +5311,13 @@ void CBotFollowSquadLeader :: execute (CBot *pBot, CBotSchedule *pSchedule)
 ////////////////////////////////////////////////////
 
 CBotDODSnipe::CBotDODSnipe(CBotWeapon* pWeaponToUse, const Vector& vOrigin, const float fYaw, const bool bUseZ, const float z,
-						   const int iWaypointType) : m_vOrigin(vOrigin)
+						   const int iWaypointType) : m_vOrigin(vOrigin), m_vLastEnemy()
 {
 	m_fEnemyTime = 0.0f;
 	m_fTime = 0.0f;
 	const QAngle angle = QAngle(0, fYaw, 0);
-	AngleVectors(angle,&m_vAim);
-	m_vAim = vOrigin + m_vAim*1024;
+	AngleVectors(angle, &m_vAim);
+	m_vAim = vOrigin + m_vAim * 1024;
 	m_pWeaponToUse = pWeaponToUse;
 	m_fScopeTime = 0.0f;
 	m_bUseZ = bUseZ;
@@ -5989,7 +5991,7 @@ void CBotTask :: _init()
 	m_iFailInterruptConditionsDontHave = 0;
 	m_iCompleteInterruptConditionsHave = 0;
 	m_iCompleteInterruptConditionsDontHave = 0;
-	init();
+	//init(); // may cause an unexpected result at runtime - [APG]RoboCop[CL]
 }
 
 void CBotTask :: init ()

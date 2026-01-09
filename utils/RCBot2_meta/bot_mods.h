@@ -231,7 +231,7 @@ public:
 		m_iNumAlliesBombsOnMap = 0;
 		std::memset(m_bBombPlanted,0,sizeof(bool)*MAX_DOD_FLAGS);
 		std::memset(m_pFlags,0,sizeof(edict_t*)*MAX_DOD_FLAGS);
-		std::memset(m_pBombs,0,sizeof(edict_t*)*MAX_DOD_FLAGS*2);
+		std::memset(m_pBombs,0,sizeof(edict_t*)*MAX_DOD_FLAGS*8);
 
 		for (int& i : m_iWaypoint)
 		{
@@ -258,9 +258,9 @@ public:
 	bool getRandomEnemyControlledFlag (const CBot *pBot, Vector *position, int iTeam, int *id = nullptr) const;
 	bool getRandomTeamControlledFlag (const CBot *pBot, Vector *position, int iTeam, int *id = nullptr) const;
 
-	bool getRandomBombToDefuse (Vector *position, int iTeam, edict_t **pBombTarget, int *id = nullptr) const;
-	bool getRandomBombToPlant (const CBot *pBot, Vector *position, int iTeam, edict_t **pBombTarget, int *id = nullptr) const;
-	bool getRandomBombToDefend (CBot *pBot, Vector *position, int iTeam, edict_t **pBombTarget, int *id = nullptr) const;
+	bool getRandomBombToDefuse (Vector& position, int iTeam, edict_t*& pBombTarget, int* id = nullptr) const;
+	bool getRandomBombToPlant (CBot* pBot, Vector& position, int iTeam, edict_t*& pBombTarget, int* id = nullptr) const;
+	bool getRandomBombToDefend (CBot* pBot, Vector* position, int iTeam, edict_t** pBombTarget, int* id = nullptr) const;
 
 	int findNearestObjective (const Vector& vOrigin) const;
 
@@ -406,7 +406,7 @@ public:
 	int getNumBombsRequired (const int iId) const
 	{
 		if ( iId == -1 )
-			return false;
+			return 0;
 
 		return m_iBombsRequired[iId];
 	}
@@ -419,7 +419,7 @@ public:
 	int getNumBombsRemaining (const int iId) const
 	{
 		if ( iId == -1 )
-			return false;
+			return 0;
 
 		return m_iBombsRemaining[iId];
 	}
@@ -565,7 +565,7 @@ public:
 
 	static float getMapStartTime ();
 
-	static bool isBombMap () { return (m_iMapType & DOD_MAPTYPE_BOMB) == DOD_MAPTYPE_BOMB; }
+	static bool isBombMap () { return (m_iMapType & DOD_MAPTYPE_BOMB) == DOD_MAPTYPE_BOMB; } //TODO: both `maphasBombs` and `isBombMap` do the same thing but conflict? [APG]RoboCop[CL]
 	static bool isFlagMap () { return (m_iMapType & DOD_MAPTYPE_FLAG) == DOD_MAPTYPE_FLAG; }
 	static bool mapHasBombs () { return (m_iMapType & DOD_MAPTYPE_BOMB) == DOD_MAPTYPE_BOMB; }
 
@@ -1203,10 +1203,14 @@ public:
 
 	static bool isCapping ( edict_t *pPlayer );//, int iCapIndex = -1 );
 	
-	static void addCapper (const int cp, const int capper)
+	static void addCapper(const int cp, const int capper)
 	{
+		assert(cp >= 0 && cp < MAX_CAP_POINTS); // Debug assertion [APG]RoboCop[CL]
+
 		if (capper > 0 && cp >= 0 && cp < MAX_CAP_POINTS)
+		{
 			m_Cappers[cp] |= 1 << (capper - 1);
+		}
 	}
 
 	static void removeCappers (const int cp)

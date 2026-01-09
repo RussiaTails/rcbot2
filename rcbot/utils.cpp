@@ -67,18 +67,18 @@ bool rcbot2utils::IsValidEdict(const edict_t* edict)
 int rcbot2utils::IndexOfEdict(const edict_t* edict)
 {
 #if SOURCE_ENGINE >= SE_LEFT4DEAD
-	return (int)(pEdict - gpGlobals->pEdicts);
+	return static_cast<int>(edict - engine->PEntityOfEntIndex(0));
 #else
 	return engine->IndexOfEdict(edict);
 #endif // SOURCE_ENGINE >= SE_LEFT4DEAD
 }
 
-edict_t* rcbot2utils::EdictOfIndex(int index)
+edict_t* rcbot2utils::EdictOfIndex(const int index)
 {
 #if SOURCE_ENGINE >= SE_LEFT4DEAD
-	if (iEntIndex >= 0 && iEntIndex < gpGlobals->maxEntities)
+	if (index >= 0 && index < gpGlobals->maxEntities)
 	{
-		return (edict_t*)(gpGlobals->pEdicts + iEntIndex);
+		return engine->PEntityOfEntIndex(index);
 	}
 
 	return nullptr;

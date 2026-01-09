@@ -2499,7 +2499,7 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 	case BOT_UTIL_DEFUSE_BOMB:
 		if ( util->getId() == BOT_UTIL_DEFUSE_BOMB )
 		{
-			if ( !CDODMod::m_Flags.getRandomBombToDefuse(&vGoal,m_iTeam,&pBombTarget,&id) )
+			if ( !CDODMod::m_Flags.getRandomBombToDefuse(vGoal,m_iTeam,pBombTarget,&id) )
 				return false;
 
 			if ( CDODMod::m_Flags.isTeamMateDefusing(m_pEdict,m_iTeam,id) )
@@ -2513,7 +2513,7 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 		{
 			if ( util->getId() == BOT_UTIL_PLANT_BOMB )
 			{
-				if ( !CDODMod::m_Flags.getRandomBombToPlant(this,&vGoal,m_iTeam,&pBombTarget,&id) )
+				if ( !CDODMod::m_Flags.getRandomBombToPlant(this,vGoal,m_iTeam,pBombTarget,&id) )
 					return false;
 
 				if ( CDODMod::m_Flags.isTeamMatePlanting(m_pEdict,m_iTeam,id) )
@@ -2618,7 +2618,7 @@ bool CDODBot :: executeAction ( CBotUtility *util )
 			
 			if (!CClassInterface::getVelocity(m_pLastEnemy, &vVelocity))
 			{
-				if (pClient != nullptr)
+				//if (pClient != nullptr)
 					vVelocity = pClient->getVelocity();
 			}
 
@@ -2802,7 +2802,7 @@ void CDODBot :: reachedCoverSpot (const int flags)
 
 				if ( pWpt && (pWpt->getFlags() == flags) )
 				{
-					m_pSchedules->addFront(new CBotSchedule(new CBotDODSnipe(pWeapon,getOrigin(),pWpt->getAimYaw(),false,false,flags)));
+					m_pSchedules->addFront(new CBotSchedule(new CBotDODSnipe(pWeapon, getOrigin(), pWpt->getAimYaw(), false, 0.0f, flags)));
 					removeCondition(CONDITION_PRONE);
 					bDontCrouchAndHide = true;
 				}
@@ -3225,7 +3225,7 @@ void CDODBot :: getTasks (unsigned iIgnore)
 
 		if ( iNumEnemyBombsOnMap > 0 )
 		{
-			ADD_UTILITY(BOT_UTIL_DEFEND_POINT,(iFlagsOwned>0)&&(m_pNearestFlag == nullptr)||CDODMod::m_Flags.ownsFlag(iFlagID,m_iTeam),fDefendUtil)
+			ADD_UTILITY(BOT_UTIL_DEFEND_POINT, ((iFlagsOwned > 0) && (m_pNearestFlag == nullptr)) || CDODMod::m_Flags.ownsFlag(iFlagID, m_iTeam), fDefendUtil)
 
 			/*if ( m_pNearestFlag )
 			{

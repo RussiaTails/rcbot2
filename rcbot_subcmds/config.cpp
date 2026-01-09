@@ -73,7 +73,7 @@ namespace
 			}
 			else if (validation(value, getter()))
 			{
-				CBotGlobals::botMessage(pEntity, 0, validationMessage, getter());
+				CBotGlobals::botMessage(pEntity, 0, validationMessage, static_cast<int>(getter()));
 				hasError = true;
 			}
 
@@ -87,7 +87,7 @@ namespace
 		}
 		else
 		{
-			CBotGlobals::botMessage(pEntity, 0, "%s is currently %d", commandName, getter());
+			CBotGlobals::botMessage(pEntity, 0, "%s is currently %d", commandName, static_cast<int>(getter()));
 		}
 	}
 }

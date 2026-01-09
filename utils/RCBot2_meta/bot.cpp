@@ -1611,8 +1611,8 @@ void CBot :: killed ( edict_t *pVictim, char *weapon )
 // called when bot shoots a wall or similar object -i.e. not the enemy
 void CBot :: shotmiss ()
 {
-	
 }
+
 // shot an enemy (or teammate?) //TODO: Experimental [APG]RoboCop[CL]
 void CBot :: shot ( edict_t *pEnemy )
 {
@@ -1623,6 +1623,7 @@ void CBot :: shot ( edict_t *pEnemy )
 		friendlyFire(pEnemy);
 
 }
+
 // got shot by someone
 bool CBot :: hurt ( edict_t *pAttacker, const int iHealthNow, const bool bDontHide )
 {
@@ -3038,6 +3039,7 @@ bool CBot::wantToFollowEnemy ()
 {
 	return getHealthPercent() > 1.0f - m_pProfile->m_fBraveness;
 }
+
 ////////////////////////////
 void CBot :: getTasks (unsigned iIgnore)
 {
@@ -3139,7 +3141,7 @@ bool CBots::controlBot(const char* szOldName, const char* szName, const char* sz
 		return false;
 	}
 
-	if (m_iMaxBots != -1 && CBotGlobals::numClients() >= m_iMaxBots)
+	if (m_iMaxBots != -1 && CBotGlobals::numPlayersPlaying() >= m_iMaxBots)
 	{
 		logger->Log(LogLevel::ERROR, "Can't create bot, max_bots reached");
 		return false;
@@ -3173,12 +3175,17 @@ bool CBots :: createBot (const char *szClass, const char *szTeam, const char *sz
 	CBotMod *pMod = CBotGlobals::getCurrentMod(); // `*pMod` Unused? [APG]RoboCop[CL]
 	const char *szOVName = ""; // `szOVName` Unused? [APG]RoboCop[CL]
 
-	if ( m_iMaxBots != -1 && CBotGlobals::numClients() >= m_iMaxBots )
+	if ( m_iMaxBots != -1 && CBotGlobals::numPlayersPlaying() >= m_iMaxBots )
 		logger->Log(LogLevel::ERROR, "Can't create bot, max_bots reached");
 
 	m_flAddKickBotTime = engine->Time() + rcbot_addbottime.GetFloat();
 
-	CBotProfile* pBotProfile = CBotProfiles::getRandomFreeProfile();
+	CBotProfile* pBotProfile;
+	if (rcbot_nonrandom_profile.GetBool()) {
+		pBotProfile = CBotProfiles::getChosenFreeProfile();
+	} else {
+		pBotProfile = CBotProfiles::getRandomFreeProfile();
+	}
 
 	if ( pBotProfile == nullptr)
 	{
@@ -3222,7 +3229,7 @@ int CBots::createDefaultBot(const char* szName) {
 		return -1;
 	}
 
-	std::size_t slot = static_cast<std::size_t>(slotInt); // Convert to std::size_t explicitly
+	const std::size_t slot = static_cast<std::size_t>(slotInt); // Convert to std::size_t explicitly
 
 	m_Bots[slot]->createBotFromEdict(pEdict, pBotProfile);
 
@@ -3428,7 +3435,11 @@ void CBots :: botThink ()
 	}
 	else if ( needToKickBot () )
 	{
-		kickRandomBot();
+		if (rcbot_nonrandom_kicking.GetBool()) {
+			kickChosenBot();
+		} else {
+			kickRandomBot();
+		}
 	}
 }
 
@@ -3511,23 +3522,104 @@ void CBots :: mapInit ()
 
 bool CBots :: needToAddBot ()
 {
-	const int iClients = CBotGlobals::numClients();
+	if (rcbot_bot_quota_interval.GetFloat() > 0.0f) {
+		return false;
+	}
 
-	return (m_iMinBots!=-1 && CBots::numBots() < m_iMinBots) || (iClients < m_iMaxBots && m_iMaxBots != -1);
+	const int iClients = CBotGlobals::numPlayersPlaying();
+	const int iBots = CBots::numBots();
+
+	if ((m_iMinBots!=-1 && iBots < m_iMinBots) || (iClients < m_iMaxBots && m_iMaxBots != -1)) {
+		return true;
+	}
+
+	return false;
 }
 
 bool CBots :: needToKickBot ()
 {
+	if (rcbot_bot_quota_interval.GetFloat() > 0.0f) {
+		return false;
+	}
+
+	const int iClients = CBotGlobals::numPlayersPlaying();
+	const int iBots = CBots::numBots();
+
 	if ( m_flAddKickBotTime < engine->Time() )
 	{
-		if ( m_iMinBots != -1 && CBots::numBots() <= m_iMinBots )
+		if ( m_iMinBots != -1 && iBots <= m_iMinBots )
 			return false;
 
-		if ( m_iMaxBots > 0 && CBotGlobals::numClients() > m_iMaxBots )
+		if ( m_iMaxBots > 0 && iClients > m_iMaxBots ) {
 			return true;
+		}
 	}
 
 	return false;
+}
+
+void CBots :: kickChosenBot (const unsigned count)
+{
+        std::vector<CBot*> botList;
+        //gather list of bots
+        for ( unsigned i = 0; i < RCBOT_MAXPLAYERS; i ++ )
+        {
+		if ( m_Bots[i]->inUse() )
+			botList.emplace_back(m_Bots[i]);
+        }
+
+        if ( botList.empty() )
+        {
+                logger->Log(LogLevel::DEBUG, "kickChosenBot() : No bots to kick");
+                return;
+        }
+
+	int team;
+	int teamA = CBotGlobals::numPlayersOnTeam(2,false);
+	int teamB = CBotGlobals::numPlayersOnTeam(3,false);
+
+	unsigned numBotsKicked = 0;
+	
+	while (numBotsKicked < count && !botList.empty()) {
+		// check numBotsOnTeam in case all the remaining bots are on the smaller team
+		if ((teamA > teamB) && (CBotGlobals::numBotsOnTeam(2,false) > 0)) {
+			team = 2;
+		} else if ((teamA < teamB) && (CBotGlobals::numBotsOnTeam(3,false) > 0)) {
+			team = 3;
+		} else {
+			team = 0;
+		}
+
+		CBot* pBot = nullptr;
+		for (CBot* tBot : botList) {
+			if ((team < 2) || (tBot->getTeam() == team)) {
+				if ((pBot == nullptr) || ( pBot->getCreateTime() < tBot->getCreateTime() ))
+					pBot = tBot;
+			}
+		}
+
+		if (pBot == nullptr) {
+			logger->Log(LogLevel::DEBUG, "kickChosenBot() : No bot to kick");
+			return;
+		}
+
+		if (pBot->getTeam() == 2)
+			teamA--;
+		else if (pBot->getTeam() == 3)
+			teamB--;
+
+		char szCommand[512];
+
+		snprintf(szCommand, sizeof(szCommand), "kickid %d\n", pBot->getPlayerID());
+		engine->ServerCommand(szCommand);
+
+		botList.erase(std::remove(botList.begin(), botList.end(), pBot),
+			botList.end());
+
+		numBotsKicked++;
+	}
+
+	m_flAddKickBotTime = engine->Time() + 2.0f;
 }
 
 void CBots :: kickRandomBot (const unsigned count)
@@ -3565,6 +3657,36 @@ void CBots :: kickRandomBot (const unsigned count)
 		
 		botList.pop_back();
 	}
+
+	m_flAddKickBotTime = engine->Time() + 2.0f;
+}
+
+void CBots::kickChosenBotOnTeam(const int team)
+{
+	std::vector<CBot*> botList;
+	//gather list of bots
+	for ( unsigned i = 0; i < RCBOT_MAXPLAYERS; i ++ )
+	{
+		if ( m_Bots[i]->inUse() && m_Bots[i]->getTeam() == team)
+			botList.emplace_back(m_Bots[i]);
+	}
+
+	if ( botList.empty() )
+	{
+		logger->Log(LogLevel::DEBUG, "kickChosenBotOnTeam() : No bots to kick");
+		return;
+	}
+
+	CBot* pBot = nullptr;
+	for (CBot* tBot : botList) {
+		if ((pBot == nullptr) || ( pBot->getCreateTime() < tBot->getCreateTime() ))
+			pBot = tBot;
+	}
+
+	char szCommand[512];
+
+	snprintf(szCommand, sizeof(szCommand), "kickid %d\n", pBot->getPlayerID());
+	engine->ServerCommand(szCommand);
 
 	m_flAddKickBotTime = engine->Time() + 2.0f;
 }

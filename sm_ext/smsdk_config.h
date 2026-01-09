@@ -86,77 +86,77 @@ extern SourceMod::IShareSys *sharesys;
 #include <ISourceMod.h>
 extern SourceMod::ISourceMod *sm_main;
 
-#if defined SMEXT_ENABLE_FORWARDSYS
+#ifdef SMEXT_ENABLE_FORWARDSYS
 #include <IForwardSys.h>
 extern SourceMod::IForwardManager *sm_forwards;
 #endif
 
-#if defined SMEXT_ENABLE_HANDLESYS
+#ifdef SMEXT_ENABLE_HANDLESYS
 #include <IHandleSys.h>
 extern SourceMod::IHandleSys *sm_handlesys;
 #endif
 
-#if defined SMEXT_ENABLE_PLAYERHELPERS
+#ifdef SMEXT_ENABLE_PLAYERHELPERS
 #include <IPlayerHelpers.h>
 extern SourceMod::IPlayerManager *sm_players;
 #endif
 
-#if defined SMEXT_ENABLE_DBMANAGER
+#ifdef SMEXT_ENABLE_DBMANAGER
 #include <IDBDriver.h>
 extern SourceMod::IDBManager *sm_dbi;
 #endif 
 
-#if defined SMEXT_ENABLE_GAMECONF
+#ifdef SMEXT_ENABLE_GAMECONF
 #include <IGameConfigs.h>
 extern SourceMod::IGameConfigManager *sm_gameconfs;
 #endif
 
-#if defined SMEXT_ENABLE_MEMUTILS
+#ifdef SMEXT_ENABLE_MEMUTILS
 #include <IMemoryUtils.h>
 extern SourceMod::IMemoryUtils *sm_memutils;
 #endif
 
-#if defined SMEXT_ENABLE_GAMEHELPERS
+#ifdef SMEXT_ENABLE_GAMEHELPERS
 #include <IGameHelpers.h>
 extern SourceMod::IGameHelpers *sm_gamehelpers;
 #endif
 
-#if defined SMEXT_ENABLE_TIMERSYS
+#ifdef SMEXT_ENABLE_TIMERSYS
 #include <ITimerSystem.h>
 extern SourceMod::ITimerSystem *sm_timersys;
 #endif
 
-#if defined SMEXT_ENABLE_THREADER
+#ifdef SMEXT_ENABLE_THREADER
 #include <IThreader.h>
 extern SourceMod::IThreader *sm_threader;
 #endif
 
-#if defined SMEXT_ENABLE_LIBSYS
+#ifdef SMEXT_ENABLE_LIBSYS
 #include <ILibrarySys.h>
 extern SourceMod::ILibrarySys *sm_libsys;
 #endif
 
-#if defined SMEXT_ENABLE_PLUGINSYS
+#ifdef SMEXT_ENABLE_PLUGINSYS
 #include <IPluginSys.h>
 extern SourceMod::IPluginManager *sm_plsys;
 #endif 
 
-#if defined SMEXT_ENABLE_MENUS
+#ifdef SMEXT_ENABLE_MENUS
 #include <IMenuManager.h>
 extern SourceMod::IMenuManager *sm_menus;
 #endif
 
-#if defined SMEXT_ENABLE_ADMINSYS
+#ifdef SMEXT_ENABLE_ADMINSYS
 #include <IAdminSystem.h>
 extern SourceMod::IAdminSystem *sm_adminsys;
 #endif
 
-#if defined SMEXT_ENABLE_TEXTPARSERS
+#ifdef SMEXT_ENABLE_TEXTPARSERS
 #include <ITextParsers.h>
 extern SourceMod::ITextParsers *sm_text;
 #endif
 
-#if defined SMEXT_ENABLE_TRANSLATOR
+#ifdef SMEXT_ENABLE_TRANSLATOR
 #include <ITranslator.h>
 extern SourceMod::ITranslator *sm_translator;
 #endif

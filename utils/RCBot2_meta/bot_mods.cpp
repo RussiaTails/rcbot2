@@ -220,10 +220,12 @@ void CBotMods::parseFile()
 		else if (curmod && !strcmpi(key, "gamedir"))
 		{
 			std::strncpy(gamefolder, val, 255);
+			gamefolder[255] = '\0';
 		}
 		else if (curmod && !strcmpi(key, "weaponlist"))
 		{
 			std::strncpy(weaponlist, val, 63);
+			weaponlist[63] = '\0';
 		}
 	}
 

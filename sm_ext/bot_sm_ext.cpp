@@ -94,7 +94,7 @@ bool SM_LoadExtension(char *error, const std::size_t maxlength) {
 	/* This could be more dynamic */
 	char path[256];
 	g_SMAPI->PathFormat(path, sizeof(path),  "addons/rcbot2/bin/RCBot2Meta%s",
-#if defined __linux__
+#ifdef __linux__
 		"_i486.so"
 #else
 		".dll"

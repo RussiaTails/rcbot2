@@ -306,9 +306,9 @@ public:
 		}
 	}
 
-	void destroy ()
+	void destroy()
 	{
-		while ( m_Head != nullptr)
+		while (m_Head != nullptr)
 		{
 			const AStarListNode* t = m_Head;
 			m_Head = m_Head->m_Next;
@@ -316,7 +316,7 @@ public:
 			t = nullptr;
 		}
 
-		m_Head = nullptr;
+		//m_Head = nullptr;
 	}
 	
 private:
@@ -382,15 +382,16 @@ class CWaypointNavigator : public IBotNavigator
 {
 public:
 	CWaypointNavigator(CBot* pBot)
+		: curr(nullptr), succ(nullptr) // Initialize pointers to nullptr
 	{
 		CWaypointNavigator::init();
-		m_pBot = pBot; 
-		m_fNextClearFailedGoals = 0;
+		m_pBot = pBot;
+		m_fNextClearFailedGoals = 0.0f;
 		m_bDangerPoint = false;
 		m_iBeliefTeam = -1;
 		m_bLoadBelief = true;
 		m_bBeliefChanged = false;
-		std::memset(&m_lastFailedPath,0,sizeof(failedpath_t));
+		std::memset(&m_lastFailedPath, 0, sizeof(failedpath_t));
 	}
 
 	void init () override;
@@ -502,8 +503,8 @@ private:
 	int m_iLastFailedWpt;
 
 	AStarNode paths[CWaypoints::MAX_WAYPOINTS];
-	AStarNode *curr;
-	AStarNode *succ;
+	AStarNode* curr = nullptr;
+	AStarNode* succ = nullptr;
 
 	WaypointList m_iFailedGoals;
 	float m_fNextClearFailedGoals;

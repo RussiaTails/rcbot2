@@ -76,8 +76,9 @@ class CBasePlayer; // forward declaration required by imovehelper.h (included by
 #endif
 
 #define MAX_AMMO_TYPES 32
-#define MAX_VOICE_CMDS 32
-#define MIN_WPT_TOUCH_DIST 16.0f
+
+constexpr int MAX_VOICE_CMDS = 32;
+constexpr float MIN_WPT_TOUCH_DIST = 16.0f;
 
 // Interfaces from the engine
 extern IVEngineServer *engine;  // helper functions (messaging clients, loading content, making entities, running commands, etc)
@@ -390,6 +391,11 @@ public:
 	virtual void killed ( edict_t *pVictim, char *weapon );
 
 	virtual int getTeam ();
+
+	float getCreateTime() const
+	{
+		return m_fTimeCreated;
+	}
 
 	bool isUnderWater ( ) const;
 
@@ -1080,7 +1086,9 @@ public:
 
 	static void roundStart ();
 
+	static void kickChosenBot (unsigned count = 1);
 	static void kickRandomBot (unsigned count = 1);
+	static void kickChosenBotOnTeam ( int team );
 	static void kickRandomBotOnTeam ( int team );
 
 	static void mapInit ();
@@ -1093,6 +1101,8 @@ public:
 
 	static void setMinBots (const int iMin) { m_iMinBots = iMin; }
 	static int getMinBots () { return m_iMinBots; }
+
+	static float getAddKickBotTime() { return m_flAddKickBotTime; }
 
 	static void botFunction ( IBotFunction *function );
 

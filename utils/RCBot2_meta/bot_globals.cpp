@@ -56,6 +56,7 @@
 #include <cmath>
 #include <cstring>
 #include <memory>
+#include <math_pfns.h>
 
 //caxanga334: SDK 2013 contains macros for std::min and std::max which causes errors when compiling
 //#if SOURCE_ENGINE == SE_SDK2013 || SOURCE_ENGINE == SE_BMS
@@ -145,13 +146,43 @@ bool CBotGlobals :: isCurrentMod (const eModId modid)
 	return m_pCurrentMod->getModId() == modid;
 }
 
+int CBotGlobals ::numPlayersPlaying()
+{
+	int num = CBotGlobals::numClients();
+
+	if (rcbot_ignore_spectators.GetBool())
+	{
+		for ( int i = 1; i <= CBotGlobals::maxClients(); i ++ )
+		{
+			edict_t* pEdict = INDEXENT(i);
+
+			if ( !pEdict )
+				continue;
+
+			if ( CBotGlobals::entityIsValid(pEdict) )
+			{
+				if ( CClassInterface::getTeam(pEdict) >= 2 )
+					continue;
+				if ( CBots::getBotPointer(pEdict) != nullptr )
+					continue;
+				num--;
+			}
+		}
+	}
+
+	return num;
+}
+
 int CBotGlobals ::numPlayersOnTeam(const int iTeam, const bool bAliveOnly)
 {
 	int num = 0;
 
-	for ( int i = 1; i <= CBotGlobals::numClients(); i ++ )
+	for ( int i = 1; i <= CBotGlobals::maxClients(); i ++ )
 	{
 		edict_t* pEdict = INDEXENT(i);
+
+		if ( !pEdict )
+			continue;
 
 		if ( CBotGlobals::entityIsValid(pEdict) )
 		{
@@ -163,6 +194,34 @@ int CBotGlobals ::numPlayersOnTeam(const int iTeam, const bool bAliveOnly)
 						num++;
 				}
 				else 
+					num++;
+			}
+		}
+	}
+	return num;
+}
+
+int CBotGlobals ::numBotsOnTeam(const int iTeam, const bool bAliveOnly)
+{
+	int num = 0;
+
+	for ( int i = 1; i <= CBotGlobals::maxClients(); i ++ )
+	{
+		edict_t* pEdict = INDEXENT(i);
+
+		if ( !pEdict )
+			continue;
+
+		if ( CBotGlobals::entityIsValid(pEdict) && CBots::getBotPointer(pEdict) != nullptr )
+		{
+			if ( CClassInterface::getTeam(pEdict) == iTeam )
+			{
+				if ( bAliveOnly )
+				{
+					if ( CBotGlobals::entityIsAlive(pEdict) )
+						num++;
+				}
+				else
 					num++;
 			}
 		}
@@ -223,17 +282,17 @@ void CBotGlobals::readRCBotFolder()
 	}
 }
 
-float CBotGlobals :: grenadeWillLand (const Vector& vOrigin, const Vector& vEnemy, const float fProjSpeed, const float fGrenadePrimeTime, const float *fAngle)
+float CBotGlobals::grenadeWillLand(const Vector& vOrigin, const Vector& vEnemy, const float fProjSpeed, const float fGrenadePrimeTime, const float* fAngle)
 {
 	static float g;
-	Vector v_comp = vEnemy-vOrigin;
+	Vector v_comp = vEnemy - vOrigin;
 	const float fDistance = v_comp.Length();
+	
+	v_comp = v_comp / fDistance;
+	
+	g = sv_gravity.IsValid() ? sv_gravity.GetFloat() : 800.0f;
 
-	v_comp = v_comp/fDistance;
-
-	g = sv_gravity.IsValid()? sv_gravity.GetFloat() : 800.0f;
-
-	if ( fAngle == nullptr)
+	if (fAngle == nullptr)
 	{
 		return 0.0f;
 	}
@@ -242,19 +301,17 @@ float CBotGlobals :: grenadeWillLand (const Vector& vOrigin, const Vector& vEnem
 	float vhorz;
 	float vvert;
 
-	SinCos(DEG2RAD(*fAngle),&vvert,&vhorz);
+	SinCos(DEG2RAD(*fAngle), &vvert, &vhorz);
 
 	vhorz *= fProjSpeed;
 	vvert *= fProjSpeed;
 
-	const float t = fDistance/vhorz;
-
 	// within one second of going off
-	if ( std::fabs(t-fGrenadePrimeTime) < 1.0f )
+	if (const float t = fDistance / vhorz; std::fabs(t - fGrenadePrimeTime) < 1.0f)
 	{
-		const float ffinaly =  vOrigin.z + vvert*t - g*0.5f*(t*t);
+		const float ffinaly = vOrigin.z + vvert * t - g * 0.5f * (t * t);
 
-		return std::fabs(ffinaly - vEnemy.z) < BLAST_RADIUS; // ok why not
+		return (std::fabs(ffinaly - vEnemy.z) < BLAST_RADIUS) ? 1.0f : 0.0f;
 	}
 
 	return 0.0f;
@@ -583,6 +640,7 @@ int CBotGlobals :: countTeamMatesNearOrigin (const Vector& vOrigin, const float 
 int CBotGlobals :: numClients ()
 {
 	int iCount = 0;
+	int iIndex = 0;
 
 	for ( int i = 1; i <= CBotGlobals::maxClients(); i ++ )
 	{
@@ -590,13 +648,15 @@ int CBotGlobals :: numClients ()
 
 		if ( !pEdict )
 			continue;
-		
+
 		IPlayerInfo *p = playerinfomanager->GetPlayerInfo(pEdict);
 		if (!p || p->IsHLTV())
 			continue;
 		
-		if ( engine->GetPlayerUserId(pEdict) > 0 )
+		if ( engine->GetPlayerUserId(pEdict) > 0 ) {
+			iIndex = i;
 			iCount++;
+		}
 	}
 
 	return iCount;
@@ -891,11 +951,19 @@ void CBotGlobals :: botMessage ( edict_t *pEntity, const int iErr, const char *f
 	const char *bot_tag = BOT_TAG;
 	const std::size_t len = std::strlen(string);
 	const std::size_t taglen = std::strlen(BOT_TAG);
+
+	// Ensure the total length does not exceed the buffer size - [APG]RoboCop[CL]
+	if (len + taglen + 1 >= sizeof(string))
+	{
+		Warning("Message too long, truncating.\n");
+		return;
+	}
+
 	// add tag -- push tag into string
 	for ( std::size_t i = len + taglen; i >= taglen; i -- )
 		string[i] = string[i-taglen];
 
-	string[len+taglen+1] = 0;
+	string[len + taglen] = '\0';
 
 	for ( std::size_t i = 0; i < taglen; i ++ )
 		string[i] = bot_tag[i];
@@ -1213,10 +1281,13 @@ float CBotGlobals :: yawAngleFromEdict (edict_t *pEntity, const Vector& vOrigin)
 
 }
 
-void CBotGlobals::teleportPlayer (const edict_t *pPlayer, const Vector& v_dest)
+void CBotGlobals::teleportPlayer(const edict_t* pPlayer, const Vector& v_dest)
 {
-	if ( CClient *pClient = CClients::get(pPlayer) )
-		pClient->teleportTo(v_dest);
+	CClient* pClient = CClients::get(pPlayer);
+
+	assert(pClient && "CClients::get returned nullptr!");
+
+	pClient->teleportTo(v_dest);
 }
 /*
 

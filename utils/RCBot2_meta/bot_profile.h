@@ -50,6 +50,7 @@ public:
 
 	// return a profile unused by a bot
 	static CBotProfile *getRandomFreeProfile ();
+	static CBotProfile *getChosenFreeProfile ();
 
 	static CBotProfile *getDefaultProfile ();
 

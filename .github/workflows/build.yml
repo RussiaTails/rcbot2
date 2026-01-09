@@ -15,15 +15,23 @@ jobs:
       matrix:
         os:
           - ubuntu-22.04
+          - ubuntu-latest
           - windows-x32
           - windows-x64
         include:
-          - meta_branch: "1.11-dev"
-            sm_branch: "1.11-dev"
-
           - os: ubuntu-22.04
-            os_short: linux
+            os_short: linux-legacy
             os_version: ubuntu-22.04
+            package_ext: tar.gz
+            dbg_ext: dbg
+            cc: gcc
+            cxx: g++
+            vs_arch: unused
+            am_arch: x86,x86_64
+            
+          - os: ubuntu-latest
+            os_short: linux-latest
+            os_version: ubuntu-latest
             package_ext: tar.gz
             dbg_ext: dbg
             cc: clang
@@ -82,7 +90,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.11'
 
     - name: Setup ambuild
       run: |

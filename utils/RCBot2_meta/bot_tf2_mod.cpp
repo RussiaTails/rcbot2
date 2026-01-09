@@ -459,9 +459,12 @@ int CTeamFortress2Mod ::numClassOnTeam(const int iTeam, const int iClass)
 {
 	int num = 0;
 
-	for ( int i = 1; i <= CBotGlobals::numClients(); i ++ )
+	for ( int i = 1; i <= CBotGlobals::maxClients(); i ++ )
 	{
 		edict_t* pEdict = INDEXENT(i);
+
+		if ( !pEdict )
+                        continue;
 
 		if ( CBotGlobals::entityIsValid(pEdict) )
 		{
@@ -940,7 +943,7 @@ bool CTeamFortress2Mod::isPayloadBomb(edict_t* pEdict, int iTeam)
 	}
 	if (std::strncmp(szmapname, "plr_matterhorn", 14) == 0)
 	{
-		if (engine->IndexOfEdict(pEdict) >= 730)
+		if (engine->IndexOfEdict(pEdict) >= 310)
 		{
 			return std::strncmp(pEdict->GetClassName(), "mapobj_cart_dispenser", 21) == 0 && CClassInterface::getTeam(pEdict) == iTeam;
 		}

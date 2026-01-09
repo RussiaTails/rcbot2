@@ -107,6 +107,9 @@ ConVar rcbot_datamap_offset("rcbot_datamap_offset", "0", 0, "offset for datamaps
 ConVar rcbot_bot_quota_interval("rcbot_bot_quota_interval", "10", 0, "Interval between bot quota checks, 0 or lower to disable");
 ConVar rcbot_show_welcome_msg("rcbot_show_welcome_msg", "1", 0, "Show welcome message on player connect");//Not referenced properly? [APG]RoboCop[CL]
 ConVar rcbot_force_class("rcbot_force_class", "0", 0, "Force bots to choose specified class, kills alive bots on change (1 - 9, set to 0 for none)");
+ConVar rcbot_ignore_spectators("rcbot_ignore_spectators", "0", 0, "Ignore spectators when calculating target number of bots");
+ConVar rcbot_nonrandom_kicking("rcbot_nonrandom_kicking", "0", 0, "Choose newest bot from largest team when kicking bots");
+ConVar rcbot_nonrandom_profile("rcbot_nonrandom_profile", "0", 0, "Choose first free bot from profile list when creating bots");
 
 // Synergy CVars
 ConVar rcbot_runplayercmd_syn("rcbot_runplayer_cmd_syn", "424", 0, "offset of the Synergy PlayerRunCommand function");

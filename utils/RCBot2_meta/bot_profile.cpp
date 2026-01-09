@@ -193,3 +193,29 @@ CBotProfile* CBotProfiles::getRandomFreeProfile()
 
 	return freeProfiles[static_cast<std::size_t>(randomInt(0, static_cast<int>(freeProfiles.size()) - 1))];
 }
+
+// return first unused bot, concidering teams if they're unequal
+CBotProfile* CBotProfiles::getChosenFreeProfile()
+{
+	int team = 0;
+	int teamA = CBotGlobals::numPlayersOnTeam(2,false);
+	int teamB = CBotGlobals::numPlayersOnTeam(3,false);
+
+	if (teamA < teamB) {
+		team = 2;
+	} else if (teamA > teamB) {
+		team = 3;
+	} else {
+		team = 0;
+	}
+
+	for (CBotProfile*& m_Profile : m_Profiles)
+	{
+		if ((!CBots::findBotByProfile(m_Profile)) && ((team < 2) || (m_Profile->m_iTeam < 2) || (m_Profile->m_iTeam == team))) {
+			return(m_Profile);
+		}
+	}
+
+	// fall back to random if matching fails
+	return CBotProfiles::getRandomFreeProfile();
+}

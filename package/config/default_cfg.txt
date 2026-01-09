@@ -198,9 +198,25 @@ rcbot_move_obj 1
 # For more information see bot_quota.ini
 rcbot_bot_quota_interval -1
 #
-# Or use these settings (but dont use them together with the above setting!)
+# If quota is enabled then min and max are treated as a ceiling and floor for bot numbers.
+# If quota is disabled then these become the primary logic for deciding bot numbers.
 rcbotd config min_bots -1
 rcbotd config max_bots 10
+#
+# If enabled, only concider humans who are actively playing - ie; are on a team
+# Caution: if max_bots is too high it's possible to have teams full of bots and humans
+# be unable to join since bots will no longer disconnect as soon as players join the server
+#rcbot_ignore_spectators 0
+#
+# When reducing the number of bots, instead of kicking a randomly chosen bot, kick the most
+# recently added bot.  If teams are unequal, only concider bots from the larger team.
+#rcbot_nonrandom_kicking 0
+#
+# When adding a bot, instead of using a randomly chosen profile, treat the profiles as
+# an ordered list, loading bot 1 first, bot 2 second and so on.   If teams are unequal,
+# only concider bots who either have no team preference, or who's team profile is for
+# the smaller team.   If no suitable bot can be found, fall back to choosing one randomly.
+#rcbot_nonrandom_profile 0
 #
 # These plugins conflict and may not work well with RCBot2. Please inform us for any plugins that
 # conflicts or prevents RCBot2 from working in rcbot.bots-united.com
