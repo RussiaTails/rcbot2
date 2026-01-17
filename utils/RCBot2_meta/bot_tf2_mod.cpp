@@ -265,6 +265,9 @@ void CTeamFortress2Mod :: mapInit ()
 	if (std::strncmp(szmapname, "ctf_", 4) == 0 || std::strncmp(szmapname, "quake_turbine", 13) == 0 ||
 		std::strncmp(szmapname, "pass_", 5) == 0 || std::strncmp(szmapname, "pd_", 3) == 0 ||
 		std::strncmp(szmapname, "od_", 3) == 0 ||
+		std::strncmp(szmapname, "workshop/ctf_", 13) == 0 ||
+		std::strncmp(szmapname, "workshop/pass_", 14) == 0 ||
+		std::strncmp(szmapname, "workshop/pd_", 12) == 0 ||
 		std::strncmp(szmapname, "slendytubbies", 13) == 0)
 		// Quake Turbine is CTF. - RussiaTails
 		m_MapType = TF_MAP_CTF; // capture the flag + pass time + player destruction
@@ -279,37 +282,52 @@ void CTeamFortress2Mod :: mapInit ()
 			 std::strncmp(szmapname, "vip_", 4) == 0 ||
 			 std::strncmp(szmapname, "vipr_", 5) == 0 ||
 			 std::strncmp(szmapname, "szf_", 4) == 0 ||
+			 std::strncmp(szmapname, "rush_", 5) == 0 ||
+			 std::strncmp(szmapname, "workshop/cp_", 12) == 0 ||
+			 std::strncmp(szmapname, "workshop/vip_", 13) == 0 ||
+			 std::strncmp(szmapname, "workshop/rush_", 14) == 0 ||
 			 std::strncmp(szmapname, "zf_", 3) == 0)
 		// Conquest, 2koth and DOM works fine as CP_. Moved stt to cp to make bots attack a tank - RussiaTails
 		m_MapType = TF_MAP_CP; // control point
 	else if (std::strncmp(szmapname, "tc_", 3) == 0)
 		m_MapType = TF_MAP_TC; // territory control
 	else if (std::strncmp(szmapname, "pl_", 3) == 0 ||
+		std::strncmp(szmapname, "workshop/pl_", 12) == 0 ||
 		std::strncmp(szmapname, "kotc_", 5) == 0)
 		// Tug of War works fine as Payload - RussiaTails
 		m_MapType = TF_MAP_CART; // pipeline
 	else if (std::strncmp(szmapname, "plr_", 4) == 0 || std::strncmp(szmapname, "tow_", 4) == 0 ||
+		std::strncmp(szmapname, "workshop/plr_", 13) == 0 ||
+		std::strncmp(szmapname, "workshop/tow_", 13) == 0 ||
 		std::strncmp(szmapname, "arena_tinyrock", 14) == 0 || std::strncmp(szmapname, "tow_impasse", 11) == 0 ||
 		std::strncmp(szmapname, "arena_hailstone", 15) == 0) // to make bots push payloads on these maps. - RussiaTails
 		m_MapType = TF_MAP_CARTRACE; // pipeline racing
-	else if (std::strncmp(szmapname, "arena_", 6) == 0 || std::strncmp(szmapname, "ft_", 3) == 0)  // pongo1321
+	else if (std::strncmp(szmapname, "arena_", 6) == 0 ||
+		std::strncmp(szmapname, "workshop/arena_", 15) == 0 ||
+		std::strncmp(szmapname, "ft_", 3) == 0)  // pongo1321
 		m_MapType = TF_MAP_ARENA; // arena mode
 	else if (std::strncmp(szmapname, "vsh_", 4) == 0 ||
 			 std::strncmp(szmapname, "ff2_", 4) == 0 ||
 			 std::strncmp(szmapname, "bvb_", 4) == 0 ||
+			 std::strncmp(szmapname, "workshop/vsh_", 13) == 0 ||
 			 std::strncmp(szmapname, "dr_", 3) == 0)
 		m_MapType = TF_MAP_SAXTON; // arena mode
 	else if (std::strncmp(szmapname, "pipeball_", 9) == 0)
 		m_MapType = TF_MAP_PIPEBALL; // arena mode
-	else if (std::strncmp(szmapname, "koth_", 5) == 0 || std::strncmp(szmapname, "ctk_", 4) == 0)
+	else if (std::strncmp(szmapname, "koth_", 5) == 0 ||
+		std::strncmp(szmapname, "workshop/koth_", 14) == 0 ||
+		std::strncmp(szmapname, "ctk_", 4) == 0)
 		// Control the Keep works almost the same as KOTH. - RussiaTails
 		m_MapType = TF_MAP_KOTH; // king of the hill
-	else if (std::strncmp(szmapname, "sd_", 3) == 0 || std::strncmp(szmapname, "sdr_", 4) == 0)
+	else if (std::strncmp(szmapname, "sd_", 3) == 0 ||
+		std::strncmp(szmapname, "workshop/sd_", 12) == 0 ||
+		std::strncmp(szmapname, "sdr_", 4) == 0)
 		// Object Destruction and Special Delivery Race (I dunno why it's named like this when it works as a usual sd_) works the same as SD_. - RussiaTails
 		m_MapType = TF_MAP_SD; // special delivery
 	else if (std::strncmp(szmapname, "tr_", 3) == 0)
 		m_MapType = TF_MAP_TR; // training mode
 	else if (std::strncmp(szmapname, "cppl_", 5) == 0 ||
+		std::strncmp(szmapname, "workshop/cppl_", 14) == 0 ||
 		std::strncmp(szmapname, "cw_", 3) == 0) // Hybrid - RussiaTails
 		m_MapType = TF_MAP_CPPL; // CP+PL maps
 	else if (std::strncmp(szmapname, "gg_", 3) == 0 || std::strncmp(szmapname, "dm_hydro", 8) == 0 ||
@@ -322,9 +340,11 @@ void CTeamFortress2Mod :: mapInit ()
 		// gd is MvM Guardian, for now there are only two maps exist with this prefix. - RussiaTails
 		m_MapType = TF_MAP_MVM; // mann vs machine
 	else if (std::strncmp(szmapname, "rd_", 3) == 0 ||
+			 std::strncmp(szmapname, "workshop/rd_", 12) == 0 ||
 			 std::strncmp(szmapname, "rda_", 4) == 0)
 		m_MapType = TF_MAP_RD; // robot destruction
-	else if (std::strncmp(szmapname, "zi_", 3) == 0)
+	else if (std::strncmp(szmapname, "zi_", 3) == 0 ||
+			 std::strncmp(szmapname, "workshop/zi_", 12) == 0)
 		m_MapType = TF_MAP_ZI; // Zombie Infection //TODO: add support for those gamemodes [APG]RoboCop[CL]
 	else
 		m_MapType = TF_MAP_DM; // deathmatch //TODO: to prevent bots from idling in their spawns by giving them basic tasks [APG]RoboCop[CL]
