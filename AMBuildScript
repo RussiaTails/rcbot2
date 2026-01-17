@@ -98,6 +98,7 @@ class MMSConfig(object):
         '-Wno-dangling-else',
         '-Wno-null-dereference',
         '-msse',
+        '-msse2',
         '-fPIC',
         '-std=c++17',
       ]
