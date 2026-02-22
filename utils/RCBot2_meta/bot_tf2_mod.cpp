@@ -343,6 +343,9 @@ void CTeamFortress2Mod :: mapInit ()
 			 std::strncmp(szmapname, "workshop/rd_", 12) == 0 ||
 			 std::strncmp(szmapname, "rda_", 4) == 0)
 		m_MapType = TF_MAP_RD; // robot destruction
+	else if (std::strncmp(szmapname, "workshop/pdr_", 13) == 0 ||
+		std::strncmp(szmapname, "pdr_", 4) == 0)
+		m_MapType = TF_MAP_PDR; // player destruction + payload race - RussiaTails
 	else if (std::strncmp(szmapname, "zi_", 3) == 0 ||
 			 std::strncmp(szmapname, "workshop/zi_", 12) == 0)
 		m_MapType = TF_MAP_ZI; // Zombie Infection //TODO: add support for those gamemodes [APG]RoboCop[CL]
@@ -966,6 +969,7 @@ bool CTeamFortress2Mod::isPayloadBomb(edict_t* pEdict, int iTeam)
 	}
 	if (CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE) ||
 		CTeamFortress2Mod::isMapType(TF_MAP_CPPL) ||
+		CTeamFortress2Mod::isMapType(TF_MAP_PDR) ||
 		(CTeamFortress2Mod::isMapType(TF_MAP_CART) &&
 			!(std::strncmp(szmapname, "plr_cutter", 10) == 0 ||
 				std::strncmp(szmapname, "plr_matterhorn", 14) == 0 ||
