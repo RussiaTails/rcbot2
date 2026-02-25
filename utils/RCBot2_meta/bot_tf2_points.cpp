@@ -774,6 +774,10 @@ bool CTFObjectiveResource :: updateAttackPoints (const int team)
 	int prev;
 	int signature = 0;
 	CTeamControlPointRound *pRound = CTeamFortress2Mod::getCurrentRound();
+	
+	const string_t mapname = gpGlobals->mapname;
+
+	const char* szmapname = mapname.ToCStr();
 
 	if ( m_ObjectiveResource.get() == nullptr) // not set up yet
 		return false;
