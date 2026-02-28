@@ -18,12 +18,19 @@ jobs:
           - windows-x32
           - windows-x64
         include:
-          - meta_branch: "1.11-dev"
-            sm_branch: "1.11-dev"
-
           - os: ubuntu-22.04
-            os_short: linux
+            os_short: linux-legacy
             os_version: ubuntu-22.04
+            package_ext: tar.gz
+            dbg_ext: dbg
+            cc: clang
+            cxx: clang++
+            vs_arch: unused
+            am_arch: x86,x86_64
+            
+          - os: ubuntu-latest
+            os_short: linux-latest
+            os_version: ubuntu-latest
             package_ext: tar.gz
             dbg_ext: dbg
             cc: clang
