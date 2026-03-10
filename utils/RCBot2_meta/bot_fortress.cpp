@@ -8097,7 +8097,10 @@ bool CBotTF2::isEnemy(edict_t* pEdict, const bool bCheckWeapons)
 
 void CBotFF :: modThink ()
 {
-// mod specific think code here
+	// FF-specific think code
+	// Update class info
+	m_iClass = static_cast<TF_Class>(CClassInterface::getTF2Class(m_pEdict));
+
 	CBotFortress :: modThink();
 }
 
@@ -8109,10 +8112,44 @@ bool CBotFF :: isEnemy ( edict_t *pEdict,bool bCheckWeapons )
 	if ( !ENTINDEX(pEdict) || (ENTINDEX(pEdict) > CBotGlobals::maxClients()) )
 		return false;
 
-	if ( CBotGlobals::getTeam(pEdict) == getTeam() )
+	const int iEnemyTeam = CBotGlobals::getTeam(pEdict);
+	const int iMyTeam = getTeam();
+
+	// Spectators and unassigned are not enemies
+	if ( iEnemyTeam <= FF_TEAM_SPECTATOR || iMyTeam <= FF_TEAM_SPECTATOR )
+		return false;
+
+	if ( iEnemyTeam == iMyTeam )
 		return false;
 
 	return true;	
+}
+
+TF_Class CBotFF :: getClass ()
+{
+	m_iClass = static_cast<TF_Class>(CClassInterface::getTF2Class(m_pEdict));
+	return m_iClass;
+}
+
+void CBotFF :: selectClass ()
+{
+	// Pick a random FF class
+	constexpr TF_Class classes[] = {
+		TF_CLASS_SCOUT,
+		TF_CLASS_SNIPER,
+		TF_CLASS_SOLDIER,
+		TF_CLASS_DEMOMAN,
+		TF_CLASS_MEDIC,
+		TF_CLASS_HWGUY,
+		TF_CLASS_PYRO,
+		TF_CLASS_SPY,
+		TF_CLASS_ENGINEER
+	};
+
+	const TF_Class pick = classes[randomInt(0, 8)];
+	char cmd[32];
+	snprintf(cmd, sizeof(cmd), "class %d", static_cast<int>(pick));
+	helpers->ClientCommand(m_pEdict, cmd);
 }
 
 void CBotTF2::MannVsMachineWaveComplete()

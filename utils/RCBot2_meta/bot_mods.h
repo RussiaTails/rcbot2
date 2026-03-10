@@ -760,6 +760,15 @@ public:
 	{
 		setup("FortressForever", MOD_FF, BOTTYPE_FF, "FF");
 	}
+
+	const char *getPlayerClass() override
+	{
+		return "CFFPlayer";
+	}
+
+	void getTeamOnlyWaypointFlags(int iTeam, int *iOn, int *iOff) override;
+
+	bool checkWaypointForTeam(CWaypoint *pWpt, int iTeam) override;
 };
 
 class CHLDMSourceMod : public CBotMod

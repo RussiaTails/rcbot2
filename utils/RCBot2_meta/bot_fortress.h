@@ -1047,6 +1047,17 @@ private:
 	int m_iMvMUpdateTime; // Tick based update time
 };
 
+// Fortress Forever team indices
+enum : std::uint8_t
+{
+	FF_TEAM_UNASSIGNED = 0,
+	FF_TEAM_SPECTATOR = 1,
+	FF_TEAM_BLUE = 2,
+	FF_TEAM_RED = 3,
+	FF_TEAM_YELLOW = 4,
+	FF_TEAM_GREEN = 5
+};
+
 class CBotFF : public CBotFortress
 {
 public:
@@ -1058,6 +1069,11 @@ public:
 
 	bool isTF() override { return true; }
 
+	bool isTF2() override { return false; }
+
+	TF_Class getClass() override;
+
+	void selectClass() override;
 };
 
 #endif

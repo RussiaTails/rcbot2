@@ -249,6 +249,7 @@ void CBotMods::readMods()
 #elif SOURCE_ENGINE == SE_HL2DM
 	m_Mods.emplace_back(new CHalfLifeDeathmatchMod());
 #elif SOURCE_ENGINE == SE_SDK2013
+	m_Mods.emplace_back(new CFortressForeverMod());
 	m_Mods.emplace_back(new CSynergyMod());
 #else
 	//TODO: Add Black Mesa Source support [APG]RoboCop[CL]
@@ -360,6 +361,26 @@ bool CHalfLifeDeathmatchMod::playerSpawned(edict_t* pPlayer)
 	}
 
 	return true;
+}
+
+void CFortressForeverMod::getTeamOnlyWaypointFlags(const int iTeam, int *iOn, int *iOff)
+{
+	if (iTeam == FF_TEAM_BLUE)
+	{
+		*iOn = CWaypointTypes::W_FL_NORED;
+		*iOff = CWaypointTypes::W_FL_NOBLU;
+	}
+	else if (iTeam == FF_TEAM_RED)
+	{
+		*iOn = CWaypointTypes::W_FL_NOBLU;
+		*iOff = CWaypointTypes::W_FL_NORED;
+	}
+}
+
+bool CFortressForeverMod::checkWaypointForTeam(CWaypoint *pWpt, const int iTeam)
+{
+	return (!pWpt->hasFlag(CWaypointTypes::W_FL_NOBLU) || iTeam != FF_TEAM_BLUE) &&
+		   (!pWpt->hasFlag(CWaypointTypes::W_FL_NORED) || iTeam != FF_TEAM_RED);
 }
 
 void CHalfLifeDeathmatchMod::initMod()
