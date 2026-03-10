@@ -1872,7 +1872,7 @@ void CBotTF2 :: spawnInit()
 // return true if we don't want to hang around on the point
 bool CBotTF2 ::checkAttackPoint()
 {
-	if ( CTeamFortress2Mod::isMapType(TF_MAP_CART) || CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE) )
+	if ( CTeamFortress2Mod::isMapType(TF_MAP_CART) || CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE) || CTeamFortress2Mod::isMapType(TF_MAP_PDR) )
 	{
 		m_fAttackPointTime = engine->Time() + randomFloat(5.0f,15.0f);
 		return true;
@@ -2659,7 +2659,7 @@ bool CBotTF2 :: canGotoWaypoint (const Vector& vPrevWaypoint, CWaypoint* pWaypoi
 						
 		}
 
-		if ( CTeamFortress2Mod::isMapType(TF_MAP_CART) || CTeamFortress2Mod::isMapType(TF_MAP_CPPL) || CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE) || (std::strncmp(szmapname, "sd_offload", 10) == 0) || (std::strncmp(szmapname, "koth_namicott", 13) == 0) || (std::strncmp(szmapname, "ctf_system", 10) == 0) || (std::strncmp(szmapname, "cp_helmsdeep_v2", 15) == 0))
+		if ( CTeamFortress2Mod::isMapType(TF_MAP_CART) || CTeamFortress2Mod::isMapType(TF_MAP_CPPL) || CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE) || CTeamFortress2Mod::isMapType(TF_MAP_PDR) || (std::strncmp(szmapname, "sd_offload", 10) == 0) || (std::strncmp(szmapname, "koth_namicott", 13) == 0) || (std::strncmp(szmapname, "ctf_system", 10) == 0) || (std::strncmp(szmapname, "cp_helmsdeep_v2", 15) == 0))
 		{
 			if ( m_pRedPayloadBomb.get() != nullptr)
 			{
@@ -3003,6 +3003,17 @@ void CBotTF2::modThink()
 		else
 		{
 			m_pDefendPayloadBomb = m_pBluePayloadBomb;
+			m_pPushPayloadBomb = m_pRedPayloadBomb;
+		}
+	}
+	else if (CTeamFortress2Mod::isMapType(TF_MAP_PDR))
+	{
+		if ((getTeam() == TF2_TEAM_BLUE) && m_bHasFlag)
+		{
+			m_pPushPayloadBomb = m_pBluePayloadBomb;
+		}
+		else if ((getTeam() == TF2_TEAM_RED) && m_bHasFlag)
+		{
 			m_pPushPayloadBomb = m_pRedPayloadBomb;
 		}
 	}
@@ -3749,7 +3760,7 @@ bool CBotTF2 :: wantToFollowEnemy()
 			return true;
 		}
 	}
-	else if ( (m_fLastKnownTeamFlagTime > 0) && (pEnemy != nullptr) && (CTeamFortress2Mod::isMapType(TF_MAP_CTF)||CTeamFortress2Mod::isMapType(TF_MAP_MVM)||CTeamFortress2Mod::isMapType(TF_MAP_RD)||CTeamFortress2Mod::isMapType(TF_MAP_CP)||CTeamFortress2Mod::isMapType(TF_MAP_TC)) )
+	else if ( (m_fLastKnownTeamFlagTime > 0) && (pEnemy != nullptr) && (CTeamFortress2Mod::isMapType(TF_MAP_CTF)||CTeamFortress2Mod::isMapType(TF_MAP_MVM)||CTeamFortress2Mod::isMapType(TF_MAP_RD)||CTeamFortress2Mod::isMapType(TF_MAP_PDR)||CTeamFortress2Mod::isMapType(TF_MAP_CP)||CTeamFortress2Mod::isMapType(TF_MAP_TC)) )
 	{
 		const Vector vDefend = m_vLastKnownTeamFlagPoint;
 
@@ -4578,7 +4589,7 @@ void CBotTF2 :: getTasks ( unsigned iIgnore )
 		updateCarrying();
 	}
 
-	ADD_UTILITY(BOT_UTIL_CAPTURE_FLAG,(CTeamFortress2Mod::isMapType(TF_MAP_CTF)||CTeamFortress2Mod::isMapType(TF_MAP_SD)||CTeamFortress2Mod::isMapType(TF_MAP_TC)||CTeamFortress2Mod::isMapType(TF_MAP_CP)||CTeamFortress2Mod::isMapType(TF_MAP_RD)) && bHasFlag,0.95f)
+	ADD_UTILITY(BOT_UTIL_CAPTURE_FLAG,(CTeamFortress2Mod::isMapType(TF_MAP_CTF)||CTeamFortress2Mod::isMapType(TF_MAP_SD)||CTeamFortress2Mod::isMapType(TF_MAP_TC)||CTeamFortress2Mod::isMapType(TF_MAP_CP)||CTeamFortress2Mod::isMapType(TF_MAP_RD)||CTeamFortress2Mod::isMapType(TF_MAP_PDR)) && bHasFlag,0.95f)
 
 	if ( iClass == TF_CLASS_ENGINEER )
 	{
@@ -4897,12 +4908,12 @@ void CBotTF2 :: getTasks ( unsigned iIgnore )
 					1.0f + ((!CTeamFortress2Mod::hasRoundStarted() && CTeamFortress2Mod::isMapType(TF_MAP_MVM))?0.5f:0.0f))
 
 	ADD_UTILITY(BOT_UTIL_GETFLAG,
-				(CTeamFortress2Mod::isMapType(TF_MAP_CTF)||(CTeamFortress2Mod::isMapType(TF_MAP_RD)||(CTeamFortress2Mod
+				(CTeamFortress2Mod::isMapType(TF_MAP_CTF)||(CTeamFortress2Mod::isMapType(TF_MAP_RD)||CTeamFortress2Mod::isMapType(TF_MAP_PDR)||(CTeamFortress2Mod
 					::isMapType(TF_MAP_SD)&&CTeamFortress2Mod::canTeamPickupFlag_SD(iTeam,false)))) && !bHasFlag,
 				fGetFlagUtility)
 
 	ADD_UTILITY(BOT_UTIL_GETFLAG_LASTKNOWN,
-				(CTeamFortress2Mod::isMapType(TF_MAP_CTF)||(CTeamFortress2Mod::isMapType(TF_MAP_RD)||CTeamFortress2Mod::
+				(CTeamFortress2Mod::isMapType(TF_MAP_CTF)||(CTeamFortress2Mod::isMapType(TF_MAP_RD)||CTeamFortress2Mod::isMapType(TF_MAP_PDR)||CTeamFortress2Mod::
 					isMapType(TF_MAP_MVM)||(CTeamFortress2Mod::isMapType(TF_MAP_SD)&&CTeamFortress2Mod::
 						canTeamPickupFlag_SD(iTeam,true)))) && !bHasFlag && (m_fLastKnownFlagTime && (
 					m_fLastKnownFlagTime > engine->Time())), fGetFlagUtility+0.1f)
@@ -4910,13 +4921,14 @@ void CBotTF2 :: getTasks ( unsigned iIgnore )
 	ADD_UTILITY(BOT_UTIL_DEFEND_FLAG,
 			CTeamFortress2Mod::isMapType(TF_MAP_MVM) ||
 			(CTeamFortress2Mod::isMapType(TF_MAP_CTF) && !bHasFlag) ||
+			(CTeamFortress2Mod::isMapType(TF_MAP_PDR) && !bHasFlag) ||
 			(CTeamFortress2Mod::isMapType(TF_MAP_CP) && !bHasFlag) ||
 			(CTeamFortress2Mod::isMapType(TF_MAP_TC) && !bHasFlag) ||
 			(CTeamFortress2Mod::isMapType(TF_MAP_RD) && !bHasFlag && (iClass != TF_CLASS_ENGINEER)),
 			fDefendFlagUtility + 0.1f)
 
 	ADD_UTILITY(BOT_UTIL_DEFEND_FLAG_LASTKNOWN, !bHasFlag &&
-		(CTeamFortress2Mod::isMapType(TF_MAP_CTF) || CTeamFortress2Mod::isMapType(TF_MAP_MVM) || CTeamFortress2Mod::isMapType(TF_MAP_TC) || CTeamFortress2Mod::isMapType(TF_MAP_CP) || CTeamFortress2Mod::isMapType(TF_MAP_RD) ||
+		(CTeamFortress2Mod::isMapType(TF_MAP_CTF) || CTeamFortress2Mod::isMapType(TF_MAP_MVM) || CTeamFortress2Mod::isMapType(TF_MAP_TC) || CTeamFortress2Mod::isMapType(TF_MAP_CP) || CTeamFortress2Mod::isMapType(TF_MAP_RD) || CTeamFortress2Mod::isMapType(TF_MAP_PDR) ||
 		(CTeamFortress2Mod::isMapType(TF_MAP_SD) && 
 		(CTeamFortress2Mod::getFlagCarrierTeam()==CTeamFortress2Mod::getEnemyTeam(iTeam)))) &&
 		(m_fLastKnownTeamFlagTime && (m_fLastKnownTeamFlagTime > engine->Time())), 
@@ -4950,6 +4962,7 @@ void CBotTF2 :: getTasks ( unsigned iIgnore )
 		((m_iClass!=TF_CLASS_SPY)||!isDisguised()) && (m_iCurrentAttackArea>0) && 
 			(CTeamFortress2Mod::isMapType(TF_MAP_SD)||CTeamFortress2Mod::isMapType(TF_MAP_CART)||
 			CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE)||
+			(CTeamFortress2Mod::isMapType(TF_MAP_PDR) && bHasFlag) ||
 			(CTeamFortress2Mod::isMapType(TF_MAP_ARENA)&&CTeamFortress2Mod::isArenaPointOpen())||
 			(CTeamFortress2Mod::isMapType(TF_MAP_SAXTON)&&CTeamFortress2Mod::isArenaPointOpen()) ||
 			(CTeamFortress2Mod::isMapType(TF_MAP_KOTH)&&CTeamFortress2Mod::isArenaPointOpen())||
@@ -4962,7 +4975,7 @@ void CBotTF2 :: getTasks ( unsigned iIgnore )
 	// (!CTeamFortress2Mod::isAttackDefendMap()||(m_iTeam==TF2_TEAM_RED))
 	ADD_UTILITY(BOT_UTIL_DEFEND_POINT, (m_iCurrentDefendArea>0) && (iClass != TF_CLASS_ENGINEER) && 
 		(CTeamFortress2Mod::isMapType(TF_MAP_MVM)||CTeamFortress2Mod::isMapType(TF_MAP_SD)||CTeamFortress2Mod::isMapType(TF_MAP_CART)||
-		CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE)||CTeamFortress2Mod::isMapType(TF_MAP_ARENA)||CTeamFortress2Mod::isMapType(TF_MAP_SAXTON) ||
+		CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE)||(CTeamFortress2Mod::isMapType(TF_MAP_PDR)&&!bHasFlag)||CTeamFortress2Mod::isMapType(TF_MAP_ARENA)||CTeamFortress2Mod::isMapType(TF_MAP_SAXTON) ||
 		CTeamFortress2Mod::isMapType(TF_MAP_KOTH)||CTeamFortress2Mod::isMapType(TF_MAP_CP)|| CTeamFortress2Mod::isMapType(TF_MAP_CPPL)||
 		CTeamFortress2Mod::isMapType(TF_MAP_TC))&&m_iClass!=TF_CLASS_SCOUT,fDefendFlagUtility)
 
@@ -5075,6 +5088,21 @@ void CBotTF2 :: getTasks ( unsigned iIgnore )
 						fGetFlagUtility+randomFloat(-0.1f,0.2f))
 		}
 	}
+	else if (CTeamFortress2Mod::isMapType(TF_MAP_PDR))
+	{
+		if (iTeam == TF2_TEAM_BLUE)
+		{
+			ADD_UTILITY(BOT_UTIL_PUSH_PAYLOAD_BOMB,
+					((m_iClass != TF_CLASS_SPY) || !isDisguised()) && (m_pPushPayloadBomb != NULL) && bHasFlag,
+					fGetFlagUtility + randomFloat(-0.1f, 0.2f))
+		}
+		else if (iTeam == TF2_TEAM_RED)
+		{
+			ADD_UTILITY(BOT_UTIL_PUSH_PAYLOAD_BOMB,
+					((m_iClass != TF_CLASS_SPY) || !isDisguised()) && (m_pPushPayloadBomb != NULL) && bHasFlag,
+					fGetFlagUtility + randomFloat(-0.1f, 0.2f))
+		}
+	}
 	else if ( CTeamFortress2Mod::isMapType(TF_MAP_CART) || CTeamFortress2Mod::isMapType(TF_MAP_CPPL) )
 	{
 		if ( iTeam == TF2_TEAM_BLUE )
@@ -5168,13 +5196,13 @@ void CBotTF2 :: getTasks ( unsigned iIgnore )
 
 		ADD_UTILITY(BOT_UTIL_DEMO_STICKYTRAP_POINT, (iTeam == TF2_TEAM_RED) && (m_iCurrentDefendArea>0) &&
 			(CTeamFortress2Mod::isMapType(TF_MAP_MVM) || CTeamFortress2Mod::isMapType(TF_MAP_SD) || CTeamFortress2Mod::isMapType(TF_MAP_CART) ||
-			CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE) || CTeamFortress2Mod::isMapType(TF_MAP_ARENA) || CTeamFortress2Mod::isMapType(TF_MAP_SAXTON) ||
+			CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE)  || CTeamFortress2Mod::isMapType(TF_MAP_PDR) || CTeamFortress2Mod::isMapType(TF_MAP_ARENA) || CTeamFortress2Mod::isMapType(TF_MAP_SAXTON) ||
 			CTeamFortress2Mod::isMapType(TF_MAP_KOTH) || CTeamFortress2Mod::isMapType(TF_MAP_CP) || CTeamFortress2Mod::isMapType(TF_MAP_CPPL) ||
 			CTeamFortress2Mod::isMapType(TF_MAP_TC)),
 			fDefendFlagUtility + 0.4f)
 
 		ADD_UTILITY(BOT_UTIL_DEMO_STICKYTRAP_PL,
-			(CTeamFortress2Mod::isMapType(TF_MAP_CART) || CTeamFortress2Mod::isMapType(TF_MAP_CPPL) || CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE)) &&
+			(CTeamFortress2Mod::isMapType(TF_MAP_CART) || CTeamFortress2Mod::isMapType(TF_MAP_CPPL)  || CTeamFortress2Mod::isMapType(TF_MAP_PDR) || CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE)) &&
 			(m_pDefendPayloadBomb != NULL),
 			fDefendFlagUtility + 0.4f)
 	}
@@ -5520,6 +5548,10 @@ bool CBotTF2 :: executeAction ( CBotUtility *util )//eBotAction id, CWaypoint *p
 			{
 				if ( m_pPushPayloadBomb.get() != nullptr)
 				{
+					if (CTeamFortress2Mod::isMapType(TF_MAP_PDR) && !m_bHasFlag)
+					{
+						return false;
+					}
 					m_pSchedules->add(new CBotTF2PushPayloadBombSched(m_pPushPayloadBomb));
 					removeCondition(CONDITION_PUSH);
 					return true;
@@ -5629,7 +5661,7 @@ bool CBotTF2 :: executeAction ( CBotUtility *util )//eBotAction id, CWaypoint *p
 			{
 				float fprob;
 
-				if ( (CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE) || CTeamFortress2Mod::isMapType(TF_MAP_CPPL) || CTeamFortress2Mod::isMapType(TF_MAP_CART) || (std::strncmp(szmapname, "sd_offload", 10) == 0) || (std::strncmp(szmapname, "koth_namicott", 13) == 0) || (std::strncmp(szmapname, "ctf_system", 10) == 0) || (std::strncmp(szmapname, "cp_helmsdeep_v2", 15) == 0)) )
+				if ( (CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE) || CTeamFortress2Mod::isMapType(TF_MAP_PDR)  || CTeamFortress2Mod::isMapType(TF_MAP_CPPL) || CTeamFortress2Mod::isMapType(TF_MAP_CART) || (std::strncmp(szmapname, "sd_offload", 10) == 0) || (std::strncmp(szmapname, "koth_namicott", 13) == 0) || (std::strncmp(szmapname, "ctf_system", 10) == 0) || (std::strncmp(szmapname, "cp_helmsdeep_v2", 15) == 0)) )
 				{
 					if ( m_pDefendPayloadBomb != nullptr)
 					{
@@ -8248,7 +8280,7 @@ void CBotTF2 :: enemyAtIntel ( Vector vPos, const int type, const int iArea )
 		}
 	}
 
-	if ( CBotGlobals::entityIsValid(m_pDefendPayloadBomb) && (CTeamFortress2Mod::isMapType(TF_MAP_CART)||CTeamFortress2Mod::isMapType(TF_MAP_CPPL)||CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE)||(std::strncmp(szmapname, "sd_offload", 10) == 0) || (std::strncmp(szmapname, "koth_namicott", 13) == 0) || (std::strncmp(szmapname, "ctf_system", 10) == 0) || (std::strncmp(szmapname, "cp_helmsdeep_v2", 15) == 0)) )
+	if ( CBotGlobals::entityIsValid(m_pDefendPayloadBomb) && (CTeamFortress2Mod::isMapType(TF_MAP_CART)||CTeamFortress2Mod::isMapType(TF_MAP_CPPL)||CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE)||CTeamFortress2Mod::isMapType(TF_MAP_PDR)||(std::strncmp(szmapname, "sd_offload", 10) == 0) || (std::strncmp(szmapname, "koth_namicott", 13) == 0) || (std::strncmp(szmapname, "ctf_system", 10) == 0) || (std::strncmp(szmapname, "cp_helmsdeep_v2", 15) == 0)) )
 	{
 		vPos = CBotGlobals::entityOrigin(m_pDefendPayloadBomb);
 	}
