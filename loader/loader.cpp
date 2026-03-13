@@ -35,6 +35,10 @@
 #include <cstdlib>
 #include <cstring>
 
+#if defined(_WIN64) || defined(_WIN32)
+#define stricmp _stricmp
+#endif 
+
 #ifdef _MSC_VER
 #define DLL_EXPORT extern "C" __declspec(dllexport)
 #define openlib(lib) LoadLibrary(lib)
@@ -295,7 +299,7 @@ DLL_EXPORT METAMOD_PLUGIN* CreateInterface_MMS(const MetamodVersionInfo* mvi, co
 				s_FailPlugin.fail_version = METAMOD_FAIL_API_V2;
 				return reinterpret_cast<METAMOD_PLUGIN*>(&s_FailPlugin);
 			}
-			if (_stricmp(gamedir, "FortressForever") == 0 || _stricmp(gamedir, "synergy") == 0)
+			if (stricmp(gamedir, "FortressForever") == 0 || stricmp(gamedir, "synergy") == 0)
 			{
 				filename = FILENAME_1_6_SDK2013;
 			}
