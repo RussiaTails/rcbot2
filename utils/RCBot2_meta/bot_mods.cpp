@@ -253,8 +253,6 @@ void CBotMods::readMods()
 	m_Mods.emplace_back(new CSynergyMod());
 #else
 	//TODO: Add Black Mesa Source support [APG]RoboCop[CL]
-	m_Mods.emplace_back(new CFortressForeverMod());
-
 	m_Mods.emplace_back(new CHLDMSourceMod());
 
 	// Look for extra MODs
@@ -282,7 +280,7 @@ void CBotMod::setup(const char* szModFolder, const eModId iModId, const eBotType
 
 bool CBotMod::isModFolder(const char* szModFolder) const
 {
-	return FStrEq(m_szModFolder, szModFolder);
+	return !strcmpi(m_szModFolder, szModFolder);
 }
 
 char* CBotMod::getModFolder() const
@@ -325,6 +323,11 @@ CBotMod* CBotMods::getMod(char* szModFolder)
 	}
 
 	logger->Log(LogLevel::FATAL, "HL2 MODIFICATION \"%s\" NOT FOUND, EXITING... see bot_mods.ini in bot config folder", szModFolder);
+
+	for (CBotMod* const& m_Mod : m_Mods)
+	{
+		logger->Log(LogLevel::FATAL, "Registered mod: \"%s\" (id: %d)", m_Mod->getModFolder(), m_Mod->getModId());
+	}
 
 	return nullptr;
 }

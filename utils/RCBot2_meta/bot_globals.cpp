@@ -583,8 +583,10 @@ bool CBotGlobals :: gameStart ()
 	
 	m_szModFolder = CStrings::getString(&szGameFolder[pos]);
 
+	logger->Log(LogLevel::INFO, "Game directory detected as: \"%s\"", m_szModFolder);
+
 	CBotMods::readMods();
-	
+
 	m_pCurrentMod = CBotMods::getMod(m_szModFolder);
 
 	if ( m_pCurrentMod != nullptr)

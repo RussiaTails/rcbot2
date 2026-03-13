@@ -161,19 +161,27 @@ METAMOD_PLUGIN* _GetPluginPtr(const char* path, const int fail_api)
 
 	if (!((fn = reinterpret_cast<METAMOD_FN_ORIG_LOAD>(findsym(g_hCore, "CreateInterface")))))
 	{
-		goto error;
+		UTIL_Format(s_FailPlugin.error_buffer, sizeof(s_FailPlugin.error_buffer),
+			"Could not find CreateInterface in: %s", path);
+		closelib(g_hCore);
+		g_hCore = nullptr;
+		s_FailPlugin.fail_version = fail_api;
+		return reinterpret_cast<METAMOD_PLUGIN*>(&s_FailPlugin);
 	}
+
 	pl = static_cast<METAMOD_PLUGIN*>(fn(METAMOD_PLAPI_NAME, &ret));
+
 	if (!pl)
 	{
-		goto error;
+		UTIL_Format(s_FailPlugin.error_buffer, sizeof(s_FailPlugin.error_buffer),
+			"CreateInterface returned null for %s in: %s", METAMOD_PLAPI_NAME, path);
+		closelib(g_hCore);
+		g_hCore = nullptr;
+		s_FailPlugin.fail_version = fail_api;
+		return reinterpret_cast<METAMOD_PLUGIN*>(&s_FailPlugin);
 	}
 
 	return pl;
-error:
-	closelib(g_hCore);
-	g_hCore = nullptr;
-	return nullptr;
 }
 
 
@@ -185,7 +193,10 @@ DLL_EXPORT METAMOD_PLUGIN* CreateInterface_MMS(const MetamodVersionInfo* mvi, co
 
 	if (mvi->api_major > METAMOD_API_MAJOR)
 	{
-		return nullptr;
+		UTIL_Format(s_FailPlugin.error_buffer, sizeof(s_FailPlugin.error_buffer),
+			"Metamod API major version %d is newer than supported (%d)", mvi->api_major, METAMOD_API_MAJOR);
+		s_FailPlugin.fail_version = METAMOD_FAIL_API_V2;
+		return reinterpret_cast<METAMOD_PLUGIN*>(&s_FailPlugin);
 	}
 
 	switch (mvi->source_engine)
@@ -276,15 +287,40 @@ DLL_EXPORT METAMOD_PLUGIN* CreateInterface_MMS(const MetamodVersionInfo* mvi, co
 		}
 		case SOURCE_ENGINE_SDK2013:
 		{
-			filename = FILENAME_1_6_SDK2013;
+			const char* gamedir = mvi->GetGameDir();
+			if (gamedir == nullptr)
+			{
+				UTIL_Format(s_FailPlugin.error_buffer, sizeof(s_FailPlugin.error_buffer),
+					"SDK2013: GetGameDir() returned null");
+				s_FailPlugin.fail_version = METAMOD_FAIL_API_V2;
+				return reinterpret_cast<METAMOD_PLUGIN*>(&s_FailPlugin);
+			}
+			if (_stricmp(gamedir, "FortressForever") == 0 || _stricmp(gamedir, "synergy") == 0)
+			{
+				filename = FILENAME_1_6_SDK2013;
+			}
+			else
+			{
+				UTIL_Format(s_FailPlugin.error_buffer, sizeof(s_FailPlugin.error_buffer),
+					"Unsupported SDK2013 game: %s", gamedir);
+				s_FailPlugin.fail_version = METAMOD_FAIL_API_V2;
+				return reinterpret_cast<METAMOD_PLUGIN*>(&s_FailPlugin);
+			}
 			break;
 		}
 		case SOURCE_ENGINE_BMS:
 		{
 			const char* gamedir = mvi->GetGameDir();
-			if (strcmp(gamedir, "bms") == 0)
+			if (gamedir != nullptr && strcmp(gamedir, "bms") == 0)
 			{
 				filename = FILENAME_1_6_BMS;
+			}
+			else
+			{
+				UTIL_Format(s_FailPlugin.error_buffer, sizeof(s_FailPlugin.error_buffer),
+					"Unsupported BMS game directory: %s", gamedir ? gamedir : "(null)");
+				s_FailPlugin.fail_version = METAMOD_FAIL_API_V2;
+				return reinterpret_cast<METAMOD_PLUGIN*>(&s_FailPlugin);
 			}
 			break;
 		}
@@ -310,7 +346,10 @@ DLL_EXPORT METAMOD_PLUGIN* CreateInterface_MMS(const MetamodVersionInfo* mvi, co
 			}
 			else
 			{
-				return nullptr;
+				UTIL_Format(s_FailPlugin.error_buffer, sizeof(s_FailPlugin.error_buffer),
+					"Unsupported OrangeBox game: %s", gamedir ? gamedir : "(null)");
+				s_FailPlugin.fail_version = METAMOD_FAIL_API_V2;
+				return reinterpret_cast<METAMOD_PLUGIN*>(&s_FailPlugin);
 			}
 			break;
 		}
@@ -331,7 +370,10 @@ DLL_EXPORT METAMOD_PLUGIN* CreateInterface_MMS(const MetamodVersionInfo* mvi, co
 		}
 		default:
 		{
-			return nullptr;
+			UTIL_Format(s_FailPlugin.error_buffer, sizeof(s_FailPlugin.error_buffer),
+			"Unknown source engine id: %d", mvi->source_engine);
+			s_FailPlugin.fail_version = METAMOD_FAIL_API_V2;
+			return reinterpret_cast<METAMOD_PLUGIN*>(&s_FailPlugin);
 		}
 	}
 
