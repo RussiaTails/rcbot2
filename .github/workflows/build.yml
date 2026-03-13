@@ -88,7 +88,7 @@ jobs:
         )
 
     - name: Setup Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.os == 'ubuntu-22.04' && '3.11' || '3.12' }}
 
@@ -99,7 +99,7 @@ jobs:
         pip install git+https://github.com/alliedmodders/ambuild
 
     - name: Fetch RCBot2
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         path: rcbot2
         submodules: recursive
