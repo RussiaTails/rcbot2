@@ -84,8 +84,8 @@ class MMSConfig(object):
       cxx.defines += [
         'HAVE_STDINT_H',
         'GNUC',
-        'stricmp=strcasecmp',
-        'strcmpi=strcasecmp',
+        #'stricmp=strcasecmp',
+        #'strcmpi=strcasecmp',
       ]
       cxx.cflags += [
         '-pipe',
