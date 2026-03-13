@@ -253,7 +253,7 @@ CBotCommandInline BotTaskCommand("givetask", CMD_ACCESS_DEBUG, [](CClient* pClie
 				pSched->freeMemory();
 
 				// 83
-				if (!strcmp(args[0], "pipe"))
+				if (!std::strcmp(args[0], "pipe"))
 				{
 					CBotUtility util = CBotUtility(pBot, BOT_UTIL_PIPE_LAST_ENEMY, true, 1.0f);
 					pBot->setLastEnemy(pClient->getPlayer());
@@ -261,7 +261,7 @@ CBotCommandInline BotTaskCommand("givetask", CMD_ACCESS_DEBUG, [](CClient* pClie
 					static_cast<CBotTF2*>(pBot)->executeAction(&util);
 				}
 				// 71
-				else if (!strcmp(args[0], "gren"))
+				else if (!std::strcmp(args[0], "gren"))
 				{
 					CBotWeapons* pWeapons = pBot->getWeapons();
 
@@ -274,7 +274,7 @@ CBotCommandInline BotTaskCommand("givetask", CMD_ACCESS_DEBUG, [](CClient* pClie
 						pSched->add(sched);
 					}
 				}
-				else if (!strcmp(args[0], "snipe"))
+				else if (!std::strcmp(args[0], "snipe"))
 				{
 					if (pClient)
 					{
@@ -441,11 +441,11 @@ CBotCommandInline SetProp("setprop", CMD_ACCESS_DEBUG, [](const CClient* pClient
 							int* intdata = static_cast<int*>(data);
 							float* floatdata = static_cast<float*>(data);
 
-							if (strcmp(args[2], "int") == 0)
+							if (std::strcmp(args[2], "int") == 0)
 								*intdata = std::atoi(args[3]);
-							else if (strcmp(args[2], "bool") == 0)
+							else if (std::strcmp(args[2], "bool") == 0)
 								*booldata = (std::atoi(args[3]) == 1);
-							else if (strcmp(args[2], "float") == 0)
+							else if (std::strcmp(args[2], "float") == 0)
 								*floatdata = static_cast<float>(std::atof(args[3]));
 						}
 						else
@@ -622,13 +622,13 @@ CBotCommandInline DebugMemoryScanCommand("memoryscan", CMD_ACCESS_DEBUG, [](cons
 
 	const unsigned m_prev_size = m_size;
 
-	if ((strcmp(args[2], "bool") == 0) || (strcmp(args[2], "byte") == 0))
+	if ((std::strcmp(args[2], "bool") == 0) || (std::strcmp(args[2], "byte") == 0))
 		m_size = MEMSEARCH_BYTE;
-	else if (strcmp(args[2], "int") == 0)
+	else if (std::strcmp(args[2], "int") == 0)
 		m_size = MEMSEARCH_INT;
-	else if (strcmp(args[2], "float") == 0)
+	else if (std::strcmp(args[2], "float") == 0)
 		m_size = MEMSEARCH_FLOAT;
-	else if (strcmp(args[2], "string") == 0)
+	else if (std::strcmp(args[2], "string") == 0)
 		m_size = MEMSEARCH_STRING;
 	else
 		m_size = 0;
@@ -672,7 +672,7 @@ CBotCommandInline DebugMemoryScanCommand("memoryscan", CMD_ACCESS_DEBUG, [](cons
 				if (str != nullptr)
 				{
 					if (const char* pszstr = STRING(*str))
-						bfound = (strcmp(pszstr, args[1]) == 0);
+						bfound = (std::strcmp(pszstr, args[1]) == 0);
 				}
 			}
 			catch (...)
@@ -724,7 +724,7 @@ CBotCommandInline DebugMemoryCheckCommand("memorycheck", CMD_ACCESS_DEBUG, [](co
 
 	const unsigned offset = std::atoi(args[1]);
 
-	if ((strcmp(args[2], "bool") == 0) || (strcmp(args[2], "byte") == 0))
+	if ((std::strcmp(args[2], "bool") == 0) || (std::strcmp(args[2], "byte") == 0))
 	{
 		CBotGlobals::botMessage(
 			pClient->getPlayer(),
@@ -735,7 +735,7 @@ CBotCommandInline DebugMemoryCheckCommand("memorycheck", CMD_ACCESS_DEBUG, [](co
 			*reinterpret_cast<byte*>(reinterpret_cast<std::uintptr_t>(pent) + offset)
 		);
 	}
-	else if (strcmp(args[2], "int") == 0)
+	else if (std::strcmp(args[2], "int") == 0)
 	{
 		CBotGlobals::botMessage(
 			pClient->getPlayer(),
@@ -746,7 +746,7 @@ CBotCommandInline DebugMemoryCheckCommand("memorycheck", CMD_ACCESS_DEBUG, [](co
 			*reinterpret_cast<int*>(reinterpret_cast<std::uintptr_t>(pent) + offset)
 		);
 	}
-	else if (strcmp(args[2], "float") == 0)
+	else if (std::strcmp(args[2], "float") == 0)
 	{
 		CBotGlobals::botMessage(
 			pClient->getPlayer(),
@@ -757,7 +757,7 @@ CBotCommandInline DebugMemoryCheckCommand("memorycheck", CMD_ACCESS_DEBUG, [](co
 			*reinterpret_cast<float*>(reinterpret_cast<std::uintptr_t>(pent) + offset)
 		);
 	}
-	else if (strcmp(args[2], "string") == 0)
+	else if (std::strcmp(args[2], "string") == 0)
 	{
 		if (const string_t* str = reinterpret_cast<string_t*>(reinterpret_cast<std::uintptr_t>(pent) + offset * sizeof(string_t)))
 			CBotGlobals::botMessage(pClient->getPlayer(), 0, "%s - offset %d - Value(string) = %s", args[0], offset, STRING(*str));
@@ -774,7 +774,7 @@ CBotCommandInline DebugMemoryCheckCommand("memorycheck", CMD_ACCESS_DEBUG, [](co
 
 CBotCommandInline DebugMstrOffsetSearch("mstr_offset_search", CMD_ACCESS_DEBUG, [](const CClient* pClient, const BotCommandArgs& args)
 {
-	if (strcmp("cp_dustbowl", STRING(gpGlobals->mapname)) != 0)
+	if (std::strcmp("cp_dustbowl", STRING(gpGlobals->mapname)) != 0)
 	{
 		CBotGlobals::botMessage(pClient->getPlayer(), 0, "Command can only be used on cp_dustbowl -- change the map first");
 		return COMMAND_ERROR;
@@ -803,7 +803,7 @@ CBotCommandInline DebugMstrOffsetSearch("mstr_offset_search", CMD_ACCESS_DEBUG, 
 		{
 			if (PointMaster->m_iTeamBaseIcons[0] == 0 && PointMaster->m_iTeamBaseIcons[2] == 5 && PointMaster->m_iTeamBaseIcons[3] == 6)
 			{
-				if (strcmp(PointMaster->m_iszTeamBaseIcons[3].ToCStr(), "sprites/obj_icons/icon_base_blu") == 0)
+				if (std::strcmp(PointMaster->m_iszTeamBaseIcons[3].ToCStr(), "sprites/obj_icons/icon_base_blu") == 0)
 				{
 					CBotGlobals::botMessage(pClient->getPlayer(), 0, "pMaster offset is %d", offset);
 					return COMMAND_ACCESSED;

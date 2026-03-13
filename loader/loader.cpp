@@ -35,10 +35,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#if defined(_WIN64) || defined(_WIN32)
-#define stricmp _stricmp
-#endif 
-
 #ifdef _MSC_VER
 #define DLL_EXPORT extern "C" __declspec(dllexport)
 #define openlib(lib) LoadLibrary(lib)
@@ -229,7 +225,7 @@ DLL_EXPORT METAMOD_PLUGIN* CreateInterface_MMS(const MetamodVersionInfo* mvi, co
 		case SOURCE_ENGINE_LEFT4DEAD2:
 		{
 			const char* gamedir = mvi->GetGameDir();
-			if (strcmp(gamedir, "nucleardawn") == 0)
+			if (std::strcmp(gamedir, "nucleardawn") == 0)
 			{
 				filename = FILENAME_1_6_ND;
 			}
@@ -299,7 +295,7 @@ DLL_EXPORT METAMOD_PLUGIN* CreateInterface_MMS(const MetamodVersionInfo* mvi, co
 				s_FailPlugin.fail_version = METAMOD_FAIL_API_V2;
 				return reinterpret_cast<METAMOD_PLUGIN*>(&s_FailPlugin);
 			}
-			if (stricmp(gamedir, "FortressForever") == 0 || stricmp(gamedir, "synergy") == 0)
+			if (std::strcmp(gamedir, "FortressForever") == 0 || std::strcmp(gamedir, "synergy") == 0)
 			{
 				filename = FILENAME_1_6_SDK2013;
 			}
@@ -315,7 +311,7 @@ DLL_EXPORT METAMOD_PLUGIN* CreateInterface_MMS(const MetamodVersionInfo* mvi, co
 		case SOURCE_ENGINE_BMS:
 		{
 			const char* gamedir = mvi->GetGameDir();
-			if (gamedir != nullptr && strcmp(gamedir, "bms") == 0)
+			if (std::strcmp(gamedir, "bms") == 0)
 			{
 				filename = FILENAME_1_6_BMS;
 			}
@@ -336,15 +332,15 @@ DLL_EXPORT METAMOD_PLUGIN* CreateInterface_MMS(const MetamodVersionInfo* mvi, co
 		case SOURCE_ENGINE_ORANGEBOXVALVE_DEPRECATED:
 		{
 			const char* gamedir = mvi->GetGameDir();
-			if (strcmp(gamedir, "tf") == 0)
+			if (std::strcmp(gamedir, "tf") == 0)
 			{
 				filename = FILENAME_1_6_TF2;
 			}
-			else if (strcmp(gamedir, "dod") == 0)
+			else if (std::strcmp(gamedir, "dod") == 0)
 			{
 				filename = FILENAME_1_6_DODS;
 			}
-			else if (strcmp(gamedir, "hl2mp") == 0)
+			else if (std::strcmp(gamedir, "hl2mp") == 0)
 			{
 				filename = FILENAME_1_6_HL2DM;
 			}
