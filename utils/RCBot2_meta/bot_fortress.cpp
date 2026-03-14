@@ -8126,62 +8126,91 @@ bool CBotTF2::isEnemy(edict_t* pEdict, const bool bCheckWeapons)
 /////////////////////////////////////////////////////////////////////////
 // FORTRESS FOREVER
 
-
-void CBotFF :: modThink ()
+void CBotFF::modThink()
 {
-	// FF-specific think code
-	// Update class info
-	m_iClass = static_cast<TF_Class>(CClassInterface::getTF2Class(m_pEdict));
+	m_iTeam = getTeam();
 
-	CBotFortress :: modThink();
+	if (needHealth())
+		updateCondition(CONDITION_NEED_HEALTH);
+	else
+		removeCondition(CONDITION_NEED_HEALTH);
+
+	if (needAmmo())
+		updateCondition(CONDITION_NEED_AMMO);
+	else
+		removeCondition(CONDITION_NEED_AMMO);
+
+	if (m_fCallMedic < engine->Time())
+	{
+		if (getHealthPercent() < 0.5f)
+		{
+			m_fCallMedic = engine->Time() + randomFloat(10.0f, 30.0f);
+			callMedic();
+		}
+	}
+
+	checkHealingValid();
 }
 
-bool CBotFF :: isEnemy ( edict_t *pEdict,bool bCheckWeapons )
+bool CBotFF::isEnemy(edict_t* pEdict, bool bCheckWeapons)
 {
-	if ( pEdict == m_pEdict )
+	if (pEdict == m_pEdict)
 		return false;
 
-	if ( !ENTINDEX(pEdict) || (ENTINDEX(pEdict) > CBotGlobals::maxClients()) )
+	if (!ENTINDEX(pEdict) || (ENTINDEX(pEdict) > CBotGlobals::maxClients()))
 		return false;
 
 	const int iEnemyTeam = CBotGlobals::getTeam(pEdict);
-	const int iMyTeam = getTeam();
 
-	// Spectators and unassigned are not enemies
-	if ( iEnemyTeam <= FF_TEAM_SPECTATOR || iMyTeam <= FF_TEAM_SPECTATOR )
+	if (iEnemyTeam == FF_TEAM_UNASSIGNED || iEnemyTeam == FF_TEAM_SPECTATOR)
 		return false;
 
-	if ( iEnemyTeam == iMyTeam )
+	if (iEnemyTeam == getTeam())
 		return false;
 
-	return true;	
+	return true;
 }
 
-TF_Class CBotFF :: getClass ()
+TF_Class CBotFF::getClass()
 {
-	m_iClass = static_cast<TF_Class>(CClassInterface::getTF2Class(m_pEdict));
 	return m_iClass;
 }
 
-void CBotFF :: selectClass ()
+void CBotFF::selectClass()
 {
-	// Pick a random FF class
-	constexpr TF_Class classes[] = {
-		TF_CLASS_SCOUT,
-		TF_CLASS_SNIPER,
-		TF_CLASS_SOLDIER,
-		TF_CLASS_DEMOMAN,
-		TF_CLASS_MEDIC,
-		TF_CLASS_HWGUY,
-		TF_CLASS_PYRO,
-		TF_CLASS_SPY,
-		TF_CLASS_ENGINEER
-	};
+	const char* cmd = nullptr;
+	TF_Class _class;
 
-	const TF_Class pick = classes[randomInt(0, 8)];
-	char cmd[32];
-	snprintf(cmd, sizeof(cmd), "class %d", static_cast<int>(pick));
-	helpers->ClientCommand(m_pEdict, cmd);
+	if (m_iDesiredClass == 0)
+		_class = static_cast<TF_Class>(randomInt(1, 9));
+	else
+		_class = static_cast<TF_Class>(m_iDesiredClass);
+
+	m_iClass = _class;
+
+	if (_class == TF_CLASS_SCOUT)
+		cmd = "class scout";
+	else if (_class == TF_CLASS_SNIPER)
+		cmd = "class sniper";
+	else if (_class == TF_CLASS_SOLDIER)
+		cmd = "class soldier";
+	else if (_class == TF_CLASS_DEMOMAN)
+		cmd = "class demoman";
+	else if (_class == TF_CLASS_MEDIC)
+		cmd = "class medic";
+	else if (_class == TF_CLASS_HWGUY)
+		cmd = "class hwguy";
+	else if (_class == TF_CLASS_PYRO)
+		cmd = "class pyro";
+	else if (_class == TF_CLASS_SPY)
+		cmd = "class spy";
+	else if (_class == TF_CLASS_ENGINEER)
+		cmd = "class engineer";
+
+	if (cmd != nullptr)
+		helpers->ClientCommand(m_pEdict, cmd);
+
+	m_fChangeClassTime = engine->Time() + randomFloat(bot_min_cc_time.GetFloat(), bot_max_cc_time.GetFloat());
 }
 
 void CBotTF2::MannVsMachineWaveComplete()

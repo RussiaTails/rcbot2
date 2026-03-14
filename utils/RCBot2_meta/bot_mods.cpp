@@ -251,6 +251,7 @@ void CBotMods::readMods()
 #elif SOURCE_ENGINE == SE_SDK2013
 	m_Mods.emplace_back(new CFortressForeverMod());
 	m_Mods.emplace_back(new CSynergyMod());
+	m_Mods.emplace_back(new CTF2ClassifiedMod());
 #else
 	//TODO: Add Black Mesa Source support [APG]RoboCop[CL]
 	m_Mods.emplace_back(new CHLDMSourceMod());
