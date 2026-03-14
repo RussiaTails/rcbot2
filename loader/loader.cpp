@@ -295,7 +295,8 @@ DLL_EXPORT METAMOD_PLUGIN* CreateInterface_MMS(const MetamodVersionInfo* mvi, co
 				s_FailPlugin.fail_version = METAMOD_FAIL_API_V2;
 				return reinterpret_cast<METAMOD_PLUGIN*>(&s_FailPlugin);
 			}
-			if (std::strcmp(gamedir, "FortressForever") == 0 || std::strcmp(gamedir, "synergy") == 0)
+			if (std::strcmp(gamedir, "FortressForever") == 0 || std::strcmp(gamedir, "tf2classified") == 0
+				 || std::strcmp(gamedir, "synergy") == 0)
 			{
 				filename = FILENAME_1_6_SDK2013;
 			}

@@ -366,6 +366,11 @@ bool CHalfLifeDeathmatchMod::playerSpawned(edict_t* pPlayer)
 	return true;
 }
 
+void CFortressForeverMod::initMod()
+{
+	CWeapons::loadWeapons(m_szWeaponListName == nullptr ? "FF" : m_szWeaponListName, FFWeaps.data());
+}
+
 void CFortressForeverMod::getTeamOnlyWaypointFlags(const int iTeam, int *iOn, int *iOff)
 {
 	if (iTeam == FF_TEAM_BLUE)

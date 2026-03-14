@@ -761,6 +761,8 @@ public:
 		setup("FortressForever", MOD_FF, BOTTYPE_FF, "FF");
 	}
 
+	void initMod() override;
+
 	const char *getPlayerClass() override
 	{
 		return "CFFPlayer";
