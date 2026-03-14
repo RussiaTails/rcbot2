@@ -100,7 +100,7 @@ Additionally, `rcbot/logging.{h,cpp}` is released separately under the
 - To improve on how Medic and Spy bots behave smarter and adequately when interacting with SG Turrets and Healing/Ubering
 - Bots need to understand how to play Kart games from sd_doomsday_event as they only wonder around those minigames
 - CBotTF2::changeClass needs to be implemented to avoid bots punting when using ClassRestrictionsForBots.smx and `rcbot_change_classes 1` - Testing in progress!
-- To add TF2C support along with Black Mesa Source, Counter-Strike: Source, Synergy and Dystopia
+- To add TF2C support along with Black Mesa Source, Counter-Strike: Source, Fortress Forever, PF2, Synergy and Dystopia
 
 ## Credits:-
 
@@ -110,7 +110,7 @@ Additionally, `rcbot/logging.{h,cpp}` is released separately under the
 - TF2 support and enhancements - Ducky1231/Pongo
 - SourceMod and AMBuild support - nosoop
 - Synergy, TF2, MvM, CSS and AMBuild support - Anonymous Player/caxanga334
-- TF2 Classic support - Technochips
+- TF2 Classified support - Technochips
 - TF2 additional gamemodes support - RussiaTails
 - Linux Black Mesa and SDK2013 mathlib fix - Sappho
 - Dystopia support - Soft As Hell
