@@ -31,6 +31,7 @@
 #ifndef __BOT_CONST_H__
 #define __BOT_CONST_H__
 
+#include <dt_common.h>
 #include "shareddefs.h"
 #include <cstdint>
 #include <cstring>

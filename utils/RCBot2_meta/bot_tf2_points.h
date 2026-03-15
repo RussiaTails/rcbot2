@@ -7,6 +7,7 @@
 #include "bot_ehandle.h"
 #include "edict.h"
 #include "ehandle.h"
+#include <dt_common.h>
 #include "shareddefs.h"
 #include "utlmap.h"
 

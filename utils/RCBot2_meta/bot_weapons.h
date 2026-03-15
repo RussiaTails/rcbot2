@@ -36,6 +36,7 @@
 
 extern const char* g_szTF2Weapons[];
 
+#include <dt_common.h>
 #include "shareddefs.h"
 
 class CBot;

@@ -47,6 +47,7 @@
 #include "eiface.h"
 
 #ifdef __linux__
+#include <dt_common.h>
 #include "shareddefs.h" //bir3yk
 #endif
 
