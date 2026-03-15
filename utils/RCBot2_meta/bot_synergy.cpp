@@ -594,6 +594,9 @@ bool CBotSynergy::executeAction(const eBotAction iAction)
 			m_pSchedules->add(pSched);
 			return true;
 		}
+
+		delete pSched;
+		break;
 	}
 	case BOT_UTIL_FIND_NEAREST_AMMO:
 	{
@@ -611,6 +614,9 @@ bool CBotSynergy::executeAction(const eBotAction iAction)
 			m_pSchedules->add(pSched);
 			return true;
 		}
+
+		delete pSched;
+		break;
 	}
 	case BOT_UTIL_ATTACK_POINT:
 	{
