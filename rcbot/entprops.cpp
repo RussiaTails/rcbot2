@@ -2476,7 +2476,7 @@ int CBotEntProp::GameRules_GetProp(const char *prop, const int size, const int e
 	bool is_unsigned = false; //Unused? [APG]RoboCop[CL]
 	void *pGameRules = sm_sdktools->GetGameRules();
 
-	if (!pGameRules || !grclassname || !strcmp(grclassname, ""))
+	if (!pGameRules || !grclassname || !std::strcmp(grclassname, ""))
 	{
 		logger->Log(LogLevel::ERROR, "Gamerules lookup failed");
 		return -1;
@@ -2538,7 +2538,7 @@ float CBotEntProp::GameRules_GetPropFloat(const char *prop, const int element) c
 	int bit_count; //Unused? [APG]RoboCop[CL]
 	void *pGameRules = sm_sdktools->GetGameRules();
 
-	if (!pGameRules || !grclassname || !strcmp(grclassname, ""))
+	if (!pGameRules || !grclassname || !std::strcmp(grclassname, ""))
 	{
 		logger->Log(LogLevel::ERROR, "Gamerules lookup failed");
 		return 0.0f;
@@ -2560,7 +2560,7 @@ int CBotEntProp::GameRules_GetPropEnt(const char *prop, const int element) const
 	int bit_count; //Unused? [APG]RoboCop[CL]
 	void *pGameRules = sm_sdktools->GetGameRules();
 
-	if (!pGameRules || !grclassname || !strcmp(grclassname, ""))
+	if (!pGameRules || !grclassname || !std::strcmp(grclassname, ""))
 	{
 		logger->Log(LogLevel::ERROR, "Gamerules lookup failed");
 		return 0.0f;
@@ -2591,7 +2591,7 @@ Vector CBotEntProp::GameRules_GetPropVector(const char *prop, const int element)
 	int bit_count; //Unused? [APG]RoboCop[CL]
 	void *pGameRules = sm_sdktools->GetGameRules();
 
-	if (!pGameRules || !grclassname || !strcmp(grclassname, ""))
+	if (!pGameRules || !grclassname || !std::strcmp(grclassname, ""))
 	{
 		logger->Log(LogLevel::ERROR, "Gamerules lookup failed");
 		return {0,0,0};
@@ -2615,7 +2615,7 @@ char *CBotEntProp::GameRules_GetPropString(const char *prop, std::size_t *len, c
 	int bit_count; //Unused? [APG]RoboCop[CL]
 	void *pGameRules = sm_sdktools->GetGameRules();
 
-	if (!pGameRules || !grclassname || !strcmp(grclassname, ""))
+	if (!pGameRules || !grclassname || !std::strcmp(grclassname, ""))
 	{
 		logger->Log(LogLevel::ERROR, "Gamerules lookup failed");
 		return nullptr;

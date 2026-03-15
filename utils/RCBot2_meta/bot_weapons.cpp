@@ -130,6 +130,34 @@ constexpr std::array<const char*, 17> g_szSYNWeapons = {
 	"weapon_bugbait"
 };
 
+constexpr std::array<const char*, 25> g_szFFWeapons = {
+	"ff_weapon_crowbar",         // 0
+	"ff_weapon_knife",           // 1
+	"ff_weapon_spanner",         // 2
+	"ff_weapon_medkit",          // 3
+	"ff_weapon_shotgun",         // 4
+	"ff_weapon_supershotgun",    // 5
+	"ff_weapon_nailgun",         // 6
+	"ff_weapon_supernailgun",    // 7
+	"ff_weapon_autorifle",       // 8
+	"ff_weapon_sniperrifle",     // 9
+	"ff_weapon_rpg",             // 10
+	"ff_weapon_grenadelauncher", // 11
+	"ff_weapon_pipelauncher",    // 12
+	"ff_weapon_flamethrower",    // 13
+	"ff_weapon_ic",              // 14
+	"ff_weapon_assaultcannon",   // 15
+	"ff_weapon_tranq",           // 16
+	"ff_weapon_railgun",         // 17
+	"ff_weapon_deploydetpack",   // 18
+	"ff_weapon_umbrella",        // 19
+	"ff_weapon_jumpgun",         // 20
+	"ff_weapon_tommygun",        // 21
+	"ff_weapon_deploydispenser", // 22
+	"ff_weapon_deploysentrygun", // 23
+	"ff_weapon_deploymancannon"  // 24
+};
+
 constexpr std::array<const char*, 29> g_szCSWeapons = {
 	"weapon_knife", // 0
 	"weapon_usp",
@@ -214,6 +242,50 @@ std::vector<WeaponsData_t> HL2DMWeaps = {
 	{1,HL2DM_WEAPON_SLAM,		g_szHL2DMWeapons[9],	WEAP_FL_EXPLOSIVE,0,180,-1,1,0},
 	{2,HL2DM_WEAPON_SHOTGUN,	g_szHL2DMWeapons[10],	WEAP_FL_PRIM_ATTACK,0,768,-1,2,0},
 	{1,HL2DM_WEAPON_PHYSCANNON,	g_szHL2DMWeapons[11],	WEAP_FL_GRAVGUN | WEAP_FL_PRIM_ATTACK,0,768,-1,4,0},
+	{ 0, 0, "\0", 0, 0, 0, 0, 0, 0 }//signal last weapon
+};
+
+std::vector<WeaponsData_t> FFWeaps = {
+
+	// slot, id, weapon name, flags, min dist, max dist, ammo index, preference, proj speed
+	// Melee weapons
+	{2,FF_WEAPON_CROWBAR,        g_szFFWeapons[0],   WEAP_FL_PRIM_ATTACK | WEAP_FL_MELEE | WEAP_FL_UNDERWATER,0,150,-1,1,0},
+	{2,FF_WEAPON_KNIFE,          g_szFFWeapons[1],   WEAP_FL_PRIM_ATTACK | WEAP_FL_MELEE | WEAP_FL_UNDERWATER,0,150,-1,1,0},
+	{2,FF_WEAPON_SPANNER,        g_szFFWeapons[2],   WEAP_FL_PRIM_ATTACK | WEAP_FL_MELEE | WEAP_FL_UNDERWATER,0,150,-1,1,0},
+	{2,FF_WEAPON_MEDKIT,         g_szFFWeapons[3],   WEAP_FL_PRIM_ATTACK | WEAP_FL_MELEE | WEAP_FL_UNDERWATER,0,150,-1,1,0},
+	// Shotguns
+	{1,FF_WEAPON_SHOTGUN,        g_szFFWeapons[4],   WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,768,-1,2,0},
+	{1,FF_WEAPON_SUPERSHOTGUN,   g_szFFWeapons[5],   WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,600,-1,3,0},
+	// Nail guns
+	{1,FF_WEAPON_NAILGUN,        g_szFFWeapons[6],   WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,1000,-1,2,0},
+	{0,FF_WEAPON_SUPERNAILGUN,   g_szFFWeapons[7],   WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,1200,-1,3,0},
+	// Sniper weapons
+	{1,FF_WEAPON_AUTORIFLE,      g_szFFWeapons[8],   WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,1200,-1,2,0},
+	{0,FF_WEAPON_SNIPERRIFLE,    g_szFFWeapons[9],   WEAP_FL_PRIM_ATTACK | WEAP_FL_SCOPE,0,4000,-1,3,0},
+	// Explosive weapons
+	{0,FF_WEAPON_RPG,            g_szFFWeapons[10],  WEAP_FL_PRIM_ATTACK | WEAP_FL_EXPLOSIVE | WEAP_FL_PROJECTILE,BLAST_RADIUS,4096,-1,3,1000.0f},
+	{0,FF_WEAPON_GRENADELAUNCHER,g_szFFWeapons[11],  WEAP_FL_PRIM_ATTACK | WEAP_FL_EXPLOSIVE | WEAP_FL_PROJECTILE,100,1200,-1,3,900.0f},
+	{1,FF_WEAPON_PIPELAUNCHER,   g_szFFWeapons[12],  WEAP_FL_PRIM_ATTACK | WEAP_FL_EXPLOSIVE | WEAP_FL_PROJECTILE,100,1200,-1,2,800.0f},
+	// Pyro weapons
+	{0,FF_WEAPON_FLAMETHROWER,   g_szFFWeapons[13],  WEAP_FL_PRIM_ATTACK | WEAP_FL_HOLDATTACK | WEAP_FL_SPECIAL,0,400,-1,3,0},
+	{1,FF_WEAPON_IC,             g_szFFWeapons[14],  WEAP_FL_PRIM_ATTACK | WEAP_FL_EXPLOSIVE | WEAP_FL_PROJECTILE,200,1200,-1,2,800.0f},
+	// Heavy weapons
+	{0,FF_WEAPON_AC,             g_szFFWeapons[15],  WEAP_FL_PRIM_ATTACK | WEAP_FL_HOLDATTACK,120,1800,-1,3,0},
+	// Spy weapons
+	{1,FF_WEAPON_TRANQ,          g_szFFWeapons[16],  WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,1000,-1,2,0},
+	// Engineer weapons
+	{0,FF_WEAPON_RAILGUN,        g_szFFWeapons[17],  WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,1400,-1,3,0},
+	// Detpack (special)
+	{2,FF_WEAPON_DEPLOYDETPACK,  g_szFFWeapons[18],  WEAP_FL_NONE,0,0,-1,0,0},
+	// Civilian weapons
+	{2,FF_WEAPON_UMBRELLA,       g_szFFWeapons[19],  WEAP_FL_PRIM_ATTACK | WEAP_FL_MELEE | WEAP_FL_UNDERWATER,0,150,-1,1,0},
+	{1,FF_WEAPON_TOMMYGUN,       g_szFFWeapons[21],  WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,1000,-1,2,0},
+	// Scout weapons
+	{1,FF_WEAPON_JUMPGUN,        g_szFFWeapons[20],  WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,800,-1,2,0},
+	// Buildable deployments
+	{2,FF_WEAPON_DEPLOYDISPENSER, g_szFFWeapons[22],  WEAP_FL_NONE,0,0,-1,0,0},
+	{2,FF_WEAPON_DEPLOYSENTRYGUN, g_szFFWeapons[23],  WEAP_FL_NONE,0,0,-1,0,0},
+	{2,FF_WEAPON_DEPLOYMANCANNON,g_szFFWeapons[24],  WEAP_FL_NONE,0,0,-1,0,0},
 	{ 0, 0, "\0", 0, 0, 0, 0, 0, 0 }//signal last weapon
 };
 
@@ -554,7 +626,7 @@ bool CBotWeapons ::update ( bool bOverrideAllFromEngine )
 				{
 					pWeapon = INDEXENT(m_Weapon_iter->GetEntryIndex());
 
-					if ( pWeapon && CBotGlobals::entityIsValid(pWeapon) && strcmp(pWeapon->GetClassName(),m_BotWeapon_iter->getWeaponInfo()->getWeaponName())==0 )
+					if ( pWeapon && CBotGlobals::entityIsValid(pWeapon) && std::strcmp(pWeapon->GetClassName(),m_BotWeapon_iter->getWeaponInfo()->getWeaponName())==0 )
 					{
 						iWeaponState = CClassInterface::getWeaponState(pWeapon);
 						// found it
@@ -754,7 +826,7 @@ if ( pEnt && CBotGlobals::entityIsValid(pEnt) )
 {
 if ( CBotGlobals::entityOrigin(pEnt) == origin )
 {
-if ( strcmp(pEnt->GetClassName(),classname) == 0 )
+if ( std::strcmp(pEnt->GetClassName(),classname) == 0 )
 {
 m_theWeapons[iId].setWeaponEntity(pEnt, bOverrideAll);// .setWeaponIndex(ENTINDEX(pEnt));
 

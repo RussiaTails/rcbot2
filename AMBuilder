@@ -104,6 +104,7 @@ mods_requiring_runcmd_overrides = [
   # default bot AI.  we'll hook into their RunPlayerMove for now, but for consistency across
   # games it'd be better to supercede `Bot_Think` (or `Bot_RunAll` higher up the call stack)
   'dods',
+  'sdk2013',
 ]
 
 # List of SDK Names that has undefined reference to some math functions

@@ -445,7 +445,10 @@ bool RCBotPluginMeta::Load(PluginId id, ISmmAPI *ismm, char *error, std::size_t 
 		fp.close();
 
 	if (!CBotGlobals::gameStart())
+	{
+		snprintf(error, maxlen, "Game mod not recognized (gamedir: \"%s\")", CBotGlobals::modFolder());
 		return false;
+	}
 
 	CBotMod *pMod = CBotGlobals::getCurrentMod(); // `*pMod` Unused? [APG]RoboCop[CL]
 

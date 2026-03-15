@@ -321,6 +321,8 @@ void CTeamFortress2Mod :: mapInit ()
 		m_MapType = TF_MAP_KOTH; // king of the hill
 	else if (std::strncmp(szmapname, "sd_", 3) == 0 ||
 		std::strncmp(szmapname, "workshop/sd_", 12) == 0 ||
+		std::strncmp(szmapname, "htf_", 4) == 0 ||
+		std::strncmp(szmapname, "workshop/htf_", 13) == 0 ||
 		std::strncmp(szmapname, "sdr_", 4) == 0)
 		// Object Destruction and Special Delivery Race (I dunno why it's named like this when it works as a usual sd_) works the same as SD_. - RussiaTails
 		m_MapType = TF_MAP_SD; // special delivery

@@ -760,6 +760,17 @@ public:
 	{
 		setup("FortressForever", MOD_FF, BOTTYPE_FF, "FF");
 	}
+
+	void initMod() override;
+
+	const char *getPlayerClass() override
+	{
+		return "CFFPlayer";
+	}
+
+	void getTeamOnlyWaypointFlags(int iTeam, int *iOn, int *iOff) override;
+
+	bool checkWaypointForTeam(CWaypoint *pWpt, int iTeam) override;
 };
 
 class CHLDMSourceMod : public CBotMod
@@ -864,6 +875,17 @@ public:
 
 		m_pResourceEntity = nullptr;
 	}
+
+protected:
+	// Allow subclasses to override the game folder
+	explicit CTeamFortress2Mod(const char *szGameDir)
+	{
+		setup(szGameDir,MOD_TF2,BOTTYPE_TF2,"TF2");
+
+		m_pResourceEntity = nullptr;
+	}
+
+public:
 
 	void mapInit () override;
 
@@ -1353,6 +1375,15 @@ private:
 	static float m_fNearestTankDistance;
 	static Vector m_vNearestTankLocation;
 
+};
+
+//TODO: TF2 Classified uses SDK2013 engine with TF2 gameplay - [APG]RoboCop[CL]
+class CTF2ClassifiedMod : public CTeamFortress2Mod
+{
+public:
+	CTF2ClassifiedMod() : CTeamFortress2Mod("tf2classified")
+	{
+	}
 };
 
 class CHalfLifeDeathmatchMod : public CBotMod
