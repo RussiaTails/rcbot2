@@ -49,6 +49,7 @@
 #include <iplayerinfo.h>
 #include <sh_vector.h>
 #include "engine_wrappers.h"
+#include <dt_common.h>
 #include <shareddefs.h>
 
 #ifdef SM_EXT
