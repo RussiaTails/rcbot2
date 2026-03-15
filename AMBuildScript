@@ -137,6 +137,11 @@ class MMSConfig(object):
           '-Wno-tautological-overlap-compare',
         ]
 
+      # The hl2sdk-manifests define TF_DLL, which causes shareddefs.h to
+      # redefine SPROP_COORD. The SDK's own include order triggers this
+      # redefinition across dt_common.h and shareddefs.h. [APG]RoboCop[CL]
+      cxx.cflags += ['-Wno-macro-redefined']
+
     elif cxx.like('msvc'):
       if builder.options.debug == '1':
         cxx.cflags += ['/MTd']
