@@ -43,6 +43,7 @@
 #include <cstdint>
 //#include "cbase.h"
 //#include "baseentity.h"
+#include <dt_common.h>
 #include "toolframework/itoolentity.h"
 #include "filesystem.h"
 #include "interface.h"
