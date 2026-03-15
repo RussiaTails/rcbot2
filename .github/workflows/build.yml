@@ -172,3 +172,12 @@ jobs:
         with:
           name: rcbot2-dbgsym-windows-${{ steps.short-sha.outputs.sha }}
           path: combined-dbgsym/
+
+      - name: Delete Individual Windows Artifacts
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: |
+            rcbot2-win32-${{ steps.short-sha.outputs.sha }}
+            rcbot2-win64-${{ steps.short-sha.outputs.sha }}
+            rcbot2-dbgsym-win32-${{ steps.short-sha.outputs.sha }}
+            rcbot2-dbgsym-win64-${{ steps.short-sha.outputs.sha }}
