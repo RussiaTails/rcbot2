@@ -1561,7 +1561,7 @@ Vector CBotEntProp::GetEntPropVector(const int entity, const PropType proptype, 
 
 		CHECK_SET_PROP_DATA_OFFSET(Vector(0,0,0))
 
-		if (td->fieldType == FIELD_CUSTOM && (td->flags & FTYPEDESC_OUTPUT) == FTYPEDESC_OUTPUT)
+		/*if (td->fieldType == FIELD_CUSTOM && (td->flags & FTYPEDESC_OUTPUT) == FTYPEDESC_OUTPUT)
 		{
 			const variant_t* pVariant = reinterpret_cast<variant_t*>(reinterpret_cast<std::intptr_t>(pEntity) + offset);
 
@@ -1570,7 +1570,7 @@ Vector CBotEntProp::GetEntPropVector(const int entity, const PropType proptype, 
 				logger->Log(LogLevel::ERROR, "Variant value for %s is not vector (%d)", prop, pVariant->fieldType);
 				return {0,0,0};
 			}
-		}
+		}*/
 
 		break;
 
@@ -1654,7 +1654,7 @@ Vector *CBotEntProp::GetEntPropVectorPointer(const int entity, const PropType pr
 
 		CHECK_SET_PROP_DATA_OFFSET(nullptr)
 
-		if (td->fieldType == FIELD_CUSTOM && (td->flags & FTYPEDESC_OUTPUT) == FTYPEDESC_OUTPUT)
+		/*if (td->fieldType == FIELD_CUSTOM && (td->flags & FTYPEDESC_OUTPUT) == FTYPEDESC_OUTPUT)
 		{
 			const variant_t* pVariant = reinterpret_cast<variant_t*>(reinterpret_cast<std::intptr_t>(pEntity) + offset);
 
@@ -1663,7 +1663,7 @@ Vector *CBotEntProp::GetEntPropVectorPointer(const int entity, const PropType pr
 				logger->Log(LogLevel::ERROR, "Variant value for %s is not vector (%d)", prop, pVariant->fieldType);
 				return nullptr;
 			}
-		}
+		}*/
 
 		break;
 
@@ -1748,7 +1748,7 @@ bool CBotEntProp::SetEntPropVector(const int entity, const PropType proptype, co
 
 		CHECK_SET_PROP_DATA_OFFSET(false)
 
-		if (td->fieldType == FIELD_CUSTOM && (td->flags & FTYPEDESC_OUTPUT) == FTYPEDESC_OUTPUT)
+		/*if (td->fieldType == FIELD_CUSTOM && (td->flags & FTYPEDESC_OUTPUT) == FTYPEDESC_OUTPUT)
 		{
 			variant_t* pVariant = reinterpret_cast<variant_t*>(reinterpret_cast<std::intptr_t>(pEntity) + offset);
 
@@ -1758,7 +1758,7 @@ bool CBotEntProp::SetEntPropVector(const int entity, const PropType proptype, co
 			{
 				pVariant->fieldType = FIELD_VECTOR;
 			}
-		}
+		}*/
 
 		break;
 

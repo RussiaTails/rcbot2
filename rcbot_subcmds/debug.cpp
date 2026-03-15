@@ -812,7 +812,9 @@ CBotCommandInline DebugMstrOffsetSearch("mstr_offset_search", CMD_ACCESS_DEBUG, 
 		}
 		catch (...)
 		{
-			// SEH handling
+			// Invalid memory at this offset, skip to the next one - [APG]RoboCop[CL]
+			offset++;
+			continue;
 		}
 
 		offset++;

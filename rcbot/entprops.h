@@ -29,9 +29,9 @@
 #ifndef __RCBOT2_ENTPROPS_H__
 #define __RCBOT2_ENTPROPS_H__
 
+#include <dt_send.h>
 #include "bot_plugin_meta.h"
 #include "bot_const.h"
-#include <dt_send.h>
 #include <IGameHelpers.h>
 #include <server_class.h>
 #include <cstdint>

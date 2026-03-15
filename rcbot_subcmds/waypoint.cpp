@@ -487,11 +487,8 @@ CBotCommandInline WaypointShiftAreas("shiftareas", CMD_ACCESS_WAYPOINT, [](const
 		{
 			const int newarea = std::atoi(args[1]);
 
-			if ( pClient )
-			{
-				// change area val to newarea
-				CWaypoints::shiftVisibleAreas(pClient->getPlayer(),val,newarea);
-			}
+			// change area val to newarea
+			CWaypoints::shiftVisibleAreas(pClient->getPlayer(),val,newarea);
 		}
 		else
 			CWaypoints::shiftAreas(val);

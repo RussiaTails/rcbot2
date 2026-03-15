@@ -153,8 +153,9 @@ int* GetIntProperty(CBotProfile* profile, const RCBotProfileVar profileVar) {
 			return &profile->m_iVisionTicksClients;
 		case RCBotProfile_iSensitivity:
 			return &profile->m_iSensitivity;
+		default:
+			return nullptr;
 	}
-	return nullptr;
 }
 
 float* GetFloatProperty(CBotProfile* profile, const RCBotProfileVar profileVar) {
@@ -163,6 +164,7 @@ float* GetFloatProperty(CBotProfile* profile, const RCBotProfileVar profileVar) 
 			return &profile->m_fBraveness;
 		case RCBotProfile_fAimSkill:
 			return &profile->m_fAimSkill;
+		default:
+			return nullptr;
 	}
-	return nullptr;
 }
