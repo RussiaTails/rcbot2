@@ -8183,6 +8183,9 @@ bool CBotTF2::isEnemy(edict_t* pEdict, const bool bCheckWeapons)
 			CTeamFortress2Mod::isDispenser(pEdict,iEnemyTeam) || 
 			CTeamFortress2Mod::isTeleporter(pEdict,iEnemyTeam))  && !(CTeamFortress2Mod::isMapType(TF_MAP_BOSS))
 			/*CTeamFortress2Mod::isTeleporterExit(pEdict,iEnemyTeam)*/  )
+		{
+			bValid = true;
+		}
 		else if ( CTeamFortress2Mod::isPipeBomb ( pEdict, iEnemyTeam ) )
 			bIsPipeBomb = bValid = true;
 		else if ( CTeamFortress2Mod::isRocket ( pEdict, iEnemyTeam ) )
