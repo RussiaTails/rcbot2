@@ -207,8 +207,12 @@ bool CWaypointNavigator::wantToSaveBelief()
 int CWaypointNavigator :: numPaths ()
 {
 	if ( m_iCurrentWaypoint != -1 )
-		return CWaypoints::getWaypoint(m_iCurrentWaypoint)->numPaths();
+	{
+		const CWaypoint* waypoint = CWaypoints::getWaypoint(m_iCurrentWaypoint);
 
+		if (waypoint != nullptr)
+			return waypoint->numPaths();
+	}
 	return 0;
 }
 
@@ -244,6 +248,10 @@ bool CWaypointNavigator :: randomDangerPath (Vector *vec)
 	for ( i = 0; i < pWpt->numPaths(); i ++ )
 	{
 		pNext = CWaypoints::getWaypoint(pWpt->getPath(i));
+
+		if (pNext == nullptr)
+			continue;
+
 		fBelief = getBelief(CWaypoints::getWaypointIndex(pNext));
 
 		if ( pNext == pOnRouteTo )
@@ -262,6 +270,10 @@ bool CWaypointNavigator :: randomDangerPath (Vector *vec)
 	for ( i = 0; i < pWpt->numPaths(); i ++ )
 	{
 		pNext = CWaypoints::getWaypoint(pWpt->getPath(i));
+
+		if (pNext == nullptr)
+			continue;
+
 		fBelief = getBelief(CWaypoints::getWaypointIndex(pNext));
 
 		if ( pNext == pOnRouteTo )
@@ -311,8 +323,12 @@ bool CWaypointNavigator::nextPointIsOnLadder()
 float CWaypointNavigator :: getNextYaw ()
 {
 	if ( m_iCurrentWaypoint != -1 )
-		return CWaypoints::getWaypoint(m_iCurrentWaypoint)->getAimYaw();
+	{
+		CWaypoint* waypoint = CWaypoints::getWaypoint(m_iCurrentWaypoint);
 
+		if (waypoint != nullptr)
+			return waypoint->getAimYaw();
+	}
 	return 0.0f;
 }
 
@@ -701,8 +717,12 @@ void CWaypointNavigator :: belief (const Vector& vOrigin, const Vector& vOther, 
 int CWaypointNavigator :: getCurrentFlags ()
 {
 	if ( m_iCurrentWaypoint != -1 )
-		return CWaypoints::getWaypoint(m_iCurrentWaypoint)->getFlags();
+	{
+		CWaypoint* waypoint = CWaypoints::getWaypoint(m_iCurrentWaypoint);
 
+		if (waypoint != nullptr)
+			return waypoint->getFlags();
+	}
 	return 0;
 }
 
@@ -1168,7 +1188,14 @@ bool CWaypointNavigator :: hasNextPoint ()
 // return the vector of the next point
 Vector CWaypointNavigator :: getNextPoint ()
 {
-	return CWaypoints::getWaypoint(m_iCurrentWaypoint)->getOrigin();
+	CWaypoint* waypoint = CWaypoints::getWaypoint(m_iCurrentWaypoint);
+	
+	if (waypoint == nullptr)
+	{
+		return Vector(); // Assuming Vector has a default constructor
+	}
+
+	return waypoint->getOrigin();
 }
 
 bool CWaypointNavigator :: getNextRoutePoint ( Vector *vPoint )
@@ -1179,9 +1206,12 @@ bool CWaypointNavigator :: getNextRoutePoint ( Vector *vPoint )
 		{
 			static CWaypoint *pW;
 			pW = CWaypoints::getWaypoint(head);
-			*vPoint = pW->getOrigin();// + pW->applyRadius();
 
-			return true;
+			if (pW != nullptr)
+			{
+				*vPoint = pW->getOrigin(); // + pW->applyRadius();
+				return true;
+			}
 		}
 	}
 
@@ -1406,7 +1436,7 @@ void CWaypoint::drawPaths(edict_t* pEdict, const unsigned short int iDrawType) c
 	const int iNumIn = numPathsToThisWaypoint();
 	for (int i = 0; i < iNumIn; i++)
 	{
-		if (CWaypoint* pFrom = CWaypoints::getWaypoint(getPathToThisWaypoint(i)))
+		if (const CWaypoint* pFrom = CWaypoints::getWaypoint(getPathToThisWaypoint(i)))
 		{
 			pFrom->drawPathBeam(const_cast<CWaypoint*>(this), iDrawType, true);
 		}
@@ -2104,9 +2134,21 @@ CWaypoint *CWaypoints :: getNestWaypoint ( int iTeam, int iArea, bool bForceArea
 }
 
 void CWaypoints :: deleteWaypoint (const int iIndex)
-{	
+{
 	// mark as not used
-	m_theWaypoints[iIndex].setUsed(false);	
+	m_theWaypoints[iIndex].setUsed(false);
+	// clearPaths() only empties this waypoint's outgoing list; without
+	// notifying the destinations first, their m_PathsTo still references
+	// iIndex and the incoming-beam visualisation (and checkReachable())
+	// would see a stale entry. Notify peers, then clear.
+	{
+		const CWaypoint* pWpt = &m_theWaypoints[iIndex];
+		for (const int iDest : *pWpt)
+		{
+			if (CWaypoint* pOther = getWaypoint(iDest))
+				pOther->removePathFrom(iIndex);
+		}
+	}
 	m_theWaypoints[iIndex].clearPaths();
 
 	// remove from waypoint locations
@@ -2231,7 +2273,16 @@ void CWaypoints :: deletePathsTo (const int iWpt)
 // Fixed; 23/01
 void CWaypoints :: deletePathsFrom (const int iWpt)
 {
-	m_theWaypoints[iWpt].clearPaths();
+	// notify each destination so its m_PathsTo loses the back-reference
+	// to iWpt, otherwise yellow incoming-path beams (and checkReachable())
+	// would still see iWpt as a source after clearPaths()
+	CWaypoint* pWpt = &m_theWaypoints[iWpt];
+	for (const int iDest : *pWpt)
+	{
+		if (CWaypoint* pOther = getWaypoint(iDest))
+			pOther->removePathFrom(iWpt);
+	}
+	pWpt->clearPaths();
 }
 
 int CWaypoints :: addWaypoint ( CClient *pClient, const char *type1, const char *type2, const char *type3, const char *type4, const bool bUseTemplate )
@@ -2535,6 +2586,9 @@ CWaypoint *CWaypoints::getNextCoverPoint ( CBot *pBot, CWaypoint *pCurrent, CWay
 	{
 		const int iNext = pCurrent->getPath(i);
 		CWaypoint* pNext = CWaypoints::getWaypoint(iNext);
+
+		if ( pNext == nullptr )
+			continue;
 
 		if ( pNext == pBlocking )
 			continue;
@@ -2916,6 +2970,9 @@ bool CWaypoint :: checkReachable ()
 		{
 			CWaypoint* pOther = CWaypoints::getWaypoint(getPathToThisWaypoint(i));
 
+			if ( pOther == nullptr )
+				continue;
+
 			if ( pOther->getFlags() == 0 )
 				break;
 
@@ -2924,7 +2981,7 @@ bool CWaypoint :: checkReachable ()
 				if ( pOther->checkGround() )
 					break;
 			}
-		
+
 			if ( getFlags() & CWaypointTypes::W_FL_OPENS_LATER )
 			{
 				if ( pOther->isPathOpened(m_vOrigin) )
