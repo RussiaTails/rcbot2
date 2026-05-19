@@ -89,7 +89,7 @@ void CBotSquads::removeSquadMember (CBotSquad* pSquad, const edict_t* pMember)
 edict_t *CBotSquad::getMember (const std::size_t iMember)
 {
 	// TODO: this is only used in CBotSquads::SquadJoin() -- inline the logic
-	if (iMember < 0 || iMember >= m_SquadMembers.size()) {
+	if (iMember >= m_SquadMembers.size()) {
 		return nullptr;
 	}
 	

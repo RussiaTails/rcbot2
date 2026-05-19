@@ -46,9 +46,26 @@ CBotProfile *CBotProfiles :: m_pDefaultProfile = nullptr;
 CBotProfile :: CBotProfile (const CBotProfile &other)
 {
 	*this = other;
+}
+
+CBotProfile &CBotProfile :: operator= (const CBotProfile &other)
+{
+	if (this == &other)
+		return *this;
+
+	m_iTeam = other.m_iTeam;
+	m_iVisionTicks = other.m_iVisionTicks;
+	m_iPathTicks = other.m_iPathTicks;
+	m_iClass = other.m_iClass;
+	m_iVisionTicksClients = other.m_iVisionTicksClients;
+	m_iSensitivity = other.m_iSensitivity;
+	m_fBraveness = other.m_fBraveness;
+	m_fAimSkill = other.m_fAimSkill;
 
 	m_szName = CStrings::getString(other.m_szName);
 	m_szModel = CStrings::getString(other.m_szModel);
+
+	return *this;
 }
 
 CBotProfile :: CBotProfile (

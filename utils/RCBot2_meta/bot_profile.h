@@ -13,6 +13,7 @@ public:
 		std::memset(this,0,sizeof(CBotProfile));
     }
 	CBotProfile (const CBotProfile &other);
+	CBotProfile &operator= (const CBotProfile &other);
 	// setup profile
 	CBotProfile (
 		const char *szName, 
