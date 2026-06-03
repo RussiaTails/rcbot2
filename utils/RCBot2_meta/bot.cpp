@@ -1815,6 +1815,8 @@ void CBot::debugBot(char* msg, const std::size_t msgSize)
 	const int currentWaypointID = hasNextPoint ? m_pNavigator->getCurrentWaypointID() : -1;
 	const int currentGoalID = hasNextPoint ? m_pNavigator->getCurrentGoalID() : -1;
 
+	const CBotSchedule *pCurrentSchedule = (m_pSchedules && !m_pSchedules->isEmpty()) ? m_pSchedules->getCurrentSchedule() : nullptr;
+
 	snprintf(msg, msgSize,
 		"Debugging bot: %s\n \
 		Current Util: %s \n \
@@ -1828,7 +1830,7 @@ void CBot::debugBot(char* msg, const std::size_t msgSize)
 		---CONDITIONS---\n%s",
 		m_szBotName,
 		m_CurrentUtil < BOT_UTIL_MAX + 1 ? g_szUtils[m_CurrentUtil] : "none",
-		!m_pSchedules || m_pSchedules->isEmpty() ? "none" : m_pSchedules->getCurrentSchedule()->getIDString(),
+		pCurrentSchedule != nullptr ? pCurrentSchedule->getIDString() : "none",
 		hastask ? task_string : "none",
 		g_szLookTaskToString[m_iLookTask],
 		currentWaypointID,
@@ -2230,14 +2232,15 @@ void CBot :: doMove ()
 #ifndef __linux__
 					if ( CClients::clientsDebugging(BOT_DEBUG_THINK) )
 					{
-						if (m_pAvoidEntity)
+						edict_t *pAvoidEnt = m_pAvoidEntity.get();
+						if (pAvoidEnt != nullptr)
 						{
-							const Vector m_vAvoidOrigin = CBotGlobals::entityOrigin(m_pAvoidEntity);
+							const Vector m_vAvoidOrigin = CBotGlobals::entityOrigin(pAvoidEnt);
 
 							debugoverlay->AddLineOverlay(getOrigin(), m_vAvoidOrigin, 0, 0, 255, false, 0.05f);
 							debugoverlay->AddLineOverlay(getOrigin(), m_bAvoidRight ? getOrigin() + vLeft * bot_avoid_strength.GetFloat() : getOrigin() - vLeft * bot_avoid_strength.GetFloat(), 0, 255, 0, false, 0.05f);
 							debugoverlay->AddLineOverlay(getOrigin(), getOrigin() + vMove / vMove.Length() * bot_avoid_strength.GetFloat(), 255, 0, 0, false, 0.05f);
-							debugoverlay->AddTextOverlayRGB(getOrigin() + Vector(0, 0, 100), 0, 0.05f, 255, 255, 255, 255, "Avoiding: %s", m_pAvoidEntity.get()->GetClassName());
+							debugoverlay->AddTextOverlayRGB(getOrigin() + Vector(0, 0, 100), 0, 0.05f, 255, 255, 255, 255, "Avoiding: %s", pAvoidEnt->GetClassName());
 						}
 					}
 #endif

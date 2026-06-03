@@ -154,10 +154,6 @@ bool CBotSynergy::needAmmo()
 			//break;
 		}
 		case SYN_WEAPON_CROSSBOW:
-		{
-			return iAmmo < 2;
-			//break;
-		}
 		case SYN_WEAPON_RPG:
 		{
 			return iAmmo < 2;
@@ -256,7 +252,7 @@ void CBotSynergy::modThink()
 	}
 
 	// Checks for nearby item boxes and try to break them
-	if (m_pNearbyItemCrate && distanceFrom(m_pNearbyItemCrate.get()) <= 400.0f && m_flPickUpTime <= engine->Time())
+	if (m_pNearbyItemCrate && distanceFrom(m_pNearbyItemCrate.get()) <= 400.0f && m_flUseCrateTime <= engine->Time())
 	{
 		if (!m_pSchedules->isCurrentSchedule(SCHED_SYN_BREAK_ICRATE))
 		{
@@ -294,7 +290,7 @@ void CBotSynergy::modThink()
 			m_pSchedules->removeSchedule(SCHED_SYN_BREAK_ICRATE);
 			m_pSchedules->addFront(new CSynBreakICrateSched(m_pNearbyItemCrate.get(), pWeapon));
 			debugMsg(BOT_DEBUG_THINK, "[MOD THINK] Breaking item crate");
-			m_flPickUpTime = engine->Time() + randomFloat(5.0f, 10.0f);
+			m_flUseCrateTime = engine->Time() + randomFloat(5.0f, 10.0f);
 		}
 	}
 
@@ -324,9 +320,13 @@ void CBotSynergy::updateConditions()
 {
 	CBot::updateConditions();
 
-	if (m_pEnemy.get() != nullptr)
+	edict_t *pEnemyEdict = m_pEnemy.get();
+	if (pEnemyEdict != nullptr)
 	{
-		if (CDataInterface::GetEntityHealth(m_pEnemy.get()->GetNetworkable()->GetBaseEntity()) <= 0)
+		IServerNetworkable* pNetworkable = pEnemyEdict->GetNetworkable();
+		CBaseEntity* pBaseEnt = pNetworkable != nullptr ? pNetworkable->GetBaseEntity() : nullptr;
+
+		if (pBaseEnt != nullptr && CDataInterface::GetEntityHealth(pBaseEnt) <= 0)
 		{
 			updateCondition(CONDITION_ENEMY_DEAD);
 			m_pNavigator->belief(getOrigin(), CBotGlobals::entityOrigin(m_pEnemy), bot_belief_fade.GetFloat(), distanceFrom(m_pEnemy), BELIEF_SAFETY);
@@ -793,11 +793,12 @@ void CBotSynergy::reachedCoverSpot(int flags)
 
 void CBotSynergy::handleWeapons()
 {
-	if (m_pEnemy && !hasSomeConditions(CONDITION_ENEMY_DEAD) &&
+	edict_t *pEnemyEdict = m_pEnemy.get();
+	if (pEnemyEdict != nullptr && !hasSomeConditions(CONDITION_ENEMY_DEAD) &&
 		hasSomeConditions(CONDITION_SEE_CUR_ENEMY) && wantToShoot() &&
 		isVisible(m_pEnemy) && isEnemy(m_pEnemy))
 	{
-		const char* szclassname = m_pEnemy.get()->GetClassName();
+		const char* szclassname = pEnemyEdict->GetClassName();
 		CBotWeapon* pWeapon;
 
 		if ((std::strncmp(szclassname, "npc_combinegunship", 18) == 0) || (std::strncmp(szclassname, "npc_combinedropship", 19) == 0) || (std::strncmp(szclassname, "npc_strider", 11) == 0) ||

@@ -371,16 +371,16 @@ void CDODBot :: killed ( edict_t *pVictim, char *weapon )
 {
 	CBot::killed(pVictim,weapon);
 
-	if ( pVictim && CBotGlobals::entityIsValid(pVictim) )
+	if (pVictim && CBotGlobals::entityIsValid(pVictim))
 		m_pNavigator->belief(CBotGlobals::entityOrigin(pVictim),getEyePosition(),bot_beliefmulti.GetFloat(),distanceFrom(pVictim),BELIEF_SAFETY);
 
-	if ( (m_pEnemy==pVictim) )
+	if (m_pWantToProne && m_pEnemy == pVictim)
 	{
 		ga_nn_value inputs[3] = {distanceFrom(m_pEnemy)/1000.0f,getHealthPercent(),m_fCurrentDanger/MAX_BELIEF};
 		m_pWantToProne->input(inputs);
 		m_pWantToProne->execute();
 
-		if ( m_bProne )
+		if (m_bProne)
 			m_pWantToProne->train(1.0f);
 		else
 			m_pWantToProne->train(0.0f);
@@ -408,13 +408,13 @@ void CDODBot :: died ( edict_t *pKiller, const char *pszWeapon )
 		if (CBotGlobals::entityIsValid(pKiller))
 			m_pNavigator->belief(CBotGlobals::entityOrigin(pKiller),getEyePosition(),bot_beliefmulti.GetFloat(),distanceFrom(pKiller),BELIEF_DANGER);
 
-		if ( (m_pEnemy==pKiller) )
+		if (m_pWantToProne && m_pEnemy == pKiller)
 		{
 			ga_nn_value inputs[3] = {distanceFrom(m_pEnemy)/1000.0f,getHealthPercent(),m_fCurrentDanger/MAX_BELIEF};
 			m_pWantToProne->input(inputs);
 			m_pWantToProne->execute();
 
-			if ( m_bProne )
+			if (m_bProne)
 				m_pWantToProne->train(0.0f);
 			else
 				m_pWantToProne->train(1.0f);
@@ -636,13 +636,13 @@ void CDODBot :: seeFriendlyDie ( edict_t *pDied, edict_t *pKiller, CWeapon *pWea
 		//if ( !bInvestigate && !bFollow )
 		//	updateCondition(CONDITION_CHANGED);
 
-		if ( (m_pEnemy==pKiller) )
+		if (m_pWantToProne && m_pEnemy == pKiller)
 		{
 			ga_nn_value inputs[3] = {distanceFrom(m_pEnemy)/1000.0f,getHealthPercent(),m_fCurrentDanger/MAX_BELIEF};
 			m_pWantToProne->input(inputs);
 			m_pWantToProne->execute();
 
-			if ( m_bProne )
+			if (m_bProne)
 				m_pWantToProne->train(0.0f);
 			else
 				m_pWantToProne->train(1.0f);
@@ -687,14 +687,17 @@ void CDODBot :: seeFriendlyKill ( edict_t *pTeamMate, edict_t *pDied, CWeapon *p
 			if (getHealthPercent() < 0.2f && randomFloat(0.0f,1.0f) > 0.75f)
 				addVoiceCommand(DOD_VC_NICE_SHOT);
 
-			ga_nn_value inputs[3] = {distanceFrom(m_pEnemy)/1000.0f,getHealthPercent(),m_fCurrentDanger/MAX_BELIEF};
-			m_pWantToProne->input(inputs);
-			m_pWantToProne->execute();
+			if (m_pWantToProne)
+			{
+				ga_nn_value inputs[3] = {distanceFrom(m_pEnemy)/1000.0f,getHealthPercent(),m_fCurrentDanger/MAX_BELIEF};
+				m_pWantToProne->input(inputs);
+				m_pWantToProne->execute();
 
-			if ( m_bProne )
-				m_pWantToProne->train(1.0f);
-			else
-				m_pWantToProne->train(0.0f);		
+				if (m_bProne)
+					m_pWantToProne->train(1.0f);
+				else
+					m_pWantToProne->train(0.0f);
+			}
 		}
 
 		if (m_pLastEnemy == pDied)
@@ -1257,7 +1260,7 @@ void CDODBot :: modThink ()
 		{
 			bool bProne = true;
 
-			if ( rcbot_prone_enemy_only.GetBool() && (m_pEnemy.get()!= nullptr) )
+			if (m_pWantToProne && rcbot_prone_enemy_only.GetBool() && m_pEnemy.get() != nullptr)
 			{
 				ga_nn_value inputs[3] = {distanceFrom(m_pEnemy)/1000.0f,getHealthPercent(),m_fCurrentDanger/MAX_BELIEF};
 				m_pWantToProne->input(inputs);
@@ -1265,7 +1268,7 @@ void CDODBot :: modThink ()
 				bProne = m_pWantToProne->fired();
 			}
 
-			if ( bProne )
+			if (bProne)
 			{
 				prone();
 			}
@@ -3385,11 +3388,11 @@ void CDODBot :: getTasks (unsigned iIgnore)
 
 bool CDODBot :: select_CWeapon ( CWeapon *pWeapon )
 {
-	char cmd[128];
+	char cmdBuf[128];
 
-	snprintf(cmd, sizeof(cmd), "use %s\n", pWeapon->getWeaponName());
+	snprintf(cmdBuf, sizeof(cmdBuf), "use %s\n", pWeapon->getWeaponName());
 
-	helpers->ClientCommand(m_pEdict,cmd);
+	helpers->ClientCommand(m_pEdict,cmdBuf);
 
 	return true;
 }
@@ -3399,11 +3402,11 @@ bool CDODBot :: selectBotWeapon ( CBotWeapon *pBotWeapon )
 	if ( const CWeapon *pSelect = pBotWeapon->getWeaponInfo() )
 	{
 		//int id = pSelect->getWeaponIndex();
-		char cmd[128];
+		char cmdBuf[128];
 
-		snprintf(cmd, sizeof(cmd), "use %s\n", pSelect->getWeaponName());
+		snprintf(cmdBuf, sizeof(cmdBuf), "use %s\n", pSelect->getWeaponName());
 
-		helpers->ClientCommand(m_pEdict,cmd);
+		helpers->ClientCommand(m_pEdict,cmdBuf);
 
 		return true;
 	}

@@ -294,15 +294,29 @@ bool CWaypointNavigator :: randomDangerPath (Vector *vec)
 
 Vector CWaypointNavigator :: getPath (const int pathid)
 {
-	 return CWaypoints::getWaypoint(CWaypoints::getWaypoint(m_iCurrentWaypoint)->getPath(pathid))->getOrigin();
+	const CWaypoint *pCurr = CWaypoints::getWaypoint(m_iCurrentWaypoint);
+	if (pCurr == nullptr)
+		return Vector();
+
+	CWaypoint *pNext = CWaypoints::getWaypoint(pCurr->getPath(pathid));
+	if (pNext == nullptr)
+		return Vector();
+
+	return pNext->getOrigin();
 }
 
 
 int CWaypointNavigator ::  getPathFlags (const int iPath)
 {
 	const CWaypoint *pWpt = CWaypoints::getWaypoint(m_iCurrentWaypoint);
+	if (pWpt == nullptr)
+		return 0;
 
-	return CWaypoints::getWaypoint(pWpt->getPath(iPath))->getFlags();
+	const CWaypoint *pNext = CWaypoints::getWaypoint(pWpt->getPath(iPath));
+	if (pNext == nullptr)
+		return 0;
+
+	return pNext->getFlags();
 }
 
 bool CWaypointNavigator::nextPointIsOnLadder()
@@ -1152,17 +1166,20 @@ bool CWaypointNavigator :: workRoute (const Vector& vFrom,
 
 		const int iParent = paths[iCurrentNode].getParent();
 
+		CWaypoint *pCurrWpt = CWaypoints::getWaypoint(iCurrentNode);
+		CWaypoint *pParentWpt = CWaypoints::getWaypoint(iParent);
+
 		// crash bug fix
-		if ( iParent != -1 )
-			fDistance += (CWaypoints::getWaypoint(iCurrentNode)->getOrigin() - CWaypoints::getWaypoint(iParent)->getOrigin()).Length();
-#ifndef __linux__		
-		if ( rcbot_debug_show_route.GetBool() )
+		if (iParent != -1 && pCurrWpt != nullptr && pParentWpt != nullptr)
+			fDistance += (pCurrWpt->getOrigin() - pParentWpt->getOrigin()).Length();
+#ifndef __linux__
+		if (rcbot_debug_show_route.GetBool() && pCurrWpt != nullptr && pParentWpt != nullptr)
 		{
 			edict_t *pListenEdict; //Unused? [APG]RoboCop[CL]
 
 			if (!engine->IsDedicatedServer() && (pListenEdict = CClients::getListenServerClient())!= nullptr)
 			{
-				debugoverlay->AddLineOverlayAlpha(CWaypoints::getWaypoint(iCurrentNode)->getOrigin()+Vector(0,0,8.0f),CWaypoints::getWaypoint(iParent)->getOrigin()+Vector(0,0,8.0f),255,255,255,255,false,5.0f);
+				debugoverlay->AddLineOverlayAlpha(pCurrWpt->getOrigin()+Vector(0,0,8.0f),pParentWpt->getOrigin()+Vector(0,0,8.0f),255,255,255,255,false,5.0f);
 			}
 		}
 #endif
@@ -1185,7 +1202,9 @@ bool CWaypointNavigator :: workRoute (const Vector& vFrom,
 	}
 	else
 	{
-		m_vGoal = CWaypoints::getWaypoint(m_iGoalWaypoint)->getOrigin();
+		CWaypoint *pGoalWpt = CWaypoints::getWaypoint(m_iGoalWaypoint);
+		if (pGoalWpt != nullptr)
+			m_vGoal = pGoalWpt->getOrigin();
 	}
 
 	return true; 
@@ -1346,7 +1365,8 @@ void CWaypointNavigator :: updatePosition ()
 			}
 			else
 			{
-				const int iWaypointFlagsPrev = CWaypoints::getWaypoint(m_iCurrentWaypoint)->getFlags();
+				const CWaypoint *pPrevWpt = CWaypoints::getWaypoint(m_iCurrentWaypoint);
+				const int iWaypointFlagsPrev = pPrevWpt != nullptr ? pPrevWpt->getFlags() : 0;
 				const int iPrevWpt = m_iPrevWaypoint;
 				m_vPreviousPoint = m_pBot->getOrigin();
 				m_iPrevWaypoint = m_iCurrentWaypoint;

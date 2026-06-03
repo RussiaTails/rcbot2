@@ -1592,7 +1592,7 @@ void CBotFortress :: selectTeam ()
 
 void CBotFortress :: selectClass ()
 {
-	const char* cmd = nullptr;
+	const char* szJoinCmd = nullptr;
 	TF_Class _class;
 
 	if ( m_iDesiredClass == 0 )
@@ -1609,42 +1609,42 @@ void CBotFortress :: selectClass ()
 	m_iClass = _class;
 	if (_class == TF_CLASS_SCOUT)
 	{
-		cmd = "joinclass scout";
+		szJoinCmd = "joinclass scout";
 	}
 	else if (_class == TF_CLASS_ENGINEER)
 	{
-		cmd = "joinclass engineer";
+		szJoinCmd = "joinclass engineer";
 	}
 	else if (_class == TF_CLASS_DEMOMAN)
 	{
-		cmd = "joinclass demoman";
+		szJoinCmd = "joinclass demoman";
 	}
 	else if (_class == TF_CLASS_SOLDIER)
 	{
-		cmd = "joinclass soldier";
+		szJoinCmd = "joinclass soldier";
 	}
 	else if (_class == TF_CLASS_HWGUY)
 	{
-		cmd = "joinclass heavyweapons";
+		szJoinCmd = "joinclass heavyweapons";
 	}
 	else if (_class == TF_CLASS_MEDIC)
 	{
-		cmd = "joinclass medic";
+		szJoinCmd = "joinclass medic";
 	}
 	else if (_class == TF_CLASS_SPY)
 	{
-		cmd = "joinclass spy";
+		szJoinCmd = "joinclass spy";
 	}
 	else if (_class == TF_CLASS_PYRO)
 	{
-		cmd = "joinclass pyro";
+		szJoinCmd = "joinclass pyro";
 	}
 	else if (_class == TF_CLASS_SNIPER)
 	{
-		cmd = "joinclass sniper";
+		szJoinCmd = "joinclass sniper";
 	}
-	if (cmd != nullptr) {
-		helpers->ClientCommand(m_pEdict, cmd);
+	if (szJoinCmd != nullptr) {
+		helpers->ClientCommand(m_pEdict, szJoinCmd);
 	}
 
 	m_fChangeClassTime = engine->Time() + randomFloat(bot_min_cc_time.GetFloat(), bot_max_cc_time.GetFloat());
@@ -8492,7 +8492,7 @@ TF_Class CBotFF::getClass()
 
 void CBotFF::selectClass()
 {
-	const char* cmd = nullptr;
+	const char* szJoinCmd = nullptr;
 	TF_Class _class;
 
 	if (m_iDesiredClass == 0)
@@ -8503,36 +8503,36 @@ void CBotFF::selectClass()
 	m_iClass = _class;
 
 	if (_class == TF_CLASS_SCOUT)
-		cmd = "class scout";
+		szJoinCmd = "class scout";
 	else if (_class == TF_CLASS_SNIPER)
-		cmd = "class sniper";
+		szJoinCmd = "class sniper";
 	else if (_class == TF_CLASS_SOLDIER)
-		cmd = "class soldier";
+		szJoinCmd = "class soldier";
 	else if (_class == TF_CLASS_DEMOMAN)
-		cmd = "class demoman";
+		szJoinCmd = "class demoman";
 	else if (_class == TF_CLASS_MEDIC)
-		cmd = "class medic";
+		szJoinCmd = "class medic";
 	else if (_class == TF_CLASS_HWGUY)
-		cmd = "class hwguy";
+		szJoinCmd = "class hwguy";
 	else if (_class == TF_CLASS_PYRO)
-		cmd = "class pyro";
+		szJoinCmd = "class pyro";
 	else if (_class == TF_CLASS_SPY)
-		cmd = "class spy";
+		szJoinCmd = "class spy";
 	else if (_class == TF_CLASS_ENGINEER)
-		cmd = "class engineer";
+		szJoinCmd = "class engineer";
 
-	if (cmd != nullptr)
+	if (szJoinCmd != nullptr)
 	{
 		// Only use helpers->ClientCommand - the logs confirm FF processes it
 		// (player_changeclass events fire). Using engine->ClientCommand too
 		// causes double class commands that may interfere with FF's spawn logic.
-		helpers->ClientCommand(m_pEdict, cmd);
+		helpers->ClientCommand(m_pEdict, szJoinCmd);
 	}
 
 	m_fClassCommandTime = engine->Time();
 	m_fChangeClassTime = engine->Time() + randomFloat(bot_min_cc_time.GetFloat(), bot_max_cc_time.GetFloat());
 
-	logger->Log(LogLevel::INFO, "CBotFF::selectClass - %s sent '%s' (class %d, desired %d)", m_szBotName, cmd ? cmd : "null", static_cast<int>(_class), m_iDesiredClass);
+	logger->Log(LogLevel::INFO, "CBotFF::selectClass - %s sent '%s' (class %d, desired %d)", m_szBotName, szJoinCmd ? szJoinCmd : "null", static_cast<int>(_class), m_iDesiredClass);
 }
 
 bool CBotFF::startGame()

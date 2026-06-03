@@ -63,6 +63,8 @@ class CPopulation
 {
 public:
 
+	~CPopulation () { freeMemory(); }
+
 	void freeMemory ();
 
 	void setGA ( CGA *ga ) { m_ga = ga; }
@@ -114,9 +116,18 @@ public:
 		init(iMaxPopSize);
 	}
 
+	~CGA ()
+	{
+		delete m_theSelectFunction;
+		m_theSelectFunction = nullptr;
+	}
+
 	void init (const std::size_t iMaxPopSize=0)
 	{
-		m_theSelectFunction = new CRouletteSelection();
+		// Only install the default selector if one wasn't supplied by the
+		// custom constructor — otherwise we'd leak the caller's selector.
+		if ( m_theSelectFunction == nullptr )
+			m_theSelectFunction = new CRouletteSelection();
 
 		m_thePopulation.setGA(this);
 		m_theNewPopulation.setGA(this);
@@ -125,7 +136,7 @@ public:
 		m_fPrevAvgFitness = 0.0f;
 
 		m_iMaxPopSize = iMaxPopSize;
-		
+
 		if ( m_iMaxPopSize == 0 )
 			m_iMaxPopSize = g_iDefaultMaxPopSize;
 	}
@@ -160,6 +171,6 @@ private:
 	unsigned m_iNumGenerations;
 	float m_fPrevAvgFitness;
 
-	ISelection *m_theSelectFunction;
+	ISelection* m_theSelectFunction = nullptr;
 };
 #endif

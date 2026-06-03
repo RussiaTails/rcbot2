@@ -64,14 +64,14 @@ void CBotGAValues::clear()
 // crossover with other individual
 void CBotGAValues::crossOver(IIndividual* other)
 {
-    const std::size_t iPoint = randomInt(0, static_cast<int>(m_theValues.size()));
-
     CBotGAValues* vother = static_cast<CBotGAValues*>(other);
 
-    for (std::size_t i = 0; i < iPoint; i++)
-    {
-        std::swap(m_theValues[i], vother->m_theValues[i]);
-    }
+    if (m_theValues.size() != vother->m_theValues.size() || m_theValues.empty())
+        return;
+
+    // Single-point crossover: swap the tail [iPoint, end) so the two genomes
+    // become (mum's head + dad's tail) and (dad's head + mum's tail).
+    const std::size_t iPoint = randomInt(0, static_cast<int>(m_theValues.size()));
 
     for (std::size_t i = iPoint; i < m_theValues.size(); i++)
     {
@@ -86,9 +86,11 @@ void CBotGAValues::mutate()
     {
         if (randomFloat(0, 1) < CGA::g_fMutateRate)
         {
+            // Additive perturbation in [-g_fMaxPerturbation, +g_fMaxPerturbation].
+            // (A multiplicative form would leave 0-valued genes permanently stuck at 0.)
             const float fCurrentVal = get(i);
 
-            set(i, fCurrentVal + fCurrentVal * (-1 + randomFloat(0, 2)) * CGA::g_fMaxPerturbation);
+            set(i, fCurrentVal + (-1.0f + randomFloat(0, 2)) * CGA::g_fMaxPerturbation);
         }
     }
 }

@@ -72,6 +72,11 @@ void CPopulation::add(IIndividual* individual)
 
 void CPopulation::freeMemory()
 {
+	// Population owns the individuals it holds — destroy them before clearing.
+	// pick() removes its return value from the vector, so anything still here is owned.
+	for (IIndividual* individual : m_theIndividuals)
+		delete individual;
+
 	m_theIndividuals.clear();
 }
 
@@ -148,6 +153,14 @@ void CGA::epoch()
 		IIndividual* mum = m_theSelectFunction->select(&m_thePopulation);
 		IIndividual* dad = m_theSelectFunction->select(&m_thePopulation);
 
+		if (mum == nullptr || dad == nullptr)
+		{
+			// Selection failed (empty/degenerate parent population); abort
+			// so we don't spin forever or deref a null parent.
+			logger->Log(LogLevel::WARN, "GA Error: epoch aborted - selection returned null.");
+			break;
+		}
+
 		IIndividual* baby1 = mum->copy();
 		IIndividual* baby2 = dad->copy();
 
@@ -208,12 +221,20 @@ std::unique_ptr<IIndividual> CGA::pick()
 IIndividual* CRouletteSelection::select(CPopulation* population)
 {
     if (population->size() == 0)
+    {
         logger->Log(LogLevel::WARN, "GA Error: Population is empty. Selection cannot proceed.");
+        return nullptr;
+    }
 
     const ga_nn_value totalFitness = population->totalFitness();
 
+    // If every individual has zero (or negative) fitness, roulette is undefined.
+    // Fall back to uniform-random selection so the GA can still make progress.
     if (totalFitness <= 0.0f)
-        logger->Log(LogLevel::WARN, "GA Error: Total fitness is zero or negative. Selection cannot proceed.");
+    {
+        const std::size_t iRnd = static_cast<std::size_t>(randomInt(0, static_cast<int>(population->size()) - 1));
+        return population->get(iRnd);
+    }
 
     const ga_nn_value fFitnessSlice = randomFloat(0, totalFitness);
 
@@ -221,13 +242,6 @@ IIndividual* CRouletteSelection::select(CPopulation* population)
 
 	for (std::size_t i = 0; i < population->size(); i++)
 	{
-		// Ensure the index is within the range of int [APG]RoboCop[CL]
-		if (i > static_cast<std::size_t>(std::numeric_limits<int>::max()))
-		{
-			logger->Log(LogLevel::ERROR, "GA Error: Index exceeds the range of int. Aborting operation.");
-			return nullptr; // Or handle the error appropriately
-		}
-
 		IIndividual* individual = population->get(i);
 
 		fFitnessSoFar += individual->getFitness();
