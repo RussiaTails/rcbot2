@@ -87,11 +87,6 @@ ga_nn_value CNeuron::execute()
 	return ga_nn_value();
 }
 
-bool CNeuron::fired() //TODO: experimental [APG]RoboCop[CL]
-{
-	return false;
-}
-
 ga_nn_value CPerceptron :: execute ()
 {
 	// bias weight
