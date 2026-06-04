@@ -1267,21 +1267,15 @@ void CWaypointNavigator :: rollBackPosition ()
 	m_vPreviousPoint = m_pBot->getOrigin();
 	m_iCurrentWaypoint = CWaypointLocations::NearestWaypoint(m_vPreviousPoint,CWaypointLocations::REACHABLE_RANGE,m_iLastFailedWpt,true,false,true, nullptr,false,m_pBot->getTeam());
 
-	// TODO: figure out what this is actually intended to do
-	while ( !m_currentRoute.empty() ) // reached goal!!
-	{
-		const int iRouteWaypoint = m_currentRoute.top();
-		m_currentRoute.pop();
-		if (m_iCurrentWaypoint == iRouteWaypoint && !m_currentRoute.empty())
-		{
-			m_iCurrentWaypoint = m_currentRoute.top();
-			m_currentRoute.pop();
-		}
-	}
+	// The bot strayed off the waypoint network (e.g. a medic following a heal
+	// target), so the queued route is stale. Re-anchoring m_iCurrentWaypoint to
+	// the bot's body above is the only thing that needs to survive: every caller
+	// fail()s immediately after, which makes the next nav task rebuild the route
+	// from scratch. Just discard the stale route here.
+	std::stack<int>().swap(m_currentRoute);
 
-	if ( m_iCurrentWaypoint == -1 ) 
+	if ( m_iCurrentWaypoint == -1 )
 		m_iCurrentWaypoint = CWaypointLocations::NearestWaypoint(m_pBot->getOrigin(),CWaypointLocations::REACHABLE_RANGE,-1,true,false,true, nullptr,false,m_pBot->getTeam());
-	// find waypoint in route
 }
 // update the bots current walk vector
 void CWaypointNavigator :: updatePosition ()
