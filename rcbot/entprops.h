@@ -51,6 +51,11 @@ class CBotEntProp
 {
 public:
 	void Init(bool reset = false);
+	// True once RCBot2's SourceMod extension is loaded and the entity-property
+	// helpers (sm_gamehelpers et al.) are valid. The bot AI runs on Metamod's
+	// GameFrame hook, which can fire before the SM extension is ready, so callers
+	// on that path must check this before using any GetEntProp*/SetEntProp* call [APG]RoboCop[CL]
+	bool isAvailable() const;
 	int GetEntProp(int entity, PropType proptype, const char *prop, int size = 4, int element = 0);
 	int *GetEntPropPointer(int entity, PropType proptype, const char *prop, int size = 4, int element = 0);
 	bool GetEntPropBool(int entity, PropType proptype, const char *prop, int element = 0);

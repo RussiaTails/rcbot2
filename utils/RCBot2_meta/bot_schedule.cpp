@@ -807,10 +807,6 @@ CCSSPlantBombSched::CCSSPlantBombSched(CWaypoint *pWaypoint, CWaypoint *pRoute)
 /////////////////////////////////////////////
 void CBotSchedule :: execute ( CBot *pBot )
 {
-	// current task
-	static CBotTask *pTask;
-	static eTaskState iState;
-
 	if ( m_Tasks.empty() )
 	{
 		m_bFailed = true;
@@ -818,7 +814,7 @@ void CBotSchedule :: execute ( CBot *pBot )
 	}
 
 	// why would task ever be null??
-	pTask = m_Tasks.front();
+	CBotTask *pTask = m_Tasks.front();
 
 	if ( pTask == nullptr)
 	{
@@ -826,7 +822,7 @@ void CBotSchedule :: execute ( CBot *pBot )
 		return;
 	}
 
-	iState = pTask->isInterrupted(pBot);
+	const eTaskState iState = pTask->isInterrupted(pBot);
 
 	if ( iState == STATE_FAIL )
 		pTask->fail();

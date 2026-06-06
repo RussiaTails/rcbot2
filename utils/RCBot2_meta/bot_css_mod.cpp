@@ -65,7 +65,7 @@ float CCounterStrikeSourceMod::m_fRoundStartTime = 0.0f;
 float CCounterStrikeSourceMod::m_fBombPlantedTime = 0.0f;
 bool CCounterStrikeSourceMod::m_bIsBombPlanted = false;
 bool CCounterStrikeSourceMod::m_bBombWasFound = false;
-CBaseHandle CCounterStrikeSourceMod::m_hBomb = NULL;
+CBaseHandle CCounterStrikeSourceMod::m_hBomb; // default-constructs to an invalid handle (portable; TF2 SDK CBaseHandle has no int ctor) [APG]RoboCop[CL]
 std::vector<CBaseHandle> CCounterStrikeSourceMod::m_hHostages;
 
 void CCounterStrikeSourceMod::initMod()

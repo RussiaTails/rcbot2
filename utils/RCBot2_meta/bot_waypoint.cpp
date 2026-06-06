@@ -1280,16 +1280,12 @@ void CWaypointNavigator :: rollBackPosition ()
 // update the bots current walk vector
 void CWaypointNavigator :: updatePosition ()
 {
-	static Vector vWptOrigin;
-	static float fRadius; //Unused? [APG]RoboCop[CL]
-	static float fPrevBelief; //Unused? [APG]RoboCop[CL]
-	static float fBelief; //Unused? [APG]RoboCop[CL]
+	Vector vWptOrigin;
+	QAngle aim;
+	Vector vaim;
 
-	static QAngle aim;
-	static Vector vaim;
-
-	fPrevBelief = 0.0f;
-	fBelief = 0.0f;
+	float fPrevBelief = 0.0f;
+	float fBelief = 0.0f;
 
 	if ( m_iCurrentWaypoint == -1 ) // invalid
 	{
@@ -1309,13 +1305,11 @@ void CWaypointNavigator :: updatePosition ()
 	aim = QAngle(0,pWaypoint->getAimYaw(),0);
 	AngleVectors(aim,&vaim);
 
-	fRadius = pWaypoint->getRadius();
-
 	vWptOrigin = pWaypoint->getOrigin();
 
 	if ( !m_bWorkingRoute )
 	{
-		static bool bTouched;
+		bool bTouched;
 		const bool movetype_ok = CClassInterface::isMoveType(m_pBot->getEdict(),MOVETYPE_LADDER)||CClassInterface::isMoveType(m_pBot->getEdict(),MOVETYPE_FLYGRAVITY);
 
 		//bTouched = false;

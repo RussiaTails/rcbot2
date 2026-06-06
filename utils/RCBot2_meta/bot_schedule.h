@@ -129,8 +129,12 @@ public:
 
 	virtual ~CBotSchedule()
 	{
-		freeMemory(); // own our tasks: deleting a schedule frees its tasks (RAII)
+		freeMemory(); // own our tasks: deleting a schedule frees its tasks (RAII) [APG]RoboCop[CL]
 	}
+
+	// Owns its tasks (freed in the destructor) - forbid copying to avoid a double-free [APG]RoboCop[CL]
+	CBotSchedule(const CBotSchedule&) = delete;
+	CBotSchedule& operator=(const CBotSchedule&) = delete;
 
 	void addTask( CBotTask *pTask );
 

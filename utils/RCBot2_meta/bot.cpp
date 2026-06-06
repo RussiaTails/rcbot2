@@ -86,6 +86,7 @@
 #include "bot_mods.h"
 
 #include "rcbot/logging.h"
+#include "rcbot/entprops.h"
 
 #include <algorithm>
 #include <random>
@@ -3367,6 +3368,14 @@ void CBots :: botThink ()
 	static CBot *pBot;
 
 	const bool bBotStop = bot_stop.GetInt() > 0;
+
+	// The bot AI runs on Metamod's GameFrame hook and reads entity netprops via
+	// RCBot2's SourceMod extension (sm_gamehelpers). On a map change the SM
+	// extension can lag a frame behind MM:S (or fail to load entirely), leaving
+	// sm_gamehelpers null -- thinking then crashes in CBotEntProp::IndexToAThings.
+	// Skip the frame until the entprop layer is ready. (crash fix for TF2) [APG]RoboCop[CL]
+	if ( !entprops->isAvailable() )
+		return;
 
 #ifdef _DEBUG
 

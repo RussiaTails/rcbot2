@@ -329,6 +329,14 @@ bool CBotEntProp::FindSendProp(SourceMod::sm_sendprop_info_t *info, CBaseEntity 
 	return true;
 }
 
+/* True when the SourceMod extension is loaded and the entity-property helper
+   interfaces are valid. Guards the bot-AI (GameFrame) path against running
+   before/without the SM extension, which would null-deref sm_gamehelpers. */
+bool CBotEntProp::isAvailable() const
+{
+	return sm_gamehelpers != nullptr;
+}
+
 /* Given an entity reference or index, fill out a CBaseEntity and/or edict.
    If lookup is successful, returns true and writes back the two parameters.
    If lookup fails, returns false and doesn't touch the params.  */
