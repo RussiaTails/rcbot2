@@ -3645,8 +3645,8 @@ void CBotTF2::handleWeapons()
 	//
 	// Handle attacking at this point
 	//
-	if ( m_pEnemy && !hasSomeConditions(CONDITION_ENEMY_DEAD) && 
-		hasSomeConditions(CONDITION_SEE_CUR_ENEMY) && wantToShoot() && 
+	if ( m_pEnemy && !hasSomeConditions(CONDITION_ENEMY_DEAD) &&
+		hasSomeConditions(CONDITION_SEE_CUR_ENEMY) && wantToShoot() &&
 		isVisible(m_pEnemy) && isEnemy(m_pEnemy) )
 	{
 		CBotWeapon* pWeapon = m_pWeapons->getBestWeapon(m_pEnemy, !hasFlag(), !hasFlag(), rcbot_melee_only.GetBool(), false,
@@ -4665,10 +4665,14 @@ void CBotTF2 :: getTasks ( unsigned iIgnore )
 
 	const char* szmapname = mapname.ToCStr();
 
-	// if in setup time this will tell bot not to shoot yet
-
-	wantToShoot(CTeamFortress2Mod::hasRoundStarted() || (CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE) || std::strncmp(szmapname, "htf_", 4) != 0));
-	wantToListen(CTeamFortress2Mod::hasRoundStarted() || (CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE) || std::strncmp(szmapname, "htf_", 4)	!= 0));
+	// Hold fire/listening until the round has actually started (hasRoundStarted()
+	// is false during the pre-round freeze AND setup time). The exceptions are
+	// game modes with no setup gate -- cart race and hunted (htf_) maps -- where
+	// bots may engage immediately. NOTE: the htf_ test must be "== 0" (name starts
+	// with "htf_"); the old "!= 0" matched every NON-htf map, forcing wantToShoot
+	// true everywhere and letting bots fire during setup [APG]RoboCop[CL]
+	wantToShoot(CTeamFortress2Mod::hasRoundStarted() || (CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE) || std::strncmp(szmapname, "htf_", 4) == 0));
+	wantToListen(CTeamFortress2Mod::hasRoundStarted() || (CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE) || std::strncmp(szmapname, "htf_", 4) == 0));
 
 	if ( !hasSomeConditions(CONDITION_CHANGED) && !m_pSchedules->isEmpty() )
 		return;
