@@ -331,10 +331,12 @@ bool CBotEntProp::FindSendProp(SourceMod::sm_sendprop_info_t *info, CBaseEntity 
 
 /* True when the SourceMod extension is loaded and the entity-property helper
    interfaces are valid. Guards the bot-AI (GameFrame) path against running
-   before/without the SM extension, which would null-deref sm_gamehelpers. */
+   before/without the SM extension, which would null-deref sm_gamehelpers.
+   Both interfaces are acquired together in SM_AcquireInterfaces and are used
+   on the per-entity lookup path (sm_players in IndexToAThings). */
 bool CBotEntProp::isAvailable() const
 {
-	return sm_gamehelpers != nullptr;
+	return sm_gamehelpers != nullptr && sm_players != nullptr;
 }
 
 /* Given an entity reference or index, fill out a CBaseEntity and/or edict.
@@ -342,6 +344,12 @@ bool CBotEntProp::isAvailable() const
    If lookup fails, returns false and doesn't touch the params.  */
 bool CBotEntProp::IndexToAThings(const int num, CBaseEntity** pEntData, edict_t** pEdictData)
 {
+	// The bot AI may call into the entprop layer before RCBot2's SourceMod
+	// extension has loaded (sm_gamehelpers/sm_players still null). Bail out
+	// quietly so callers fall back to safe defaults instead of null-deref. [APG]RoboCop[CL]
+	if (!isAvailable())
+		return false;
+
 	if (num <= 0) {
 		logger->Log(LogLevel::ERROR, "Invalid entity reference %d", num);
 		return false;
@@ -386,6 +394,19 @@ bool CBotEntProp::IndexToAThings(const int num, CBaseEntity** pEntData, edict_t*
 	return true;
 }
 
+/* Logs the standard "entity invalid" error for a failed lookup. Stays silent
+   when the entprop layer isn't available: in that case IndexToAThings has
+   already bailed and sm_gamehelpers is null, so logging here (it calls
+   sm_gamehelpers->ReferenceToIndex) would both crash and spam every frame
+   for every bot. Keeps the existing behaviour when the layer is ready. [APG]RoboCop[CL] */
+void CBotEntProp::logEntityInvalid(const int ref) const
+{
+	if (!isAvailable())
+		return;
+
+	logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(ref), ref);
+}
+
 /// @brief Retrieves an integer value in an entity's property.
 /// @param entity Entity/edict index.
 /// @param proptype Property type.
@@ -405,7 +426,7 @@ int CBotEntProp::GetEntProp(const int entity, const PropType proptype, const cha
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return 0;
 	}
 
@@ -535,7 +556,7 @@ int *CBotEntProp::GetEntPropPointer(const int entity, const PropType proptype, c
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return nullptr;
 	}
 
@@ -677,7 +698,7 @@ bool *CBotEntProp::GetEntPropBoolPointer(const int entity, const PropType propty
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return nullptr;
 	}
 
@@ -792,7 +813,7 @@ bool CBotEntProp::SetEntProp(const int entity, const PropType proptype, const ch
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return false;
 	}
 
@@ -924,7 +945,7 @@ float CBotEntProp::GetEntPropFloat(const int entity, const PropType proptype, co
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return 0.0f;
 	}
 
@@ -999,7 +1020,7 @@ float *CBotEntProp::GetEntPropFloatPointer(const int entity, const PropType prop
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return nullptr;
 	}
 
@@ -1075,7 +1096,7 @@ bool CBotEntProp::SetEntPropFloat(const int entity, const PropType proptype, con
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return false;
 	}
 
@@ -1166,7 +1187,7 @@ int CBotEntProp::GetEntPropEnt(const int entity, const PropType proptype, const 
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return -1;
 	}
 
@@ -1363,7 +1384,7 @@ bool CBotEntProp::SetEntPropEnt(const int entity, const PropType proptype, const
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return false;
 	}
 
@@ -1448,7 +1469,7 @@ bool CBotEntProp::SetEntPropEnt(const int entity, const PropType proptype, const
 	CBaseEntity *pOther = GetEntity(other);
 	if (!pOther && other != -1)
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(other), other);
+		logEntityInvalid(other);
 		return false;
 	}
 
@@ -1535,7 +1556,7 @@ Vector CBotEntProp::GetEntPropVector(const int entity, const PropType proptype, 
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return {0,0,0};
 	}
 
@@ -1628,7 +1649,7 @@ Vector *CBotEntProp::GetEntPropVectorPointer(const int entity, const PropType pr
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return nullptr;
 	}
 
@@ -1722,7 +1743,7 @@ bool CBotEntProp::SetEntPropVector(const int entity, const PropType proptype, co
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return false;
 	}
 
@@ -1827,7 +1848,7 @@ char *CBotEntProp::GetEntPropString(const int entity, const PropType proptype, c
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return nullptr;
 	}
 
@@ -1962,7 +1983,7 @@ bool CBotEntProp::SetEntPropString(int entity, PropType proptype, const char *pr
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return false;
 	}
 
@@ -2103,7 +2124,7 @@ int CBotEntProp::GetEntData(const int entity, const int offset, const int size)
 
 	if (!pEntity)
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return 0;
 	}
 
@@ -2141,7 +2162,7 @@ bool CBotEntProp::SetEntData(const int entity, const int offset, const int value
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return false;
 	}
 
@@ -2191,7 +2212,7 @@ float CBotEntProp::GetEntDataFloat(const int entity, const int offset)
 
 	if (!pEntity)
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return 0.0f;
 	}
 
@@ -2217,7 +2238,7 @@ bool CBotEntProp::SetEntDataFloat(const int entity, const int offset, const floa
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return false;
 	}
 
@@ -2250,7 +2271,7 @@ int CBotEntProp::GetEntDataEnt(const int entity, const int offset)
 
 	if (!pEntity)
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return -1;
 	}
 
@@ -2285,7 +2306,7 @@ bool CBotEntProp::SetEntDataEnt(const int entity, const int offset, const int va
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return false;
 	}
 
@@ -2307,7 +2328,7 @@ bool CBotEntProp::SetEntDataEnt(const int entity, const int offset, const int va
 
 		if (!pOther)
 		{
-			logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(value), value);
+			logEntityInvalid(value);
 			return false;
 		}
 
@@ -2333,7 +2354,7 @@ Vector CBotEntProp::GetEntDataVector(const int entity, const int offset)
 
 	if (!pEntity)
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return {0,0,0};
 	}
 
@@ -2361,7 +2382,7 @@ bool CBotEntProp::SetEntDataVector(const int entity, const int offset, const Vec
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return false;
 	}
 
@@ -2395,7 +2416,7 @@ char *CBotEntProp::GetEntDataString(const int entity, const int offset, const in
 
 	if (!pEntity)
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return nullptr;
 	}
 
@@ -2435,7 +2456,7 @@ bool CBotEntProp::SetEntDataString(const int entity, const int offset, const cha
 
 	if (!IndexToAThings(entity, &pEntity, &pEdict))
 	{
-		logger->Log(LogLevel::ERROR, "Entity %d (%d) is invalid", sm_gamehelpers->ReferenceToIndex(entity), entity);
+		logEntityInvalid(entity);
 		return false;
 	}
 
@@ -2458,8 +2479,22 @@ bool CBotEntProp::SetEntDataString(const int entity, const int offset, const cha
 	return true;
 }
 
+/* sm_sdktools (the SDKTools interface) is acquired late, in
+   RCBotSourceModExt::LateLoadExtensions, and is null until then (or forever if
+   the SDKTools extension isn't present). Return null instead of dereferencing
+   it so the gamerules accessors fall back to their existing "lookup failed"
+   path rather than crashing. [APG]RoboCop[CL] */
+static void *SafeGetGameRules()
+{
+	return sm_sdktools != nullptr ? sm_sdktools->GetGameRules() : nullptr;
+}
+
 CBaseEntity *CBotEntProp::GetGameRulesProxyEntity()
 {
+	// Entprop layer not ready yet -- avoid null-deref of sm_gamehelpers/sm_players [APG]RoboCop[CL]
+	if (!isAvailable())
+		return nullptr;
+
 	static int proxyEntRef = -1;
 	CBaseEntity *pProxy;
 	if (proxyEntRef == -1 || (pProxy = sm_gamehelpers->ReferenceToEntity(proxyEntRef)) == nullptr)
@@ -2482,7 +2517,7 @@ int CBotEntProp::GameRules_GetProp(const char *prop, const int size, const int e
 	int offset;
 	int bit_count;
 	bool is_unsigned = false; //Unused? [APG]RoboCop[CL]
-	void *pGameRules = sm_sdktools->GetGameRules();
+	void *pGameRules = SafeGetGameRules();
 
 	if (!pGameRules || !grclassname || !std::strcmp(grclassname, ""))
 	{
@@ -2544,7 +2579,7 @@ float CBotEntProp::GameRules_GetPropFloat(const char *prop, const int element) c
 {
 	int offset;
 	int bit_count; //Unused? [APG]RoboCop[CL]
-	void *pGameRules = sm_sdktools->GetGameRules();
+	void *pGameRules = SafeGetGameRules();
 
 	if (!pGameRules || !grclassname || !std::strcmp(grclassname, ""))
 	{
@@ -2566,7 +2601,7 @@ int CBotEntProp::GameRules_GetPropEnt(const char *prop, const int element) const
 {
 	int offset;
 	int bit_count; //Unused? [APG]RoboCop[CL]
-	void *pGameRules = sm_sdktools->GetGameRules();
+	void *pGameRules = SafeGetGameRules();
 
 	if (!pGameRules || !grclassname || !std::strcmp(grclassname, ""))
 	{
@@ -2597,7 +2632,7 @@ Vector CBotEntProp::GameRules_GetPropVector(const char *prop, const int element)
 {
 	int offset;
 	int bit_count; //Unused? [APG]RoboCop[CL]
-	void *pGameRules = sm_sdktools->GetGameRules();
+	void *pGameRules = SafeGetGameRules();
 
 	if (!pGameRules || !grclassname || !std::strcmp(grclassname, ""))
 	{
@@ -2621,7 +2656,7 @@ char *CBotEntProp::GameRules_GetPropString(const char *prop, std::size_t *len, c
 {
 	int offset;
 	int bit_count; //Unused? [APG]RoboCop[CL]
-	void *pGameRules = sm_sdktools->GetGameRules();
+	void *pGameRules = SafeGetGameRules();
 
 	if (!pGameRules || !grclassname || !std::strcmp(grclassname, ""))
 	{

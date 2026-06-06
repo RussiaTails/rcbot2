@@ -94,6 +94,9 @@ private:
 	bool FindSendProp(SourceMod::sm_sendprop_info_t *info, CBaseEntity *pEntity, const char *prop, int entity);
 	int MatchTypeDescAsInteger(_fieldtypes type, int flags);
 	bool IndexToAThings(int num, CBaseEntity **pEntData, edict_t **pEdictData);
+	// Logs an "entity invalid" error, silently no-op when the entprop layer
+	// isn't available yet (avoids a null-deref + log spam on that path) [APG]RoboCop[CL]
+	void logEntityInvalid(int ref) const;
 	CBaseEntity *GetEntity(int entity);
 	CBaseEntity *GetGameRulesProxyEntity();
 

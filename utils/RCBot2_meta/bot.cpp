@@ -3369,13 +3369,12 @@ void CBots :: botThink ()
 
 	const bool bBotStop = bot_stop.GetInt() > 0;
 
-	// The bot AI runs on Metamod's GameFrame hook and reads entity netprops via
-	// RCBot2's SourceMod extension (sm_gamehelpers). On a map change the SM
-	// extension can lag a frame behind MM:S (or fail to load entirely), leaving
-	// sm_gamehelpers null -- thinking then crashes in CBotEntProp::IndexToAThings.
-	// Skip the frame until the entprop layer is ready. (crash fix for TF2) [APG]RoboCop[CL]
-	if ( !entprops->isAvailable() )
-		return;
+	// NOTE: don't gate the whole AI on the entprop layer being ready. RCBot2
+	// runs the bot AI on Metamod's GameFrame hook and worked for years as a pure
+	// MM:S plugin; if RCBot2's SourceMod extension hasn't loaded (sm_gamehelpers
+	// null) bots must still navigate. The null-deref crash that used to happen in
+	// CBotEntProp::IndexToAThings is now handled inside the entprop layer itself,
+	// which degrades to safe defaults until the extension is ready. [APG]RoboCop[CL]
 
 #ifdef _DEBUG
 

@@ -56,6 +56,11 @@ extern IServerTools *servertools;
    If lookup fails, returns false and doesn't touch the params.  */
 bool CBotHelper::IndexToAThings(const int num, CBaseEntity **pEntData, edict_t **pEdictData)
 {
+	// RCBot2's SourceMod extension may not be loaded yet (sm_gamehelpers/sm_players
+	// null); fail the lookup instead of null-dereferencing them. [APG]RoboCop[CL]
+	if (sm_gamehelpers == nullptr || sm_players == nullptr)
+		return false;
+
 	CBaseEntity *pEntity = sm_gamehelpers->ReferenceToEntity(num);
 
 	if (!pEntity)
@@ -162,6 +167,9 @@ bool CBotHelper::isBrushEntity( edict_t *pEntity )
 /// @return Entity index/reference or INVALID_EHANDLE_INDEX if none is found
 int CBotHelper::FindEntityByClassname(const int start,const char *classname)
 {
+	if (sm_gamehelpers == nullptr) // SM extension not loaded yet [APG]RoboCop[CL]
+		return INVALID_EHANDLE_INDEX;
+
 	CBaseEntity *pEntity = servertools->FindEntityByClassname(GetEntity(start), classname);
 	return sm_gamehelpers->EntityToBCompatRef(pEntity);
 }
@@ -170,6 +178,9 @@ int CBotHelper::FindEntityByClassname(const int start,const char *classname)
 /// @return Entity index/reference or INVALID_EHANDLE_INDEX if none is found
 int CBotHelper::FindEntityInSphere(const int start, const Vector& center, const float radius)
 {
+	if (sm_gamehelpers == nullptr) // SM extension not loaded yet [APG]RoboCop[CL]
+		return INVALID_EHANDLE_INDEX;
+
 	CBaseEntity *pEntity = servertools->FindEntityInSphere(GetEntity(start), center, radius);
 	return sm_gamehelpers->EntityToBCompatRef(pEntity);
 }
