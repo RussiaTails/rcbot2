@@ -157,6 +157,18 @@ public:
 		*iOff = 0;
 	}
 
+	// Maps an `addbot <class> <team>` team argument to this mod's team number
+	// Returns -1 for "no preference / let the game auto-assign"
+	// Base handles a numeric argument only; mods with named teams override this? [APG]RoboCop[CL]
+	virtual int getTeamByName ( const char *szTeam ) const
+	{
+		if ( szTeam == nullptr || *szTeam == '\0' )
+			return -1;
+		if ( isdigit(static_cast<unsigned char>(szTeam[0])) != 0 )
+			return std::atoi(szTeam);
+		return -1;
+	}
+
 	bool needResetCheatFlag () const
 	{
 		return m_bBotCommand_ResetCheatFlag;
@@ -880,6 +892,20 @@ public:
 		setup("tf",MOD_TF2,BOTTYPE_TF2,"TF2");
 
 		m_pResourceEntity = nullptr;
+	}
+
+	// TF2 team numbers: RED=2, BLUE=3 (also used by CTF2ClassifiedMod) [APG]RoboCop[CL]
+	int getTeamByName ( const char *szTeam ) const override
+	{
+		if ( szTeam == nullptr || *szTeam == '\0' )
+			return -1;
+		if ( Q_stricmp(szTeam, "red") == 0 )
+			return TF2_TEAM_RED;
+		if ( Q_stricmp(szTeam, "blu") == 0 || Q_stricmp(szTeam, "blue") == 0 )
+			return TF2_TEAM_BLUE;
+		if ( isdigit(static_cast<unsigned char>(szTeam[0])) != 0 )
+			return std::atoi(szTeam);
+		return -1;
 	}
 
 protected:

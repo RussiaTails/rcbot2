@@ -1587,7 +1587,15 @@ void CBotFortress :: selectTeam ()
 
 	helpers->ClientCommand(m_pEdict,buffer);*/
 
-	helpers->ClientCommand(m_pEdict, "jointeam auto");
+	// Honour a team requested via `addbot <class> <team>` (m_iDesiredTeam, set from the profile)
+	// TF2's jointeam command takes team names
+	// Fall back to autobalance when no specific team was requested? [APG]RoboCop[CL]
+	if ( m_iDesiredTeam == TF2_TEAM_RED )
+		helpers->ClientCommand(m_pEdict, "jointeam red");
+	else if ( m_iDesiredTeam == TF2_TEAM_BLUE )
+		helpers->ClientCommand(m_pEdict, "jointeam blue");
+	else
+		helpers->ClientCommand(m_pEdict, "jointeam auto");
 }
 
 void CBotFortress :: selectClass ()

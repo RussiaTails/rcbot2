@@ -3177,7 +3177,7 @@ bool CBots::controlBot(const char* szOldName, const char* szName, const char* sz
 
 bool CBots :: createBot (const char *szClass, const char *szTeam, const char *szName)
 {
-	CBotMod *pMod = CBotGlobals::getCurrentMod(); // `*pMod` Unused? [APG]RoboCop[CL]
+	CBotMod *pMod = CBotGlobals::getCurrentMod(); // used below to parse the team argument [APG]RoboCop[CL]
 	const char *szOVName = ""; // `szOVName` Unused? [APG]RoboCop[CL]
 
 	if ( m_iMaxBots != -1 && CBotGlobals::numPlayersPlaying() >= m_iMaxBots )
@@ -3203,7 +3203,12 @@ bool CBots :: createBot (const char *szClass, const char *szTeam, const char *sz
 	}
 
 	SET_PROFILE_DATA_INT(szClass,m_iClass)
-	SET_PROFILE_DATA_INT(szTeam,m_iTeam)
+	// Parse the team argument the mod-aware way ("red"/"blu"/"blue"/numeric)
+	// The old SET_PROFILE_DATA_INT used atoi(), which turned every team NAME into
+	// 0 -- so `addbot <class> red` and `... blu` behaved identically and the team
+	// argument was silently ignored -1 means "no preference / auto" ? [APG]RoboCop[CL]
+	if ( szTeam && *szTeam )
+		pBotProfile->m_iTeam = pMod->getTeamByName(szTeam);
 	SET_PROFILE_STRING(szName,szOVName,m_szName)
 
 	edict_t* pEdict = g_pBotManager->CreateBot(szOVName);
