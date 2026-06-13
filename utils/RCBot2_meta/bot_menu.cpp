@@ -128,29 +128,33 @@ CWaypointFlagMenu::CWaypointFlagMenu(CBotMenu* pPrev)
 		if (!CWaypointTypes::getTypeByIndex(i)->forMod(iMod))
 			continue;
 
-		pCurrent->addMenuItem(new CWaypointFlagMenuItem(static_cast<int>(i)));
-		iNumAdded++;
-
-		if (iNumAdded > 7 || i == iNumTypes - 1)
+		// 7 flags per page (slots 1-7), leaving slots for "More..." and "Back..."
+		// within the menu's 10 selectable slots. When the current page is full,
+		// spill onto a new page BEFORE adding this item. The old code keyed the
+		// page break off the absolute last type index (i == iNumTypes-1), so when
+		// a mod's last flag was followed by other mods' types (e.g. FF before the
+		// Synergy types), the final page never got its More/Back and the menu got
+		// stuck. [APG]RoboCop[CL]
+		if (iNumAdded >= 7)
 		{
-			CBotMenuItem* back = new CBotGotoMenuItem("Back...", pParent);
+			CBotMenu* pNext = new CBotMenu();
+			pNext->setCaption("Waypoint Flags (More)");
+
+			pCurrent->addMenuItem(new CBotGotoMenuItem("More...", pNext));
+			pCurrent->addMenuItem(new CBotGotoMenuItem("Back...", pParent));
 
 			pParent = pCurrent;
-
-			if (iNumAdded > 7 && i < iNumTypes - 1)
-			{
-				pCurrent = new CBotMenu();
-				pCurrent->setCaption("Waypoint Flags (More)");
-				pParent->addMenuItem(new CBotGotoMenuItem("More...", pCurrent));
-			}
-
-			pParent->addMenuItem(back);
-
-			//make a new menu
-
-			iNumAdded = 0; // reset
+			pCurrent = pNext;
+			iNumAdded = 0;
 		}
+
+		pCurrent->addMenuItem(new CWaypointFlagMenuItem(static_cast<int>(i)));
+		iNumAdded++;
 	}
+
+	// Always finish the last page with a Back link (regardless of where the
+	// final for-this-mod type falls in the overall type list). [APG]RoboCop[CL]
+	pCurrent->addMenuItem(new CBotGotoMenuItem("Back...", pParent));
 }
 
 void CBotMenuList::setupMenus()
