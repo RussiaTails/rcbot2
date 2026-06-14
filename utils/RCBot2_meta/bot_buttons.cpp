@@ -34,6 +34,16 @@
 #include "bot_buttons.h"
 #include "in_buttons.h"
 
+// Fortress Forever hand-grenade prime/throw button bits. Present in
+// hl2sdk-sdk2013/game/shared/in_buttons.h but not public/in_buttons.h, so guard
+// a definition in case the public header is the one in scope here. [APG]RoboCop[CL]
+#ifndef IN_GRENADE1
+#define IN_GRENADE1 (1 << 23)
+#endif
+#ifndef IN_GRENADE2
+#define IN_GRENADE2 (1 << 24)
+#endif
+
 void CBotButtons :: attack (const float fFor, const float fFrom) const
 {	
 	holdButton(IN_ATTACK,fFrom,fFor,0.1f);
@@ -69,6 +79,8 @@ CBotButtons :: CBotButtons()
 	add(new CBotButton(IN_USE)); // for chargers
 	add(new CBotButton(IN_ALT1)); // for proning
 	add(new CBotButton(IN_RUN)); // ????
+	add(new CBotButton(IN_GRENADE1)); // Fortress Forever: prime/throw primary grenade
+	add(new CBotButton(IN_GRENADE2)); // Fortress Forever: prime/throw secondary grenade
 
 	m_bLetGoAll = false;
 }

@@ -16,6 +16,11 @@ ConVar rcbot_tf2_medic_letgotime("rcbot_tf2_medic_letgotime", "0.5", 0, "Time fo
 ConVar rcbot_tf2_pyro_airblast("rcbot_tf2_pyro_airblast_ammo", "50", 0, "Ammo must be above this to airblast -- if 200 airblast will be disabled");
 ConVar rcbot_projectile_tweak("rcbot_projtweak", "0.05", 0, "Tweaks the bots knowledge of projectiles and gravity");
 
+// Fortress Forever hand-grenade tossing (primary frag). [APG]RoboCop[CL]
+ConVar rcbot_ff_grenades("rcbot_ff_grenades", "1", 0, "Fortress Forever bots throw primary (frag) hand grenades at enemies");
+ConVar rcbot_ff_grenade_cook("rcbot_ff_grenade_cook", "1.8", 0, "FF bot grenade cook/hold time (s) before throwing; clamped 0.6..3.0 (fuse is 3.81s)");
+ConVar rcbot_ff_grenade_chance("rcbot_ff_grenade_chance", "0.5", 0, "Chance 0..1 an FF bot throws a grenade when a valid opportunity arises");
+
 ConVar bot_cmd_enable_wpt_sounds("rcbot_enable_wpt_sounds", "1", 0, "Enable/disable sound effects when editing waypoints");
 //ConVar bot_general_difficulty("rcbot_skill", "0.8", 0, "General difficulty of the bots. 0.5 = stock, < 0.5 easier, > 0.5 = harder");//TODO: Broken! [APG]RoboCop[CL]
 ConVar bot_visrevs_clients("rcbot_visrevs_clients", "3", 0, "how many revs the bot searches for visible players and enemies, lower to reduce cpu usage");

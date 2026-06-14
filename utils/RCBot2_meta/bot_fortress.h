@@ -35,6 +35,15 @@
 
 #include "bot_utility.h"
 
+// Fortress Forever hand-grenade prime/throw button bits (see bot_buttons.cpp).
+// Guarded so they resolve whether or not the in-scope in_buttons.h defines them. [APG]RoboCop[CL]
+#ifndef IN_GRENADE1
+#define IN_GRENADE1 (1 << 23)
+#endif
+#ifndef IN_GRENADE2
+#define IN_GRENADE2 (1 << 24)
+#endif
+
 //#include <stack>
 
 enum : std::uint16_t
@@ -1076,10 +1085,15 @@ class CBotFF : public CBotFortress
 	bool m_bHasEverSpawned = false;
 	bool m_bSetClassAutoKill = false;
 	int m_iSpawnRetries = 0;
+	// Next time (engine->Time) the bot may start priming/throwing a grenade.
+	float m_fThrowGrenadeTime = 0.0f;
 public:
 	CBotFF() = default;
 
 	void modThink() override;
+
+	// Fortress Forever primary (frag) grenade tossing; called from modThink().
+	void handleGrenades();
 
 	void currentlyDead() override;
 
