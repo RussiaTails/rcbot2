@@ -36,6 +36,7 @@
 #include "bot_getprop.h"
 #include "bot_globals.h"
 #include "bot_weapons.h"
+#include "bot_cvars.h"
 
 #include <cmath>
 #include <cstring>
@@ -257,8 +258,8 @@ std::vector<WeaponsData_t> FFWeaps = {
 	{1,FF_WEAPON_SHOTGUN,        g_szFFWeapons[4],   WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,768,-1,2,0},
 	{1,FF_WEAPON_SUPERSHOTGUN,   g_szFFWeapons[5],   WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,600,-1,3,0},
 	// Nail guns
-	{1,FF_WEAPON_NAILGUN,        g_szFFWeapons[6],   WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,1000,-1,2,0},
-	{0,FF_WEAPON_SUPERNAILGUN,   g_szFFWeapons[7],   WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,1200,-1,3,0},
+	{1,FF_WEAPON_NAILGUN,        g_szFFWeapons[6],   WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,1000,-1,1,0}, // pref lowered: nails are for sentries, not player combat [APG]RoboCop[CL]
+	{0,FF_WEAPON_SUPERNAILGUN,   g_szFFWeapons[7],   WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,1200,-1,1,0}, // pref lowered: anti-sentry weapon
 	// Sniper weapons
 	{1,FF_WEAPON_AUTORIFLE,      g_szFFWeapons[8],   WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,1200,-1,2,0},
 	{0,FF_WEAPON_SNIPERRIFLE,    g_szFFWeapons[9],   WEAP_FL_PRIM_ATTACK | WEAP_FL_SCOPE,0,4000,-1,3,0},
@@ -274,7 +275,7 @@ std::vector<WeaponsData_t> FFWeaps = {
 	// Spy weapons
 	{1,FF_WEAPON_TRANQ,          g_szFFWeapons[16],  WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,1000,-1,2,0},
 	// Engineer weapons
-	{0,FF_WEAPON_RAILGUN,        g_szFFWeapons[17],  WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,1400,-1,3,0},
+	{0,FF_WEAPON_RAILGUN,        g_szFFWeapons[17],  WEAP_FL_PRIM_ATTACK | WEAP_FL_UNDERWATER,0,1400,-1,1,0}, // pref lowered: engineer's anti-sentry weapon, not for player combat
 	// Detpack (special)
 	{2,FF_WEAPON_DEPLOYDETPACK,  g_szFFWeapons[18],  WEAP_FL_NONE,0,0,-1,0,0},
 	// Civilian weapons
@@ -726,7 +727,7 @@ CBotWeapon* CBotWeapons::getBestWeapon(edict_t* pEnemy, const bool bAllowMelee, 
 		}
 	}
 
-	if (bMeleeOnly || (bAllowMeleeFallback && (m_theBestWeapon == nullptr && flDist < 400.0f &&
+	if (bMeleeOnly || (bAllowMeleeFallback && (m_theBestWeapon == nullptr && flDist < rcbot_melee_fallback_dist.GetFloat() &&
 		std::fabs(vEnemyOrigin.z - m_pBot->getOrigin().z) < static_cast<float>(BOT_JUMP_HEIGHT))))
 	{
 		m_theBestWeapon = m_FallbackMelee;

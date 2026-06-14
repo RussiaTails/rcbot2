@@ -21,6 +21,12 @@ ConVar rcbot_ff_grenades("rcbot_ff_grenades", "1", 0, "Fortress Forever bots thr
 ConVar rcbot_ff_grenade_cook("rcbot_ff_grenade_cook", "1.8", 0, "FF bot grenade cook/hold time (s) before throwing; clamped 0.6..3.0 (fuse is 3.81s)");
 ConVar rcbot_ff_grenade_chance("rcbot_ff_grenade_chance", "0.5", 0, "Chance 0..1 an FF bot throws a grenade when a valid opportunity arises");
 
+// Max distance (units) a bot will charge to melee when it has NO usable ranged
+// weapon (out of ammo / none whose range covers the gap). Default 400 preserves
+// prior behaviour; lower it to stop bots suicide-charging to melee from intermediate
+// range (try ~150-200 for FF). [APG]RoboCop[CL]
+ConVar rcbot_melee_fallback_dist("rcbot_melee_fallback_dist", "200", 0, "Max distance a bot charges to melee when it has no usable ranged weapon (lower = less melee-rushing)");
+
 ConVar bot_cmd_enable_wpt_sounds("rcbot_enable_wpt_sounds", "1", 0, "Enable/disable sound effects when editing waypoints");
 //ConVar bot_general_difficulty("rcbot_skill", "0.8", 0, "General difficulty of the bots. 0.5 = stock, < 0.5 easier, > 0.5 = harder");//TODO: Broken! [APG]RoboCop[CL]
 ConVar bot_visrevs_clients("rcbot_visrevs_clients", "3", 0, "how many revs the bot searches for visible players and enemies, lower to reduce cpu usage");

@@ -64,6 +64,9 @@ rcbot_voice_cmds 1
 # Bots don't shoot the host - useful for testing waypoints
 rcbot_notarget 0
 #
+# Max distance a bot charges to melee when it has no usable ranged weapon (lower = less melee-rushing)
+rcbot_melee_fallback_dist 200 
+#
 # Distance for autowaypoints to be placed - useful for adding waypoints
 rcbot_autowpt_dist 150.0
 #
@@ -113,6 +116,15 @@ rcbot_jump_obst_dist 80
 # The fov dot product before the bot shoots an enemy 0.98 = 11 degrees
 rcbot_enemyshoot_gravgun_fov 0.98
 #
+######## Fortres Forever Settings ########
+#
+# Fortress Forever bots throw primary (frag) hand grenades at enemies
+rcbot_ff_grenades 1
+# FF bot grenade cook/hold time (s) before throwing; clamped 0.6..3.0 (fuse is 3.81s)
+rcbot_ff_grenade_cook 1.8
+# Chance 0..1 an FF bot throws a grenade when a valid opportunity arises
+rcbot_ff_grenade_chance 0.5
+#
 ######## TF2 Settings ########
 #
 # Enable/disable bots taunting
@@ -154,9 +166,6 @@ rcbot_spyknifefov 80
 # Fraction of how much the heavy aims at a diagonal offset
 rcbot_heavyaimoffset 0.1
 #
-# Minimum distance to move objects to
-rcbot_move_dist 800
-#
 # Seconds for bots to start thinking about moving sentries
 rcbot_move_sentry_time 120
 #
@@ -171,6 +180,9 @@ rcbot_move_disp_healamount 100
 #
 # Distance that bots will go back to use a dispenser
 rcbot_disp_dist 800.0
+#
+# Minimum distance to move objects to
+rcbot_move_dist 800
 #
 # Seconds for bots to start thinking about moving teleporters
 rcbot_move_tele_time 120
@@ -238,6 +250,7 @@ sm plugins unload smac_cvars.smx
 sm plugins unload superlogs-tf2.smx
 #sm plugins unload bossspawner.smx
 sm plugins unload sm_dod_dropweapon.smx
+#sm plugins unload addon_dodtms_classrest.smx
 #
 # This is a TF2 lag bot prevention fix that prevents causing rcbots to crash
 sv_quota_stringcmdspersecond 99999
