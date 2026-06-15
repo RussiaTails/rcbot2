@@ -942,7 +942,10 @@ void CBotFortress ::wantToDisguise(const bool bSet)
 
 	const char* szmapname = mapname.ToCStr();
 
-	if ((rcbot_tf2_debug_spies_cloakdisguise.GetBool()) && !(CTeamFortress2Mod::isMapType(TF_MAP_ZI) || CTeamFortress2Mod::isMapType(TF_MAP_SAXTON) || CTeamFortress2Mod::isMapType(TF_MAP_BOSS) || std::strncmp(szmapname, "ph_", 3) == 0) || ((std::strncmp(szmapname, "koth_lakeside_event", 19) == 0 || std::strncmp(szmapname, "koth_viaduct_event", 18) == 0) && !(CTeamFortress2Mod::isBossSummoned())))
+	if ((rcbot_tf2_debug_spies_cloakdisguise.GetBool()) && !(CTeamFortress2Mod::isMapType(TF_MAP_ZI) 
+		|| CTeamFortress2Mod::isMapType(TF_MAP_SAXTON) || CTeamFortress2Mod::isMapType(TF_MAP_BOSS) 
+		|| std::strncmp(szmapname, "ph_", 3) == 0) || ((std::strncmp(szmapname, "koth_lakeside_event", 19) == 0 
+		|| std::strncmp(szmapname, "koth_viaduct_event", 18) == 0) && !(CTeamFortress2Mod::isBossSummoned())))
 	{
 		if ( bSet )
 			m_fSpyDisguiseTime = 0.0f;
@@ -2293,9 +2296,16 @@ void CBotTF2 :: spyDisguise (const int iTeam, const byte iClass)
 
 	//char cmd[256];
 
-	if ((iTeam == 3) && !(CTeamFortress2Mod::isMapType(TF_MAP_ZI) || CTeamFortress2Mod::isMapType(TF_MAP_SAXTON) || CTeamFortress2Mod::isMapType(TF_MAP_BOSS)) || ((std::strncmp(szmapname, "koth_lakeside_event", 19) == 0 || std::strncmp(szmapname, "koth_viaduct_event", 18) == 0) && !(CTeamFortress2Mod::isBossSummoned())))
+	if ((iTeam == 3) && !(CTeamFortress2Mod::isMapType(TF_MAP_ZI) 
+		|| CTeamFortress2Mod::isMapType(TF_MAP_SAXTON) || CTeamFortress2Mod::isMapType(TF_MAP_BOSS)) 
+		|| ((std::strncmp(szmapname, "koth_lakeside_event", 19) == 0 
+		|| std::strncmp(szmapname, "koth_viaduct_event", 18) == 0) && !(CTeamFortress2Mod::isBossSummoned())))
 		m_iImpulse = 230 + iClass;
-	else if ((iTeam == 2) && !(CTeamFortress2Mod::isMapType(TF_MAP_ZI) || CTeamFortress2Mod::isMapType(TF_MAP_SAXTON) || CTeamFortress2Mod::isMapType(TF_MAP_BOSS)) || ((std::strncmp(szmapname, "koth_lakeside_event", 19) == 0 || std::strncmp(szmapname, "koth_viaduct_event", 18) == 0) && !(CTeamFortress2Mod::isBossSummoned())))
+	else if ((iTeam == 2) && !(CTeamFortress2Mod::isMapType(TF_MAP_ZI) 
+		|| CTeamFortress2Mod::isMapType(TF_MAP_SAXTON) 
+		|| CTeamFortress2Mod::isMapType(TF_MAP_BOSS)) 
+		|| ((std::strncmp(szmapname, "koth_lakeside_event", 19) == 0 
+		|| std::strncmp(szmapname, "koth_viaduct_event", 18) == 0) && !(CTeamFortress2Mod::isBossSummoned())))
 		m_iImpulse = 220 + iClass;
 
 	m_fDisguiseTime = engine->Time();
@@ -3424,9 +3434,11 @@ void CBotTF2::modThink()
 		m_fDoubleJumpTime = 0;
 	}
 
-	if ( m_pSchedules->isCurrentSchedule(SCHED_GOTO_ORIGIN) && (m_fPickupTime < engine->Time()) && (bNeedHealth || bNeedAmmo) && (!m_pEnemy && !hasSomeConditions(CONDITION_SEE_CUR_ENEMY)) )
+	if ( m_pSchedules->isCurrentSchedule(SCHED_GOTO_ORIGIN) && (m_fPickupTime < engine->Time()) 
+		&& (bNeedHealth || bNeedAmmo) && (!m_pEnemy && !hasSomeConditions(CONDITION_SEE_CUR_ENEMY)) )
 	{
-		if ( (m_fPickupTime<engine->Time()) && m_pNearestDisp && !m_pSchedules->isCurrentSchedule(SCHED_USE_DISPENSER) )
+		if ( (m_fPickupTime<engine->Time()) && m_pNearestDisp 
+			&& !m_pSchedules->isCurrentSchedule(SCHED_USE_DISPENSER) )
 		{
 			if (std::fabs(CBotGlobals::entityOrigin(m_pNearestDisp).z - getOrigin().z) < static_cast<float>(BOT_JUMP_HEIGHT))
 
@@ -3438,7 +3450,10 @@ void CBotTF2::modThink()
 				return;
 			}
 		}
-		else if ( (m_fPickupTime<engine->Time()) && bNeedHealth && m_pHealthkit && !m_pSchedules->isCurrentSchedule(SCHED_TF2_GET_HEALTH) )
+		else if ( (m_fPickupTime<engine->Time()) 
+			&& bNeedHealth 
+			&& m_pHealthkit 
+			&& !m_pSchedules->isCurrentSchedule(SCHED_TF2_GET_HEALTH) )
 		{
 			if (std::fabs(CBotGlobals::entityOrigin(m_pHealthkit).z - getOrigin().z) < static_cast<float>(BOT_JUMP_HEIGHT))
 			{
@@ -5221,7 +5236,7 @@ void CBotTF2 :: getTasks ( unsigned iIgnore )
 	// acquisition exactly so the cached handle is actually populated): [APG]RoboCop[CL]
 	//   * Zombie Infection: blue (zombie) team hunts red (humans).
 	//   * Saxton Hale: any Heavy or full-Demoknight (no nade/sticky launcher) hunts
-	//     the enemy team — Hale is either color depending on the map.
+	//     the enemy team Â— Hale is either color depending on the map.
 	// Score 0.8 beats roam (0.0001) but loses to direct-combat utilities.
 	ADD_UTILITY(BOT_UTIL_HUNT_HUMAN,
 		((CTeamFortress2Mod::isMapType(TF_MAP_ZI) && iTeam == TF2_TEAM_BLUE)
@@ -7532,24 +7547,11 @@ bool CBotTF2 :: handleAttack ( CBotWeapon *pWeapon, edict_t *pEnemy )
 			// dontAvoid my enemy
 			m_fAvoidTime = engine->Time() + 1.0f;
 			// secondaryAttack: ZI zombies (alt-fire melee), Demoknight shield charge.
-			// Skip on Heavy — that would just rev the minigun and slow the bot down
+			// Skip on Heavy Â— that would just rev the minigun and slow the bot down
 			// while it's trying to close distance; primary fire is handled below.
 			if (bZIClose || bVSHDemoKnight)
 				secondaryAttack();
 		}
-
-		/*if ((m_iClass == TF_CLASS_SPY) /* && (m_pWeapons->hasWeapon(TF2_WEAPON_BUILDER)) && m_pWeapons->getCurrentWeaponInSlot(1) && (CTeamFortress2Mod::isMapType(TF_MAP_MVM) || std::strncmp(szmapname, "vsh_facility", 12) == 0 || std::strncmp(szmapname, "vsh_halepizza", 13) == 0) && m_iTeam == TF2_TEAM_RED)
-		{
-			setMoveTo(CBotGlobals::entityOrigin(pEnemy));
-			setLookAtTask(LOOK_ENEMY);
-			//m_pWeapons->getCurrentWeaponInSlot(1);
-			selectWeapon(1);
-			//m_fSpySapTime = engine->Time() + randomFloat(1.0f, 4.0f);
-			if (m_pWeapons->getCurrentWeaponInSlot(1) && pWeapon->getWeaponInfo()->getSlot() == 1)
-			{
-				primaryAttack();
-			}
-		}*/
 
 		if (m_iClass == TF_CLASS_SNIPER && pWeapon->isProjectile())
 		{
