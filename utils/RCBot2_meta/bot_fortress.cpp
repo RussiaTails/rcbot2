@@ -942,7 +942,8 @@ void CBotFortress ::wantToDisguise(const bool bSet)
 
 	const char* szmapname = mapname.ToCStr();
 
-	if ((rcbot_tf2_debug_spies_cloakdisguise.GetBool()) && !(CTeamFortress2Mod::isMapType(TF_MAP_ZI) 
+	if ((rcbot_tf2_debug_spies_cloakdisguise.GetBool()) 
+		&& !(CTeamFortress2Mod::isMapType(TF_MAP_ZI) 
 		|| CTeamFortress2Mod::isMapType(TF_MAP_SAXTON) || CTeamFortress2Mod::isMapType(TF_MAP_BOSS) 
 		|| std::strncmp(szmapname, "ph_", 3) == 0) || ((std::strncmp(szmapname, "koth_lakeside_event", 19) == 0 
 		|| std::strncmp(szmapname, "koth_viaduct_event", 18) == 0) && !(CTeamFortress2Mod::isBossSummoned())))
@@ -2296,7 +2297,8 @@ void CBotTF2 :: spyDisguise (const int iTeam, const byte iClass)
 
 	//char cmd[256];
 
-	if ((iTeam == 3) && !(CTeamFortress2Mod::isMapType(TF_MAP_ZI) 
+	if ((iTeam == 3) 
+		&& !(CTeamFortress2Mod::isMapType(TF_MAP_ZI) 
 		|| CTeamFortress2Mod::isMapType(TF_MAP_SAXTON) || CTeamFortress2Mod::isMapType(TF_MAP_BOSS)) 
 		|| ((std::strncmp(szmapname, "koth_lakeside_event", 19) == 0 
 		|| std::strncmp(szmapname, "koth_viaduct_event", 18) == 0) && !(CTeamFortress2Mod::isBossSummoned())))
@@ -3441,7 +3443,6 @@ void CBotTF2::modThink()
 			&& !m_pSchedules->isCurrentSchedule(SCHED_USE_DISPENSER) )
 		{
 			if (std::fabs(CBotGlobals::entityOrigin(m_pNearestDisp).z - getOrigin().z) < static_cast<float>(BOT_JUMP_HEIGHT))
-
 			{
 				m_pSchedules->removeSchedule(SCHED_USE_DISPENSER);
 				m_pSchedules->addFront(new CBotUseDispSched(this,m_pNearestDisp));
