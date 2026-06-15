@@ -51,7 +51,10 @@ void CStrings::freeAllMemory()
 	{
 		for (char*& j : m_String)
 		{
-			delete[] j;
+			const char* pszFree = j;
+
+			//if ( pszFree )
+			delete pszFree;
 
 			j = nullptr;
 		}
@@ -92,6 +95,8 @@ char* CStrings::getString(const char* szString)
 	char* szNew = new char[len + 1];
 
 	std::strcpy(szNew, szString);
+
+	szNew[len] = 0;
 
 	m_Strings[iHash].emplace_back(szNew);
 

@@ -485,7 +485,7 @@ public:
 
 	virtual void engineerBuild ( eEngiBuild iBuilding, eEngiCmd iEngiCmd ) {}
 
-	virtual void spyDisguise (const int iTeam, const int iClass) {}
+	virtual void spyDisguise (const int iTeam, const byte iClass) {}
 
 	virtual bool lookAfterBuildings (float *fTime) { return false; }
 
@@ -883,7 +883,7 @@ public:
 
 	void engineerBuild ( eEngiBuild iBuilding, eEngiCmd iEngiCmd ) override;
 
-	void spyDisguise (int iTeam, int iClass) override;
+	void spyDisguise (int iTeam, byte iClass) override;
 
 	bool hasEngineerBuilt ( eEngiBuild iBuilding ) override;
 
@@ -901,7 +901,7 @@ public:
 	
 	void roundWon ( int iTeam, bool bFullRound );
 
-	void changeClass ();
+	//void changeClass (); // TODO: Needs implemented to avoid bots punting when using ClassRestrictionsForBots.smx? [APG]RoboCop[CL]
 
 	bool needAmmo() override;
 
@@ -994,6 +994,11 @@ private:
 	MyEHandle m_pRedPayloadBomb;
 	MyEHandle m_pBluePayloadBomb;
 
+	// Zombie Infection (zi_) maps: blue (zombie) bots cache the nearest red player
+	// to actively hunt instead of wandering. [APG]RoboCop[CL]
+	MyEHandle m_pHuntTarget;
+	float m_fHuntTargetUpdateTime;
+
 	// if demoman has already deployed stickies this is true
 	// once the demoman explodes them then this becomes false
 	// and it can deploy stickies again
@@ -1032,6 +1037,7 @@ private:
 	bool m_bIsCarryingSentry;
 	bool m_bIsCarryingDisp;
 	bool m_bIsCarryingTeleEnt;
+	bool m_bIsCarryingBall;
 	bool m_bIsCarryingObj;
 
 	float m_fCarryTime;
@@ -1047,33 +1053,17 @@ private:
 	int m_iMvMUpdateTime; // Tick based update time
 };
 
-// Fortress Forever team indices
-enum : std::uint8_t
-{
-	FF_TEAM_UNASSIGNED = 0,
-	FF_TEAM_SPECTATOR = 1,
-	FF_TEAM_BLUE = 2,
-	FF_TEAM_RED = 3,
-	FF_TEAM_YELLOW = 4,
-	FF_TEAM_GREEN = 5
-};
-
 class CBotFF : public CBotFortress
 {
 public:
-	CBotFF() = default;
+	CBotFF() { CBotFortress(); } //TODO: unused object [APG]RoboCop[CL]
 
-	void modThink() override;
+	void modThink () override;
 
-	bool isEnemy(edict_t* pEdict, bool bCheckWeapons = true) override;
+	bool isEnemy ( edict_t *pEdict,bool bCheckWeapons = true ) override;
 
-	bool isTF() override { return true; }
+	bool isTF () override { return true; }
 
-	bool isTF2() override { return false; }
-
-	TF_Class getClass() override;
-
-	void selectClass() override;
 };
 
 #endif

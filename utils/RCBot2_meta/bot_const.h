@@ -136,13 +136,10 @@ constexpr char BOT_MOD_FILE[] = "bot_mods";
 constexpr char BOT_ACCESS_CLIENT_FILE[] = "accessclients";
 constexpr char BOT_PROFILE_FOLDER[] = "profiles";
 constexpr char BOT_WAYPOINT_FOLDER[] = "waypoints";
-constexpr char BOT_AUXILERY_FOLDER[] = "aux_data";
 constexpr char BOT_CONFIG_EXTENSION[] = "ini";
 
 constexpr char BOT_WAYPOINT_EXTENSION[] = "rcw"; // extension for waypoint files
 constexpr char BOT_WAYPOINT_FILE_TYPE[] = "RCBot2\0"; // for waypoint file header
-
-constexpr char BOT_VISIBILITY_EXTENSION[] = "rcv"; // extension for visibility files
 
 constexpr char BOT_TAG[] = "[RCBot] "; // for printing messages
 
@@ -210,7 +207,7 @@ constexpr char BOT_FOLDER[] = "rcbot2";
 typedef enum : std::uint8_t
 {
 	BOT_FUNC_FAIL = 0,
-	BOT_FUNC_CONTINUE,
+    BOT_FUNC_CONTINUE,
 	BOT_FUNC_COMPLETE,
 }eBotFuncState;
 

@@ -758,46 +758,25 @@ public:
 		m_pEvent = pEvent;
 	}
 
-	bool isValid() const
+	float getFloat ( const char *keyName = nullptr, const float defaultValue = 0 ) override
 	{
-		return m_pEvent != nullptr;
+		return m_pEvent->GetFloat(keyName,defaultValue);
 	}
-
-	float getFloat(const char* keyName = nullptr, const float defaultValue = 0) override
+	int getInt ( const char *keyName = nullptr, const int defaultValue = 0 ) override
 	{
-		if (!isValid())
-			return defaultValue;
-
-		return m_pEvent->GetFloat(keyName, defaultValue);
+		return m_pEvent->GetInt(keyName,defaultValue);
 	}
-
-	int getInt(const char* keyName = nullptr, const int defaultValue = 0) override
+	void setInt ( const char *keyName, const int value ) override
 	{
-		if (!isValid())
-			return defaultValue;
-
-		return m_pEvent->GetInt(keyName, defaultValue);
+		m_pEvent->SetInt(keyName,value);
 	}
-
-	void setInt(const char* keyName, const int value) override
+	const char *getString ( const char *keyName = nullptr, const char *defaultValue = nullptr ) override
 	{
-		if (isValid())
-			m_pEvent->SetInt(keyName, value);
+		return m_pEvent->GetString(keyName,defaultValue);
 	}
-
-	const char* getString(const char* keyName = nullptr, const char* defaultValue = nullptr) override
+	//Arguments needing filled? [APG]RoboCop[CL]
+	const char *getName () override
 	{
-		if (!isValid())
-			return defaultValue;
-
-		return m_pEvent->GetString(keyName, defaultValue);
-	}
-
-	const char* getName() override
-	{
-		if (!isValid())
-			return nullptr;
-
 		return m_pEvent->GetName();
 	}
 private:

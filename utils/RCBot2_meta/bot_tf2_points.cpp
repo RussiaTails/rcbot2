@@ -774,7 +774,7 @@ bool CTFObjectiveResource :: updateAttackPoints (const int team)
 	int prev;
 	int signature = 0;
 	CTeamControlPointRound *pRound = CTeamFortress2Mod::getCurrentRound();
-	
+
 	const string_t mapname = gpGlobals->mapname;
 
 	const char* szmapname = mapname.ToCStr();
@@ -790,7 +790,7 @@ bool CTFObjectiveResource :: updateAttackPoints (const int team)
 	std::memset(arr,0,sizeof(TF2PointProb_t)*MAX_CONTROL_POINTS);
 	std::memset(arr->iPrev,0xFF,sizeof(int)*MAX_PREVIOUS_POINTS);
 
-	if ( team == TF2_TEAM_RED && (CTeamFortress2Mod::isAttackDefendMap() && !(std::strncmp(szmapname, "cp_graygravel_b2", 16) == 0)))
+	if ( team == TF2_TEAM_RED && (CTeamFortress2Mod::isAttackDefendMap() && !std::strncmp(szmapname, "cp_graygravel_b2", 16) == 0))
 	{
 		if (team == TF2_TEAM_RED && std::strncmp(szmapname, "cp_graygravel_b2", 16) == 0)
 		{
@@ -805,7 +805,6 @@ bool CTFObjectiveResource :: updateAttackPoints (const int team)
 		// no attacking for blu on this map
 		return false;
 	}
-
 	for (int i = 0; i < *m_iNumControlPoints; i++)
 	{
 		arr[i].fProb = 1.0f;

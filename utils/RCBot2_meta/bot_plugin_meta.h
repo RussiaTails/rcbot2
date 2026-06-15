@@ -51,7 +51,7 @@
 #include "engine_wrappers.h"
 #include <shareddefs.h>
 
-#ifdef SM_EXT
+#if defined SM_EXT
 #include <bot_sm_ext.h>
 #endif
 
@@ -107,7 +107,7 @@ public:
 #endif
 
 //public: // SourceMod
-#ifdef SM_EXT
+#if defined SM_EXT
 	void *OnMetamodQuery(const char* iface, int *ret) override;
 #endif
 
@@ -123,7 +123,7 @@ public:
 	const char *GetLogTag() override;
 
 private:
-#ifdef SM_EXT
+#if defined SM_EXT
 	void BindToSourcemod();
 #endif
 

@@ -231,7 +231,7 @@ public:
 		m_iNumAlliesBombsOnMap = 0;
 		std::memset(m_bBombPlanted,0,sizeof(bool)*MAX_DOD_FLAGS);
 		std::memset(m_pFlags,0,sizeof(edict_t*)*MAX_DOD_FLAGS);
-		std::memset(m_pBombs,0,sizeof(edict_t*)*MAX_DOD_FLAGS*8);
+		std::memset(m_pBombs,0,sizeof(edict_t*)*MAX_DOD_FLAGS*2);
 
 		for (int& i : m_iWaypoint)
 		{
@@ -258,9 +258,9 @@ public:
 	bool getRandomEnemyControlledFlag (const CBot *pBot, Vector *position, int iTeam, int *id = nullptr) const;
 	bool getRandomTeamControlledFlag (const CBot *pBot, Vector *position, int iTeam, int *id = nullptr) const;
 
-	bool getRandomBombToDefuse (Vector& position, int iTeam, edict_t*& pBombTarget, int* id = nullptr) const;
-	bool getRandomBombToPlant (CBot* pBot, Vector& position, int iTeam, edict_t*& pBombTarget, int* id = nullptr) const;
-	bool getRandomBombToDefend (CBot* pBot, Vector* position, int iTeam, edict_t** pBombTarget, int* id = nullptr) const;
+	bool getRandomBombToDefuse (Vector *position, int iTeam, edict_t **pBombTarget, int *id = nullptr) const;
+	bool getRandomBombToPlant (const CBot *pBot, Vector *position, int iTeam, edict_t **pBombTarget, int *id = nullptr) const;
+	bool getRandomBombToDefend (CBot *pBot, Vector *position, int iTeam, edict_t **pBombTarget, int *id = nullptr) const;
 
 	int findNearestObjective (const Vector& vOrigin) const;
 
@@ -406,7 +406,7 @@ public:
 	int getNumBombsRequired (const int iId) const
 	{
 		if ( iId == -1 )
-			return 0;
+			return false;
 
 		return m_iBombsRequired[iId];
 	}
@@ -419,7 +419,7 @@ public:
 	int getNumBombsRemaining (const int iId) const
 	{
 		if ( iId == -1 )
-			return 0;
+			return false;
 
 		return m_iBombsRemaining[iId];
 	}
@@ -520,7 +520,7 @@ public:
 
 private:
 	edict_t *m_pFlags[MAX_DOD_FLAGS];
-	edict_t* m_pBombs[MAX_DOD_FLAGS][8]; // maximum of 8 bombs per capture point increased for stability [APG]RoboCop[CL]
+	edict_t *m_pBombs[MAX_DOD_FLAGS][2]; // maximum of 2 bombs per capture point
 	int m_iWaypoint[MAX_DOD_FLAGS];
 
 	int m_iNumControlPoints;
@@ -565,7 +565,7 @@ public:
 
 	static float getMapStartTime ();
 
-	static bool isBombMap () { return (m_iMapType & DOD_MAPTYPE_BOMB) == DOD_MAPTYPE_BOMB; } //TODO: both `maphasBombs` and `isBombMap` do the same thing but conflict? [APG]RoboCop[CL]
+	static bool isBombMap () { return (m_iMapType & DOD_MAPTYPE_BOMB) == DOD_MAPTYPE_BOMB; }
 	static bool isFlagMap () { return (m_iMapType & DOD_MAPTYPE_FLAG) == DOD_MAPTYPE_FLAG; }
 	static bool mapHasBombs () { return (m_iMapType & DOD_MAPTYPE_BOMB) == DOD_MAPTYPE_BOMB; }
 
@@ -760,17 +760,6 @@ public:
 	{
 		setup("FortressForever", MOD_FF, BOTTYPE_FF, "FF");
 	}
-
-	void initMod() override;
-
-	const char *getPlayerClass() override
-	{
-		return "CFFPlayer";
-	}
-
-	void getTeamOnlyWaypointFlags(int iTeam, int *iOn, int *iOff) override;
-
-	bool checkWaypointForTeam(CWaypoint *pWpt, int iTeam) override;
 };
 
 class CHLDMSourceMod : public CBotMod
@@ -832,6 +821,7 @@ typedef enum : std::uint8_t
 	TF_MAP_PASS, //TODO: add support for those gamemodes [APG]RoboCop[CL]
 	TF_MAP_CPPL, // CP+PL Hybrid maps - RussiaTails
 	TF_MAP_GG, // GunGame maps - RussiaTails
+	TF_MAP_BOSS, // Boss gamemode - RussiaTails
 	TF_MAP_MAX
 }eTFMapType;
 
@@ -875,17 +865,6 @@ public:
 
 		m_pResourceEntity = nullptr;
 	}
-
-protected:
-	// Allow subclasses to override the game folder
-	explicit CTeamFortress2Mod(const char *szGameDir)
-	{
-		setup(szGameDir,MOD_TF2,BOTTYPE_TF2,"TF2");
-
-		m_pResourceEntity = nullptr;
-	}
-
-public:
 
 	void mapInit () override;
 
@@ -1226,14 +1205,10 @@ public:
 
 	static bool isCapping ( edict_t *pPlayer );//, int iCapIndex = -1 );
 	
-	static void addCapper(const int cp, const int capper)
+	static void addCapper (const int cp, const int capper)
 	{
-		assert(cp >= 0 && cp < MAX_CAP_POINTS); // Debug assertion [APG]RoboCop[CL]
-
 		if (capper > 0 && cp >= 0 && cp < MAX_CAP_POINTS)
-		{
 			m_Cappers[cp] |= 1 << (capper - 1);
-		}
 	}
 
 	static void removeCappers (const int cp)
@@ -1255,7 +1230,7 @@ public:
 	static edict_t *getBuildingOwner (eEngiBuild object, short index); //TODO: not implemented? [APG]RoboCop[CL]
 	static edict_t *getBuilding (eEngiBuild object, const edict_t* pOwner); //TODO: not implemented? [APG]RoboCop[CL]
 
-	static bool isBoss ( edict_t *pEntity, float *fFactor = nullptr);
+	static bool isBoss ( edict_t *pEntity, int iTeam, float *fFactor = nullptr);
 
 	static void initBoss (const bool bSummoned) { m_bBossSummoned = bSummoned; m_pBoss = nullptr; }
 
@@ -1375,15 +1350,6 @@ private:
 	static float m_fNearestTankDistance;
 	static Vector m_vNearestTankLocation;
 
-};
-
-//TODO: TF2 Classified uses SDK2013 engine with TF2 gameplay - [APG]RoboCop[CL]
-class CTF2ClassifiedMod : public CTeamFortress2Mod
-{
-public:
-	CTF2ClassifiedMod() : CTeamFortress2Mod("tf2classified")
-	{
-	}
 };
 
 class CHalfLifeDeathmatchMod : public CBotMod

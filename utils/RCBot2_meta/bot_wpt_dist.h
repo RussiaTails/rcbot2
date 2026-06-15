@@ -8,7 +8,7 @@ enum : std::uint8_t
 	WPT_DIST_VER = 0x03
 };
 
-constexpr const char* BOT_WAYPOINT_DST_EXTENSION = "rcd";
+#define BOT_WAYPOINT_DST_EXTENSION "rcd"
 
 class CWaypointDistances
 {

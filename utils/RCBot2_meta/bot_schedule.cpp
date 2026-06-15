@@ -895,7 +895,7 @@ void CBotSchedule :: _init ()
 	vPass = Vector(0,0,0);
 	pPass = nullptr;	
 
-	//init(); // may cause an unexpected result at runtime - [APG]RoboCop[CL]
+	init();
 }
 
 void CBotSchedule :: passInt(const int i)

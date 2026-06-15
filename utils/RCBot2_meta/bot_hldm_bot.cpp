@@ -349,8 +349,8 @@ bool CHLDMBot :: executeAction (const eBotAction iAction)
 				m_pSchedules->add(pSched);
 				return true;
 			}
+
 		}
-		break;
 	case BOT_UTIL_SNIPE:
 		{
 			// roam

@@ -321,7 +321,7 @@ void CPlayerDeathEvent :: execute ( IBotEventInterface *pEvent )
 			CClient *pClient = CClients::get(pAttacker);
 
 			assert(pClient != nullptr);
-			if ( pClient->autoWaypointOn() )
+			if ( pClient && pClient->autoWaypointOn() )
 			{
 				const CWeapon *pWeapon = CWeapons::getWeaponByShortName(weapon);
 
@@ -360,7 +360,7 @@ void CPlayerDeathEvent :: execute ( IBotEventInterface *pEvent )
 			pClient = CClients::get(m_pActivator);
 
 			assert(pClient != nullptr);
-			if ( CBotGlobals::isPlayer(pAttacker) && pClient->autoWaypointOn() )
+			if ( CBotGlobals::isPlayer(pAttacker) && pClient && pClient->autoWaypointOn() )
 			{
 				const CWeapon *pWeapon = CWeapons::getWeaponByShortName(weapon);
 
@@ -538,7 +538,7 @@ void CPlayerHealed ::execute(IBotEventInterface *pEvent)
 				CBotTF2 *pBotTF2 = static_cast<CBotTF2*>(pBot);
 
 				assert(pBotTF2 != nullptr);
-				if ( randomInt(0,1) )
+				if ( pBotTF2 && randomInt(0,1) )
 					pBotTF2->addVoiceCommand(TF_VC_THANKS);
 			}
 		}
@@ -674,7 +674,7 @@ void CTF2BuiltObjectEvent :: execute ( IBotEventInterface *pEvent )
 		CTeamFortress2Mod::teleporterBuilt(m_pActivator,type,pBuilding);
 
 		assert(pClient != nullptr);
-		if ( pClient->autoWaypointOn() )
+		if ( pClient && pClient->autoWaypointOn() )
 		{
 			if ( CTeamFortress2Mod::isTeleporterEntrance(pBuilding,CTeamFortress2Mod::getTeam(m_pActivator)) )
 				pClient->autoEventWaypoint(CWaypointTypes::W_FL_TELE_ENTRANCE,400.0f);
@@ -688,7 +688,7 @@ void CTF2BuiltObjectEvent :: execute ( IBotEventInterface *pEvent )
 		CTeamFortress2Mod::sentryBuilt(m_pActivator,type,pBuilding);
 
 		assert(pClient != nullptr);
-		if ( pClient->autoWaypointOn() )
+		if ( pClient && pClient->autoWaypointOn() )
 		{
 			pClient->autoEventWaypoint(CWaypointTypes::W_FL_SENTRY,400.0f);
 		}
@@ -907,16 +907,12 @@ void CFlagEvent :: execute ( IBotEventInterface *pEvent )
 
 	edict_t *pPlayer = nullptr;
 	CBot *pBot = nullptr;
-
+	
 	// Crash fix
 	if ( player )
 	{
 		pPlayer = INDEXENT(player);
-
-		if ( pPlayer )
-		{
-			pBot = CBots::getBotPointer(pPlayer);
-		}
+		pBot = CBots::getBotPointer(pPlayer);
 	}
 
 	switch ( type )
@@ -936,7 +932,7 @@ void CFlagEvent :: execute ( IBotEventInterface *pEvent )
 				CClient* pClient = CClients::get(pPlayer);
 
 				assert(pClient != nullptr);
-				if ( pClient->autoWaypointOn() )
+				if ( pClient && pClient->autoWaypointOn() )
 					pClient->autoEventWaypoint(CWaypointTypes::W_FL_FLAG,200.0f,false);
 			}
 
@@ -971,8 +967,8 @@ void CFlagEvent :: execute ( IBotEventInterface *pEvent )
 				CClient* pClient = CClients::get(pPlayer);
 
 				assert(pClient != nullptr);
-				if (pClient->autoWaypointOn())
-					pClient->autoEventWaypoint(CWaypointTypes::W_FL_CAPPOINT, 200.0f, false);
+				if ( pClient && pClient->autoWaypointOn() )
+					pClient->autoEventWaypoint(CWaypointTypes::W_FL_CAPPOINT,200.0f,false);
 			}
 
 			CTeamFortress2Mod::resetFlagStateToDefault();
@@ -980,8 +976,6 @@ void CFlagEvent :: execute ( IBotEventInterface *pEvent )
 		}
 		break;
 	case FLAG_DROPPED: // drop
-	{
-		if ( pPlayer )
 		{
 			IPlayerInfo *p = playerinfomanager->GetPlayerInfo(pPlayer);
 			Vector vLoc;
@@ -996,10 +990,11 @@ void CFlagEvent :: execute ( IBotEventInterface *pEvent )
 			if ( pBot && pBot->isTF() )
 				static_cast<CBotTF2*>(pBot)->droppedFlag();
 
-			CTeamFortress2Mod::flagDropped(CTeamFortress2Mod::getTeam(pPlayer),vLoc);
+			
+			if ( pPlayer )
+				CTeamFortress2Mod::flagDropped(CTeamFortress2Mod::getTeam(pPlayer),vLoc);
 		}
-	}
-	break;
+		break;
 	case FLAG_RETURN:
 		{
 			if ( CTeamFortress2Mod::isMapType(TF_MAP_SD) )
@@ -1041,7 +1036,7 @@ void CDODPointCaptured :: execute ( IBotEventInterface *pEvent )
 		CClient *pClient = CClients::get(pPlayer);
 
 		assert(pClient != nullptr);
-		if (pClient->autoWaypointOn())
+		if (pClient && pClient->autoWaypointOn())
 		{
 			pClient->autoEventWaypoint(CWaypointTypes::W_FL_CAPPOINT, 150.0f, false, 0, Vector(0, 0, 0), true);
 		}
@@ -1126,16 +1121,14 @@ void CDODRoundOver :: execute ( IBotEventInterface *pEvent )
 	//CDODMod::m_Flags.reset();
 }
 
-void CDODChangeClass::execute(IBotEventInterface* pEvent)
+void CDODChangeClass :: execute ( IBotEventInterface *pEvent )
 {
-	if (!pEvent || !m_pActivator)
-		return;
-
-	if (CBot* pBot = CBots::getBotPointer(m_pActivator))
+	if ( m_pActivator )
 	{
-		if (pBot->isDOD())
+		if ( CBot *pBot = CBots::getBotPointer(m_pActivator) )
 		{
-			CDODBot* pDODBot = static_cast<CDODBot*>(pBot);
+			CDODBot *pDODBot = static_cast<CDODBot*>(pBot);
+
 			pDODBot->selectedClass(pEvent->getInt("class"));
 		}
 	}
@@ -1275,10 +1268,6 @@ void CBotEvents :: freeMemory ()
 
 void CBotEvents::executeEvent(void* pEvent, const eBotEventType iType)
 {
-	// Early exit if event pointer is null (can happen when event is blocked by another plugin) - [APG]RoboCop[CL]
-	if (pEvent == nullptr)
-		return;
-
 	int iEventId = -1;
 
 	std::unique_ptr<IBotEventInterface> pInterface;
@@ -1292,11 +1281,6 @@ void CBotEvents::executeEvent(void* pEvent, const eBotEventType iType)
 	if (pInterface == nullptr)
 		return;
 
-	// Sanity check for event name - [APG]RoboCop[CL]
-	const char* eventName = pInterface->getName();
-	if (eventName == nullptr)
-		return;
-
 	if (iType != TYPE_IGAMEEVENT)
 		iEventId = pInterface->getInt("eventid");
 
@@ -1307,7 +1291,7 @@ void CBotEvents::executeEvent(void* pEvent, const eBotEventType iType)
 		//	bFound = pFound->isEventId(iEventId);
 		//else
 
-		if ( const bool bFound = pFound->forCurrentMod() && pFound->isType(eventName) )
+		if ( const bool bFound = pFound->forCurrentMod() && pFound->isType(pInterface->getName()) )	
 		{
 			const int userid = pInterface->getInt("userid",-1);
 			// set pEvent id for quick checking

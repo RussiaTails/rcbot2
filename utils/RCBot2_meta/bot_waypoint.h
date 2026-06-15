@@ -190,6 +190,7 @@ public:
 	static constexpr int W_FL_TELEPORT_CHEAT = 1 << 28; // teleports bots to the next waypoint (cheat)
 	static constexpr int W_FL_OWNER_ONLY     = 1 << 29; // Only owners of this area can use the waypoint
 	static constexpr int W_FL_USE			 = 1 << 30; // Synergy: Use Button/Door
+	static constexpr int W_FL_HOOK			 = 1 << 31;
 	//static const int W_FL_ATTACKPOINT = (1 << 30); // Tactical waypoint -- each squad will go to different attack points and signal others to go
 
     static void setup();
@@ -377,9 +378,6 @@ public:
 	int getPathToThisWaypoint(int i) const;
 
 	int getPath(int i) const;
-
-	WaypointList::const_iterator begin() const { return m_thePaths.begin(); }
-	WaypointList::const_iterator end() const { return m_thePaths.end(); }
 
 	void load(std::fstream& bfp, int iVersion);
 

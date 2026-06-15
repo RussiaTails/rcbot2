@@ -265,6 +265,8 @@ void CTeamFortress2Mod :: mapInit ()
 	if (std::strncmp(szmapname, "ctf_", 4) == 0 || std::strncmp(szmapname, "quake_turbine", 13) == 0 ||
 		std::strncmp(szmapname, "pass_", 5) == 0 || std::strncmp(szmapname, "pd_", 3) == 0 ||
 		std::strncmp(szmapname, "od_", 3) == 0 ||
+		std::strncmp(szmapname, "cr_", 3) == 0 ||
+		std::strncmp(szmapname, "workshop/cr_", 12) == 0 ||
 		std::strncmp(szmapname, "workshop/ctf_", 13) == 0 ||
 		std::strncmp(szmapname, "workshop/pass_", 14) == 0 ||
 		std::strncmp(szmapname, "workshop/pd_", 12) == 0 ||
@@ -272,21 +274,22 @@ void CTeamFortress2Mod :: mapInit ()
 		// Quake Turbine is CTF. - RussiaTails
 		m_MapType = TF_MAP_CTF; // capture the flag + pass time + player destruction
 	else if (std::strncmp(szmapname, "cp_", 3) == 0 ||
-			 std::strncmp(szmapname, "cqt_", 4) == 0 ||
-			 std::strncmp(szmapname, "conquest_", 9) == 0 ||
-			 std::strncmp(szmapname, "dom_", 4) == 0 ||
-			 std::strncmp(szmapname, "2koth_", 6) == 0 ||
-			 std::strncmp(szmapname, "falling_cp", 10) == 0 ||
-			 std::strncmp(szmapname, "stt_", 4) == 0 ||
-			 std::strncmp(szmapname, "koth_lifesnatcher", 17) == 0 ||
-			 std::strncmp(szmapname, "vip_", 4) == 0 ||
-			 std::strncmp(szmapname, "vipr_", 5) == 0 ||
-			 std::strncmp(szmapname, "szf_", 4) == 0 ||
-			 std::strncmp(szmapname, "rush_", 5) == 0 ||
-			 std::strncmp(szmapname, "workshop/cp_", 12) == 0 ||
-			 std::strncmp(szmapname, "workshop/vip_", 13) == 0 ||
-			 std::strncmp(szmapname, "workshop/rush_", 14) == 0 ||
-			 std::strncmp(szmapname, "zf_", 3) == 0)
+		std::strncmp(szmapname, "cqt_", 4) == 0 ||
+		std::strncmp(szmapname, "conquest_", 9) == 0 ||
+		std::strncmp(szmapname, "dom_", 4) == 0 ||
+		std::strncmp(szmapname, "2koth_", 6) == 0 ||
+		std::strncmp(szmapname, "falling_cp", 10) == 0 ||
+		std::strncmp(szmapname, "stt_", 4) == 0 ||
+		std::strncmp(szmapname, "koth_lifesnatcher", 17) == 0 ||
+		std::strncmp(szmapname, "vip_", 4) == 0 ||
+		std::strncmp(szmapname, "vipr_", 5) == 0 ||
+		std::strncmp(szmapname, "szf_", 4) == 0 ||
+		std::strncmp(szmapname, "rush_", 5) == 0 ||
+		std::strncmp(szmapname, "workshop/cp_", 12) == 0 ||
+		std::strncmp(szmapname, "workshop/vip_", 13) == 0 ||
+		std::strncmp(szmapname, "workshop/rush_", 14) == 0 ||
+		std::strncmp(szmapname, "bot_rockpaperglitter", 20) == 0 ||
+		std::strncmp(szmapname, "zf_", 3) == 0)
 		// Conquest, 2koth and DOM works fine as CP_. Moved stt to cp to make bots attack a tank - RussiaTails
 		m_MapType = TF_MAP_CP; // control point
 	else if (std::strncmp(szmapname, "tc_", 3) == 0)
@@ -307,10 +310,10 @@ void CTeamFortress2Mod :: mapInit ()
 		std::strncmp(szmapname, "ft_", 3) == 0)  // pongo1321
 		m_MapType = TF_MAP_ARENA; // arena mode
 	else if (std::strncmp(szmapname, "vsh_", 4) == 0 ||
-			 std::strncmp(szmapname, "ff2_", 4) == 0 ||
-			 std::strncmp(szmapname, "bvb_", 4) == 0 ||
-			 std::strncmp(szmapname, "workshop/vsh_", 13) == 0 ||
-			 std::strncmp(szmapname, "dr_", 3) == 0)
+		std::strncmp(szmapname, "ff2_", 4) == 0 ||
+		std::strncmp(szmapname, "bvb_", 4) == 0 ||
+		std::strncmp(szmapname, "workshop/vsh_", 13) == 0 ||
+		std::strncmp(szmapname, "dr_", 3) == 0)
 		m_MapType = TF_MAP_SAXTON; // arena mode
 	else if (std::strncmp(szmapname, "pipeball_", 9) == 0)
 		m_MapType = TF_MAP_PIPEBALL; // arena mode
@@ -342,15 +345,18 @@ void CTeamFortress2Mod :: mapInit ()
 		// gd is MvM Guardian, for now there are only two maps exist with this prefix. - RussiaTails
 		m_MapType = TF_MAP_MVM; // mann vs machine
 	else if (std::strncmp(szmapname, "rd_", 3) == 0 ||
-			 std::strncmp(szmapname, "workshop/rd_", 12) == 0 ||
-			 std::strncmp(szmapname, "rda_", 4) == 0)
+		std::strncmp(szmapname, "workshop/rd_", 12) == 0 ||
+		std::strncmp(szmapname, "rda_", 4) == 0)
 		m_MapType = TF_MAP_RD; // robot destruction
 	else if (std::strncmp(szmapname, "workshop/pdr_", 13) == 0 ||
 		std::strncmp(szmapname, "pdr_", 4) == 0)
 		m_MapType = TF_MAP_PDR; // player destruction + payload race - RussiaTails
 	else if (std::strncmp(szmapname, "zi_", 3) == 0 ||
-			 std::strncmp(szmapname, "workshop/zi_", 12) == 0)
+		std::strncmp(szmapname, "workshop/zi_", 12) == 0)
 		m_MapType = TF_MAP_ZI; // Zombie Infection //TODO: add support for those gamemodes [APG]RoboCop[CL]
+	else if (std::strncmp(szmapname, "workshop/boss_", 14) == 0 || std::strncmp(szmapname, "workshop/my_world_", 18) == 0 ||
+		std::strncmp(szmapname, "boss_", 5) == 0 || std::strncmp(szmapname, "my_world_", 9) == 0)
+		m_MapType = TF_MAP_BOSS; // test - RussiaTails
 	else
 		m_MapType = TF_MAP_DM; // deathmatch //TODO: to prevent bots from idling in their spawns by giving them basic tasks [APG]RoboCop[CL]
 
@@ -466,12 +472,9 @@ int CTeamFortress2Mod ::numClassOnTeam(const int iTeam, const int iClass)
 {
 	int num = 0;
 
-	for ( int i = 1; i <= CBotGlobals::maxClients(); i ++ )
+	for ( int i = 1; i <= CBotGlobals::numClients(); i ++ )
 	{
 		edict_t* pEdict = INDEXENT(i);
-
-		if ( !pEdict )
-                        continue;
 
 		if ( CBotGlobals::entityIsValid(pEdict) )
 		{
@@ -595,11 +598,13 @@ bool CTeamFortress2Mod :: isFlag (edict_t *pEntity, const int iTeam)
 	return (!iTeam || getEnemyTeam(iTeam) == getTeam(pEntity)) && std::strcmp(pEntity->GetClassName(), "passtime_ball") == 0;
 }*/
 
-bool CTeamFortress2Mod::isBoss(edict_t* pEntity, float* fFactor)
+bool CTeamFortress2Mod::isBoss(edict_t* pEntity, const int iTeam, float* fFactor)
 {
 	const string_t mapname = gpGlobals->mapname;
 
 	const char* szmapname = mapname.ToCStr();
+
+	const int edictIndex = engine->IndexOfEdict(pEntity);
 
 	if (m_bBossSummoned)
 	{
@@ -607,22 +612,18 @@ bool CTeamFortress2Mod::isBoss(edict_t* pEntity, float* fFactor)
 			return m_pBoss.get() == pEntity;
 		if (std::strcmp(pEntity->GetClassName(), "merasmus") == 0 ||
 			std::strcmp(pEntity->GetClassName(), "headless_hatman") == 0 ||
-			std::strcmp(pEntity->GetClassName(), "eyeball_boss") == 0 ||
-			std::strcmp(pEntity->GetClassName(), "tf_merasmus_trick_or_treat_prop") == 0 ||
-			std::strcmp(pEntity->GetClassName(), "base_boss") == 0) // For Krampus and any other NPCs which uses base_boss entity - RussiaTails
+			std::strcmp(pEntity->GetClassName(), "eyeball_boss") == 0)
 		{
 			m_pBoss = pEntity;
 			return true;
 		}
-		if (std::strcmp(pEntity->GetClassName(), "tf_merasmus_trick_or_treat_prop") == 0 && CBotGlobals::entityIsAlive(m_pBoss.get()))
-			return (std::strcmp(pEntity->GetClassName(), "merasmus") != 0);
 	}
 	else if (CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE) || isMapType(TF_MAP_CART) || isMapType(TF_MAP_CTF) || isMapType(TF_MAP_KOTH) ||
-		isMapType(TF_MAP_CP) || isMapType(TF_MAP_PD) || isMapType(TF_MAP_ARENA) || isMapType(TF_MAP_SAXTON) || isMapType(TF_MAP_SD) || isMapType(TF_MAP_DM))
+		isMapType(TF_MAP_CP) || isMapType(TF_MAP_PD) || isMapType(TF_MAP_ARENA) || isMapType(TF_MAP_SAXTON) || isMapType(TF_MAP_SD) || isMapType(TF_MAP_BOSS) || isMapType(TF_MAP_DM))
 	{
 		if (m_pBoss.get() == pEntity)
 			return true;
-		if (std::strcmp(pEntity->GetClassName(), "base_boss") == 0 || // For Krampus and any other NPCs which uses base_boss entity - RussiaTails
+		if (std::strcmp(pEntity->GetClassName(), "base_boss") == 0 && (!std::strncmp(szmapname, "pl_candyland", 12) == 0 || !std::strncmp(szmapname, "pl_futura", 9) == 0 || !std::strncmp(szmapname, "cp_futura", 9) == 0) || // For Krampus and any other NPCs which uses base_boss entity - RussiaTails
 			std::strcmp(pEntity->GetClassName(), "tf_robot_botler") == 0 || // Botler Robots from Embargo entity - RussiaTails
 			std::strcmp(pEntity->GetClassName(), "prop_soccer_ball") == 0)
 		{
@@ -688,11 +689,27 @@ float CTeamFortress2Mod :: getTeleportTime (const edict_t* pOwner)
 
 bool CTeamFortress2Mod :: isSentry (edict_t *pEntity, const int iTeam, const bool checkcarrying)
 {
+	const string_t mapname = gpGlobals->mapname;
+
+	const char* szmapname = mapname.ToCStr();
+
+	const string_t model = pEntity->GetIServerEntity()->GetModelName();
+
+	/*if (std::strncmp(szmapname, "vsh_facility", 12) == 0 || std::strncmp(szmapname, "vsh_halepizza", 13) == 0)
+	{
+		return (CBotGlobals::getTeam(pEntity) != iTeam);
+	}
+	if (CTeamFortress2Mod::isMapType(TF_MAP_MVM))
+	{
+		return (CBotGlobals::getTeam(pEntity) != iTeam);
+	}*/
 	return (!iTeam || iTeam == getTeam(pEntity)) && std::strcmp(pEntity->GetClassName(),"obj_sentrygun")==0 && (checkcarrying||!CClassInterface::isSentryGunBeingPlaced(pEntity));
 }
 
 bool CTeamFortress2Mod::isTankBoss(const edict_t* pEntity)
 {
+	const string_t model = pEntity->GetIServerEntity()->GetModelName();
+
 	return std::strcmp(pEntity->GetClassName(), "tank_boss") == 0;
 }
 
@@ -734,7 +751,7 @@ bool CTeamFortress2Mod :: isHurtfulPipeGrenade (edict_t *pEntity, edict_t *pPlay
 
 bool CTeamFortress2Mod :: isRocket (edict_t *pEntity, const int iTeam)
 {
-	return (!iTeam || iTeam == getTeam(pEntity)) && std::strcmp(pEntity->GetClassName(),"tf_projectile_rocket")==0;
+	return (!iTeam || iTeam == getTeam(pEntity)) && (std::strcmp(pEntity->GetClassName(),"tf_projectile_rocket")==0 || std::strcmp(pEntity->GetClassName(), "tf_projectile_sentryrocket") == 0);
 }
 
 edict_t *CTeamFortress2Mod:: getMediGun ( edict_t *pPlayer )
@@ -877,7 +894,12 @@ void CTeamFortress2Mod:: flagPickedUp (const int iTeam, edict_t *pPlayer)
 
 bool CTeamFortress2Mod :: isArenaPointOpen ()
 {
-	return m_fArenaPointOpenTime < engine->Time();
+	/*if (CTeamFortress2Mod::isMapType(TF_MAP_ARENA))
+		return m_fArenaPointOpenTime > engine->Time() + 60.0f;
+	if (CTeamFortress2Mod::isMapType(TF_MAP_SAXTON))
+		return m_fArenaPointOpenTime > engine->Time() + 240.0f;
+	else*/
+		return m_fArenaPointOpenTime < engine->Time();
 }
 
 void CTeamFortress2Mod :: resetSetupTime ()
@@ -960,7 +982,11 @@ bool CTeamFortress2Mod::isPayloadBomb(edict_t* pEdict, int iTeam)
 	{
 		return std::strncmp(pEdict->GetClassName(), "mapobj_cart_dispenser", 21) == 0;
 	}
-	if (std::strncmp(szmapname, "sd_offload", 10) == 0)
+	/*if (std::strncmp(szmapname, "pass_", 5) == 0)
+	{
+		return std::strncmp(pEdict->GetClassName(), "passtime_ball", 13) == 0;
+	}*/
+	if (std::strncmp(szmapname, "sd_offload", 10) == 0 || std::strncmp(szmapname, "koth_namicott", 13) == 0)
 	{
 		return (std::strncmp(pEdict->GetClassName(), "prop_dynamic", 12) == 0) && std::strcmp(model.ToCStr(), "models/props_doomsday/cap_point_small.mdl") == 0;
 	}
@@ -970,22 +996,33 @@ bool CTeamFortress2Mod::isPayloadBomb(edict_t* pEdict, int iTeam)
 			&& CClassInterface::getTeam(pEdict) == iTeam;
 	}
 	if (CTeamFortress2Mod::isMapType(TF_MAP_CARTRACE) ||
-		CTeamFortress2Mod::isMapType(TF_MAP_CPPL) ||
 		CTeamFortress2Mod::isMapType(TF_MAP_PDR) ||
+		CTeamFortress2Mod::isMapType(TF_MAP_CPPL) ||
 		(CTeamFortress2Mod::isMapType(TF_MAP_CART) &&
 			!(std::strncmp(szmapname, "plr_cutter", 10) == 0 ||
 				std::strncmp(szmapname, "plr_matterhorn", 14) == 0 ||
 				std::strncmp(szmapname, "pl_embargo", 10) == 0 ||
 				std::strncmp(szmapname, "pl_aquarius", 11) == 0 ||
 				std::strncmp(szmapname, "sd_offload", 10) == 0 ||
+				std::strncmp(szmapname, "koth_namicott", 13) == 0 ||
 				std::strncmp(szmapname, "ctf_system", 10) == 0 ||
 				std::strncmp(szmapname, "tow_", 4) == 0)))
 	{
-		return std::strncmp(pEdict->GetClassName(), "mapobj_cart_dispenser", 21) == 0 && CClassInterface::getTeam(pEdict) == iTeam;
+		/*if (std::strncmp(szmapname, "pl_angkor", 9) == 0)
+			if (((CTeamFortress2Mod::m_ObjectiveResource.getRandomValidPointForTeam(getTeam(pEdict), TF2_POINT_ATTACK) == 4) || (CTeamFortress2Mod::m_ObjectiveResource.getRandomValidPointForTeam(getTeam(pEdict), TF2_POINT_ATTACK) == 7)) && ((CTeamFortress2Mod::m_ObjectiveResource.getRandomValidPointForTeam(getTeam(pEdict), TF2_POINT_DEFEND) == 4) || (CTeamFortress2Mod::m_ObjectiveResource.getRandomValidPointForTeam(getTeam(pEdict), TF2_POINT_DEFEND) == 7)))
+			{
+				return false;
+			}
+			else*/
+				return std::strncmp(pEdict->GetClassName(), "mapobj_cart_dispenser", 21) == 0 && CClassInterface::getTeam(pEdict) == iTeam;
 	}
 	if (std::strncmp(szmapname, "tow_impasse", 11) == 0)
 	{
 		return std::strncmp(pEdict->GetClassName(), "mapobj_cart_dispenser", 21) == 0 && CClassInterface::getTeam(pEdict) == iTeam;
+	}
+	if (CTeamFortress2Mod::isMapType(TF_MAP_PIPEBALL))
+	{
+		return std::strncmp(pEdict->GetClassName(), "func_physbox", 12) == 0;
 	}
 	/*else if (std::strncmp(szmapname, "tow_impasse", 11) == 0)
 	{
@@ -1141,26 +1178,22 @@ int CTeamFortress2Mod ::getHighestScore ()
 
 // check if there is another building near where I want to build
 // check quickly by using the storage of sentryguns etc in the mod class
-bool CTeamFortress2Mod::buildingNearby(const int iTeam, const Vector& vOrigin)
+bool CTeamFortress2Mod::buildingNearby (const int iTeam, const Vector& vOrigin)
 {
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for ( int i = 1; i <= gpGlobals->maxClients; i ++ )
 	{
 		edict_t* pPlayer = INDEXENT(i);
 
 		// crash bug fix 
-		if (!pPlayer || pPlayer->IsFree())
-			continue;
-
-		// check if the player is valid [APG]RoboCop[CL]
-		if (!playerinfomanager->GetPlayerInfo(pPlayer))
+		if ( !pPlayer || pPlayer->IsFree() )
 			continue;
 
 		const short sentryIndex = static_cast<short>(i - 1);
 
-		if (CClassInterface::getTF2Class(pPlayer) != TF_CLASS_ENGINEER)
+		if ( CClassInterface::getTF2Class(pPlayer) != TF_CLASS_ENGINEER )
 			continue;
 
-		if (CClassInterface::getTeam(pPlayer) != iTeam)
+		if ( CClassInterface::getTeam(pPlayer) != iTeam )
 			continue;
 
 		if (m_SentryGuns[sentryIndex].sentry.get())
@@ -1177,13 +1210,13 @@ bool CTeamFortress2Mod::buildingNearby(const int iTeam, const Vector& vOrigin)
 
 		if (m_Teleporters[sentryIndex].entrance.get())
 		{
-			if ((vOrigin - CBotGlobals::entityOrigin(m_Teleporters[sentryIndex].entrance.get())).Length() < 100)
+			if ( (vOrigin-CBotGlobals::entityOrigin(m_Teleporters[sentryIndex].entrance.get())).Length() < 100 )
 				return true;
 		}
 
 		if (m_Teleporters[sentryIndex].exit.get())
 		{
-			if ((vOrigin - CBotGlobals::entityOrigin(m_Teleporters[sentryIndex].exit.get())).Length() < 100)
+			if ( (vOrigin-CBotGlobals::entityOrigin(m_Teleporters[sentryIndex].exit.get())).Length() < 100 )
 				return true;
 		}
 

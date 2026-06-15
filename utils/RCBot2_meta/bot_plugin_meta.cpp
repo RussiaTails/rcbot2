@@ -67,7 +67,7 @@
 #include <build_info.h>
 #include <sourcehook.h>
 
-#ifdef SM_EXT
+#if defined SM_EXT
 #include "rcbot/entprops.h"
 #endif
 SH_DECL_HOOK6(IServerGameDLL, LevelInit, SH_NOATTRIB, 0, bool, char const *, char const *, char const *, char const *, bool, bool);
@@ -445,10 +445,7 @@ bool RCBotPluginMeta::Load(PluginId id, ISmmAPI *ismm, char *error, std::size_t 
 		fp.close();
 
 	if (!CBotGlobals::gameStart())
-	{
-		snprintf(error, maxlen, "Game mod not recognized (gamedir: \"%s\")", CBotGlobals::modFolder());
 		return false;
-	}
 
 	CBotMod *pMod = CBotGlobals::getCurrentMod(); // `*pMod` Unused? [APG]RoboCop[CL]
 
@@ -565,26 +562,16 @@ bool RCBotPluginMeta::Load(PluginId id, ISmmAPI *ismm, char *error, std::size_t 
 	return true;
 }
 
-bool RCBotPluginMeta::FireGameEvent(IGameEvent* pevent, bool bDontBroadcast)
+bool RCBotPluginMeta::FireGameEvent(IGameEvent * pevent, bool bDontBroadcast)
 {
-	// Skip processing if another plugin already handled/blocked this event - [APG]RoboCop[CL]
-	if (META_RESULT_STATUS >= MRES_OVERRIDE)
-	{
-		RETURN_META_VALUE(MRES_IGNORED, true);
-	}
-
-	// Sanity check: ensure event pointer is valid before processing - [APG]RoboCop[CL]
-	if (pevent != nullptr)
-	{
-		CBotEvents::executeEvent(pevent, TYPE_IGAMEEVENT);
-	}
+	CBotEvents::executeEvent(pevent,TYPE_IGAMEEVENT);
 
 	RETURN_META_VALUE(MRES_IGNORED, true);
 }
 
 bool RCBotPluginMeta::Unload(char *error, std::size_t maxlen)
 {
-#ifdef SM_EXT
+#if defined SM_EXT
 	SM_UnloadExtension();
 #endif
 	
@@ -650,12 +637,12 @@ void RCBotPluginMeta::AllPluginsLoaded()
 	/* This is where we'd do stuff that relies on the mod or other plugins 
 	 * being initialized (for example, cvars added and events registered).
 	 */
-#ifdef SM_EXT
+#if defined SM_EXT
 	BindToSourcemod();
 #endif
 }
 
-#ifdef SM_EXT
+#if defined SM_EXT
 void* RCBotPluginMeta::OnMetamodQuery(const char* iface, int *ret) {
 	if (std::strcmp(iface, SOURCEMOD_NOTICE_EXTENSIONS) == 0) {
 		BindToSourcemod();
@@ -847,7 +834,7 @@ void RCBotPluginMeta::Hook_GameFrame(const bool simulating)
 		currentmod->modFrame();
 
 		// Bot Quota
-		if (rcbot_bot_quota_interval.GetFloat() > 0.0) {
+		if (rcbot_bot_quota_interval.GetInt() > 0) {
 			BotQuotaCheck();
 		}
 	}
@@ -855,7 +842,7 @@ void RCBotPluginMeta::Hook_GameFrame(const bool simulating)
 
 void RCBotPluginMeta::BotQuotaCheck() {
 	// this is configured with config/bot_quota.ini
-	if (rcbot_bot_quota_interval.GetFloat() <= 0.0) {
+	if (rcbot_bot_quota_interval.GetInt() <= 0) {
 		return;
 	}
 
@@ -890,11 +877,7 @@ void RCBotPluginMeta::BotQuotaCheck() {
 				IPlayerInfo* p = playerinfomanager->GetPlayerInfo(client->getPlayer());
 
 				if (p->IsConnected() && !p->IsFakeClient() && !p->IsHLTV()) {
-					if (rcbot_ignore_spectators.GetBool()) {
-						if ( CClassInterface::getTeam(client->getPlayer()) >= 2 )
-							human_count++;
-					} else
-						human_count++;
+					human_count++;
 				}
 			}
 		}
@@ -904,33 +887,19 @@ void RCBotPluginMeta::BotQuotaCheck() {
 		}
 
 		// Get Bot Quota
-		int bot_target = m_iTargetBots[human_count];
-		const int max_bots = CBots::getMaxBots();
-		const int min_bots = CBots::getMinBots();
-
-		// Use min and max as ceiling and floor
-		if ((max_bots > -1) && (bot_target > max_bots)) {
-			bot_target = max_bots;
-		} else if ((min_bots > -1) && (bot_target < min_bots)) {
-			bot_target = min_bots;
-		}
+		const int bot_target = m_iTargetBots[human_count];
 
 		// Change Bot Quota
 		if (bot_count > bot_target) {
-			if (rcbot_nonrandom_kicking.GetBool()) {
-				CBots::kickChosenBot(static_cast<unsigned>(bot_count - bot_target));
-			} else {
-				CBots::kickRandomBot(static_cast<unsigned>(bot_count - bot_target));
-			}
+			CBots::kickRandomBot(static_cast<unsigned>(bot_count - bot_target));
 			notify = true;
 		}
-		else if ((bot_target > bot_count) && ( CBots::getAddKickBotTime() < engine->Time() )) {
+		else if (bot_target > bot_count) {
 			const int bot_diff = bot_target - bot_count;
 
 			for (int i = 0; i < bot_diff; ++i) {
 				CBots::createBot("", "", "");
-				if (rcbot_addbottime.GetFloat() > 0.0)
-					break;
+				//break; // Bug-Fix, only add one bot at a time
 			}
 
 			notify = true;
@@ -1067,7 +1036,7 @@ const char *RCBotPluginMeta::GetURL()
 	return build_info::url;
 }
 
-#ifdef SM_EXT
+#if defined SM_EXT
 void RCBotPluginMeta::BindToSourcemod()
 {
 	char error[256];

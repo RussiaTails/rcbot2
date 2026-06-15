@@ -24,7 +24,7 @@ void CWaypointDistances::load()
 	if (szMapName && *szMapName)
 	{
 		char filename[1024];
-		CBotGlobals::buildFileName(filename, szMapName, BOT_AUXILERY_FOLDER, BOT_WAYPOINT_DST_EXTENSION, true);
+		CBotGlobals::buildFileName(filename, szMapName, BOT_WAYPOINT_FOLDER, BOT_WAYPOINT_DST_EXTENSION, true);
 
 		std::fstream bfp = CBotGlobals::openFile(filename, std::fstream::in | std::fstream::binary);
 
@@ -37,7 +37,7 @@ void CWaypointDistances::load()
 
 		if ((hdr.maxwaypoints == CWaypoints::MAX_WAYPOINTS) && (hdr.numwaypoints == CWaypoints::numWaypoints()) && (hdr.version == WPT_DIST_VER))
 		{
-			bfp.read(reinterpret_cast<char*>(m_Distances), sizeof(m_Distances));
+			bfp.read(reinterpret_cast<char*>(m_Distances), static_cast<std::streamsize>(sizeof(int) * CWaypoints::MAX_WAYPOINTS) * CWaypoints::MAX_WAYPOINTS);
 		}
 
 		m_fSaveTime = engine->Time() + 100.0f;
@@ -53,7 +53,7 @@ void CWaypointDistances::save()
 		char filename[1024];
 		wpt_dist_hdr_t hdr;
 
-		CBotGlobals::buildFileName(filename, szMapName, BOT_AUXILERY_FOLDER, BOT_WAYPOINT_DST_EXTENSION, true);
+		CBotGlobals::buildFileName(filename, szMapName, BOT_WAYPOINT_FOLDER, BOT_WAYPOINT_DST_EXTENSION, true);
 
 		std::fstream bfp = CBotGlobals::openFile(filename, std::fstream::out | std::fstream::binary);
 
@@ -69,7 +69,7 @@ void CWaypointDistances::save()
 
 		bfp.write(reinterpret_cast<char*>(&hdr), sizeof(wpt_dist_hdr_t));
 
-		bfp.write(reinterpret_cast<char*>(m_Distances), sizeof(m_Distances));
+		bfp.write(reinterpret_cast<char*>(m_Distances), static_cast<std::streamsize>(sizeof(int) * CWaypoints::MAX_WAYPOINTS) * CWaypoints::MAX_WAYPOINTS);
 
 		m_fSaveTime = engine->Time() + 100.0f;
 	}

@@ -106,6 +106,8 @@ enum : std::uint8_t
 	TF2_WEAPON_BAT_GIFTWRAP,
 	TF2_WEAPON_RAYGUN,
 	TF2_WEAPON_SNIPERRIFLE_DECAP,
+	TF2_WEAPON_GRAPPLINGHOOK,
+	TF2_WEAPON_JACK,
 	TF2_WEAPON_MAX
 };
 /*
@@ -240,36 +242,6 @@ enum : std::uint8_t
 
 enum : std::uint8_t
 {
-	FF_WEAPON_CROWBAR = 0,
-	FF_WEAPON_KNIFE,
-	FF_WEAPON_SPANNER,
-	FF_WEAPON_MEDKIT,
-	FF_WEAPON_SHOTGUN,
-	FF_WEAPON_SUPERSHOTGUN,
-	FF_WEAPON_NAILGUN,
-	FF_WEAPON_SUPERNAILGUN,
-	FF_WEAPON_AUTORIFLE,
-	FF_WEAPON_SNIPERRIFLE,
-	FF_WEAPON_RPG,
-	FF_WEAPON_GRENADELAUNCHER,
-	FF_WEAPON_PIPELAUNCHER,
-	FF_WEAPON_FLAMETHROWER,
-	FF_WEAPON_IC,
-	FF_WEAPON_AC,
-	FF_WEAPON_TRANQ,
-	FF_WEAPON_RAILGUN,
-	FF_WEAPON_DEPLOYDETPACK,
-	FF_WEAPON_UMBRELLA,
-	FF_WEAPON_JUMPGUN,
-	FF_WEAPON_TOMMYGUN,
-	FF_WEAPON_DEPLOYDISPENSER,
-	FF_WEAPON_DEPLOYSENTRYGUN,
-	FF_WEAPON_DEPLOYMANCANNON,
-	FF_WEAPON_MAX
-};
-
-enum : std::uint8_t
-{
 	CS_WEAPON_KNIFE = 0,
 	CS_WEAPON_USP,
 	CS_WEAPON_GLOCK,
@@ -333,7 +305,6 @@ extern std::vector<WeaponsData_t> DODWeaps;
 extern std::vector<WeaponsData_t> BMSWeaps;
 extern std::vector<WeaponsData_t> SYNERGYWeaps;
 extern std::vector<WeaponsData_t> CSSWeaps;
-extern std::vector<WeaponsData_t> FFWeaps;
 
 class CWeapon
 {
@@ -388,7 +359,7 @@ public:
 
 	bool isWeaponName(const char* szWeaponName) const
 	{
-		return !std::strcmp(szWeaponName, getWeaponName());
+		return !strcmp(szWeaponName, getWeaponName());
 	}
 
 	bool isShortWeaponName(const char* szWeaponName) const

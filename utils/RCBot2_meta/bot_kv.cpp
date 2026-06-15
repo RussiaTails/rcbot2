@@ -5,109 +5,129 @@
 #include "bot_globals.h"
 
 #include <cstring>
-#include <string>
-#include <algorithm>
 
 #include "rcbot/logging.h"
 
 void CRCBotKeyValueList::parseFile(std::fstream& fp)
 {
-	std::string line;
+	char buffer[2* RCBOT_MAX_KV_LEN];
+	char szKey[RCBOT_MAX_KV_LEN];
+	char szValue[RCBOT_MAX_KV_LEN];
+
 	std::size_t iLine = 0;
 
 	// parse profile ini
-	while (std::getline(fp, line))
+	while (fp.getline(buffer, 255))
 	{
 		iLine++;
 
-		// remove carriage return if present
-		if (!line.empty() && line.back() == '\r')
-		{
-			line.pop_back();
-		}
-
-		if (line.empty() || line[0] == '#') // skip empty lines and comments
+		if ( buffer[0] == '#' ) // skip comment
 			continue;
 
-		std::string key, value;
+		std::size_t iLen = std::strlen(buffer);
+
+		if ( iLen == 0 )
+			continue;
+
+		if ( buffer[iLen-1] == '\n' )
+			buffer[--iLen] = 0;
+
+		if ( buffer[iLen-1] == '\r' )
+			buffer[--iLen] = 0;
+
 		bool bHaveKey = false;
 
-		for (const char c : line)
+		std::size_t iKi = 0;
+		std::size_t iVi = 0;
+
+		for (std::size_t iCi = 0; iCi < iLen; iCi++)
 		{
-			if (c == ' ') // ignore spacing
+			// ignore spacing
+			if ( buffer[iCi] == ' ' )
 				continue;
 
-			if (!bHaveKey)
+			if ( !bHaveKey )
 			{
-				if (c == '=')
+				if ( buffer[iCi] == '=' )
 				{
 					bHaveKey = true;
+					continue;
 				}
-				else
-				{
-					key += c;
-				}
+
+				// parse key
+
+				if ( iKi < RCBOT_MAX_KV_LEN )
+					szKey[iKi++] = buffer[iCi];													
 			}
+			else if ( iVi < RCBOT_MAX_KV_LEN )
+				szValue[iVi++] = buffer[iCi];
 			else
-			{
-				value += c;
-			}
-		}
+				break;
+		}      
 
-		if (key.length() >= RCBOT_MAX_KV_LEN || value.length() >= RCBOT_MAX_KV_LEN)
-		{
-			logger->Log(LogLevel::WARN, "Key or value too long on line %zu in KV file.", iLine);
-			continue;
-		}
+		szKey[iKi] = 0;
+		szValue[iVi] = 0;
 
-		logger->Log(LogLevel::TRACE, "m_KVs.emplace_back(%s,%s)", key.c_str(), value.c_str());
+		logger->Log(LogLevel::TRACE, "m_KVs.emplace_back(%s,%s)", szKey, szValue);
 
-		m_KVs.emplace_back(std::make_unique<CRCBotKeyValue>(key.c_str(), value.c_str()));
+		m_KVs.emplace_back(new CRCBotKeyValue(szKey,szValue));
+
 	}
 }
 
-CRCBotKeyValue* CRCBotKeyValueList::getKV(const char* key) const
+CRCBotKeyValueList :: ~CRCBotKeyValueList()
 {
-	for (const std::unique_ptr<CRCBotKeyValue>& m_KV : m_KVs)
+	for (CRCBotKeyValue*& m_KV : m_KVs)
 	{
-		if (FStrEq(m_KV->getKey(), key))
-			return m_KV.get();
+		delete m_KV;
+		m_KV = nullptr;
+	}
+
+	m_KVs.clear();
+}
+
+CRCBotKeyValue *CRCBotKeyValueList :: getKV ( const char *key ) const
+{
+	for (CRCBotKeyValue* const m_KV : m_KVs)
+	{
+		if ( FStrEq(m_KV->getKey(),key) )
+			return m_KV;
 	}
 
 	return nullptr;
 }
 
-bool CRCBotKeyValueList::getFloat(const char* key, float* val) const
+bool CRCBotKeyValueList :: getFloat ( const char *key, float *val ) const
 {
-	const CRCBotKeyValue* pKV = getKV(key);
+	CRCBotKeyValue* pKV = getKV(key);
 
-	if (!pKV)
+	if ( !pKV )
 		return false;
-
+	
 	*val = static_cast<float>(std::atof(pKV->getValue()));
 
 	return true;
 }
 
-
-bool CRCBotKeyValueList::getInt(const char* key, int* val) const
+	
+bool CRCBotKeyValueList :: getInt ( const char *key, int *val ) const
 {
-	const CRCBotKeyValue* pKV = getKV(key);
+	CRCBotKeyValue* pKV = getKV(key);
 
-	if (!pKV)
+	if ( !pKV )
 		return false;
-
+	
 	*val = std::atoi(pKV->getValue());
 
 	return true;
 }
 
 
-bool CRCBotKeyValueList::getString(const char* key, const char** val) const
+bool CRCBotKeyValueList :: getString (const char* key, const char** val) const
 {
-	const CRCBotKeyValue* pKV = getKV(key);
+	CRCBotKeyValue* pKV = getKV(key);
 
-	if (!pKV)
+	if ( !pKV )
 		return false;
 
 	*val = pKV->getValue();
@@ -115,11 +135,10 @@ bool CRCBotKeyValueList::getString(const char* key, const char** val) const
 	return true;
 }
 
-CRCBotKeyValue::CRCBotKeyValue(const char* szKey, const char* szValue)
+CRCBotKeyValue :: CRCBotKeyValue ( const char *szKey, const char *szValue )
 {
-	std::strncpy(m_szKey, szKey, RCBOT_MAX_KV_LEN - 1);
-	m_szKey[RCBOT_MAX_KV_LEN - 1] = 0;
-
-	std::strncpy(m_szValue, szValue, RCBOT_MAX_KV_LEN - 1);
-	m_szValue[RCBOT_MAX_KV_LEN - 1] = 0;
+	std::strncpy(m_szKey,szKey,RCBOT_MAX_KV_LEN-1);
+	m_szKey[RCBOT_MAX_KV_LEN-1] = 0;
+	std::strncpy(m_szValue,szValue,RCBOT_MAX_KV_LEN-1);
+	m_szValue[RCBOT_MAX_KV_LEN-1] = 0;
 }

@@ -292,8 +292,9 @@ public:
 
 		if ( m_data )
 		{
-			float* x = static_cast<float*>(m_data);
-			*v = Vector(*x, *(x + 1), *(x + 2));
+			static float *x;
+			x = static_cast<float*>(m_data);
+			*v = Vector(*x,*(x+1),*(x+2));
 
 			return true;
 		}
@@ -533,8 +534,8 @@ public:
 
 	static void getAnimatingInfo ( edict_t *edict, float *flCycle, int *iSequence ) 
 	{	
-		*flCycle = g_GetProps[GETPROP_CYCLE].getFloat(edict,0.0f);
-		*iSequence = g_GetProps[GETPROP_SEQUENCE].getInt(edict,0);
+		*flCycle = g_GetProps[GETPROP_CYCLE].getFloat(edict,0);
+		*iSequence = g_GetProps[GETPROP_SEQUENCE].getInt(edict,false);
 	}
 
 	static int getPlayerFlags (edict_t *player) { return g_GetProps[GETPROP_ENTITYFLAGS].getInt(player,0);}

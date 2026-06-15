@@ -68,8 +68,7 @@ class CBotSquad
 {
 public:
 
-	CBotSquad(edict_t* pLeader, edict_t* pMember)
-		: m_fDesiredSpread(0.0f), bCanFire(false), m_CombatType(COMBAT_NONE), m_bIsWaitingForOther(false)                           // Initialize with a default value
+	CBotSquad ( edict_t *pLeader, edict_t *pMember )
 	{
 		SetLeader(pLeader);
 		AddMember(pMember);
@@ -77,8 +76,8 @@ public:
 		Init();
 	}
 
-
-	~CBotSquad() = default;
+	~CBotSquad()
+	= default;
 
 	void Init ();
 

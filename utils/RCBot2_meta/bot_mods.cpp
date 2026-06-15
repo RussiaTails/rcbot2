@@ -220,12 +220,10 @@ void CBotMods::parseFile()
 		else if (curmod && !strcmpi(key, "gamedir"))
 		{
 			std::strncpy(gamefolder, val, 255);
-			gamefolder[255] = '\0';
 		}
 		else if (curmod && !strcmpi(key, "weaponlist"))
 		{
 			std::strncpy(weaponlist, val, 63);
-			weaponlist[63] = '\0';
 		}
 	}
 
@@ -249,11 +247,11 @@ void CBotMods::readMods()
 #elif SOURCE_ENGINE == SE_HL2DM
 	m_Mods.emplace_back(new CHalfLifeDeathmatchMod());
 #elif SOURCE_ENGINE == SE_SDK2013
-	m_Mods.emplace_back(new CFortressForeverMod());
 	m_Mods.emplace_back(new CSynergyMod());
-	m_Mods.emplace_back(new CTF2ClassifiedMod());
 #else
 	//TODO: Add Black Mesa Source support [APG]RoboCop[CL]
+	m_Mods.emplace_back(new CFortressForeverMod());
+
 	m_Mods.emplace_back(new CHLDMSourceMod());
 
 	// Look for extra MODs
@@ -281,7 +279,7 @@ void CBotMod::setup(const char* szModFolder, const eModId iModId, const eBotType
 
 bool CBotMod::isModFolder(const char* szModFolder) const
 {
-	return !strcmpi(m_szModFolder, szModFolder);
+	return FStrEq(m_szModFolder, szModFolder);
 }
 
 char* CBotMod::getModFolder() const
@@ -325,11 +323,6 @@ CBotMod* CBotMods::getMod(char* szModFolder)
 
 	logger->Log(LogLevel::FATAL, "HL2 MODIFICATION \"%s\" NOT FOUND, EXITING... see bot_mods.ini in bot config folder", szModFolder);
 
-	for (CBotMod* const& m_Mod : m_Mods)
-	{
-		logger->Log(LogLevel::FATAL, "Registered mod: \"%s\" (id: %d)", m_Mod->getModFolder(), m_Mod->getModId());
-	}
-
 	return nullptr;
 }
 
@@ -365,31 +358,6 @@ bool CHalfLifeDeathmatchMod::playerSpawned(edict_t* pPlayer)
 	}
 
 	return true;
-}
-
-void CFortressForeverMod::initMod()
-{
-	CWeapons::loadWeapons(m_szWeaponListName == nullptr ? "FF" : m_szWeaponListName, FFWeaps.data());
-}
-
-void CFortressForeverMod::getTeamOnlyWaypointFlags(const int iTeam, int *iOn, int *iOff)
-{
-	if (iTeam == FF_TEAM_BLUE)
-	{
-		*iOn = CWaypointTypes::W_FL_NORED;
-		*iOff = CWaypointTypes::W_FL_NOBLU;
-	}
-	else if (iTeam == FF_TEAM_RED)
-	{
-		*iOn = CWaypointTypes::W_FL_NOBLU;
-		*iOff = CWaypointTypes::W_FL_NORED;
-	}
-}
-
-bool CFortressForeverMod::checkWaypointForTeam(CWaypoint *pWpt, const int iTeam)
-{
-	return (!pWpt->hasFlag(CWaypointTypes::W_FL_NOBLU) || iTeam != FF_TEAM_BLUE) &&
-		   (!pWpt->hasFlag(CWaypointTypes::W_FL_NORED) || iTeam != FF_TEAM_RED);
 }
 
 void CHalfLifeDeathmatchMod::initMod()

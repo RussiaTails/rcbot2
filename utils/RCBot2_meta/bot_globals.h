@@ -65,11 +65,13 @@ public:
 
 	static QAngle playerAngles ( edict_t *pPlayer );
 
-	static bool isPlayer(const edict_t* pEdict)
+	static bool isPlayer (const edict_t* pEdict)
 	{
-		const int index = ENTINDEX(pEdict);
+		static int index;
 
-		return index > 0 && index <= gpGlobals->maxClients;
+		index = ENTINDEX(pEdict);
+
+		return index>0&&index<=gpGlobals->maxClients;
 	}
 
 	static bool walkableFromTo (edict_t *pPlayer, const Vector& v_src, const Vector& v_dest);
@@ -95,9 +97,7 @@ public:
 	static float DotProductFromOrigin ( edict_t *pEnemy, const Vector& pOrigin );
 	static float DotProductFromOrigin (const Vector& vPlayer, const Vector& vFacing, const QAngle& eyes );
 
-	static int numPlayersPlaying();
 	static int numPlayersOnTeam(int iTeam, bool bAliveOnly);
-	static int numBotsOnTeam(int iTeam, bool bAliveOnly);
 	static void setMapName ( const char *szMapName );
 	static char *getMapName (); 
 
