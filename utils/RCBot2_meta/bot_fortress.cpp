@@ -942,11 +942,12 @@ void CBotFortress ::wantToDisguise(const bool bSet)
 
 	const char* szmapname = mapname.ToCStr();
 
-	if ((rcbot_tf2_debug_spies_cloakdisguise.GetBool()) 
-		&& !(CTeamFortress2Mod::isMapType(TF_MAP_ZI) 
-		|| CTeamFortress2Mod::isMapType(TF_MAP_SAXTON) || CTeamFortress2Mod::isMapType(TF_MAP_BOSS) 
-		|| std::strncmp(szmapname, "ph_", 3) == 0) || ((std::strncmp(szmapname, "koth_lakeside_event", 19) == 0 
-		|| std::strncmp(szmapname, "koth_viaduct_event", 18) == 0) && !(CTeamFortress2Mod::isBossSummoned())))
+	if ((rcbot_tf2_debug_spies_cloakdisguise.GetBool() &&
+		!(CTeamFortress2Mod::isMapType(TF_MAP_ZI) || CTeamFortress2Mod::isMapType(TF_MAP_BOSS) || 
+		CTeamFortress2Mod::isMapType(TF_MAP_SAXTON))) ||
+		((std::strncmp(szmapname, "koth_lakeside_event", 19) == 0 ||
+			std::strncmp(szmapname, "koth_viaduct_event", 18) == 0) &&
+			!CTeamFortress2Mod::isBossSummoned()))
 	{
 		if ( bSet )
 			m_fSpyDisguiseTime = 0.0f;
@@ -2297,18 +2298,22 @@ void CBotTF2 :: spyDisguise (const int iTeam, const byte iClass)
 
 	//char cmd[256];
 
-	if ((iTeam == 3) 
-		&& !(CTeamFortress2Mod::isMapType(TF_MAP_ZI) 
-		|| CTeamFortress2Mod::isMapType(TF_MAP_SAXTON) || CTeamFortress2Mod::isMapType(TF_MAP_BOSS)) 
-		|| ((std::strncmp(szmapname, "koth_lakeside_event", 19) == 0 
-		|| std::strncmp(szmapname, "koth_viaduct_event", 18) == 0) && !(CTeamFortress2Mod::isBossSummoned())))
+	if (((iTeam == 3) &&
+		!(CTeamFortress2Mod::isMapType(TF_MAP_ZI) || CTeamFortress2Mod::isMapType(TF_MAP_SAXTON) || CTeamFortress2Mod::isMapType(TF_MAP_BOSS))) ||
+		((std::strncmp(szmapname, "koth_lakeside_event", 19) == 0 ||
+			std::strncmp(szmapname, "koth_viaduct_event", 18) == 0) &&
+			!CTeamFortress2Mod::isBossSummoned()))
+	{
 		m_iImpulse = 230 + iClass;
-	else if ((iTeam == 2) && !(CTeamFortress2Mod::isMapType(TF_MAP_ZI) 
-		|| CTeamFortress2Mod::isMapType(TF_MAP_SAXTON) 
-		|| CTeamFortress2Mod::isMapType(TF_MAP_BOSS)) 
-		|| ((std::strncmp(szmapname, "koth_lakeside_event", 19) == 0 
-		|| std::strncmp(szmapname, "koth_viaduct_event", 18) == 0) && !(CTeamFortress2Mod::isBossSummoned())))
+	}
+	else if (((iTeam == 2) &&
+		!(CTeamFortress2Mod::isMapType(TF_MAP_ZI) || CTeamFortress2Mod::isMapType(TF_MAP_SAXTON) || CTeamFortress2Mod::isMapType(TF_MAP_BOSS))) ||
+		((std::strncmp(szmapname, "koth_lakeside_event", 19) == 0 ||
+			std::strncmp(szmapname, "koth_viaduct_event", 18) == 0) &&
+			!CTeamFortress2Mod::isBossSummoned()))
+	{
 		m_iImpulse = 220 + iClass;
+	}
 
 	m_fDisguiseTime = engine->Time();
 	m_iDisguiseClass = iClass;
@@ -3436,13 +3441,12 @@ void CBotTF2::modThink()
 		m_fDoubleJumpTime = 0;
 	}
 
-	if ( m_pSchedules->isCurrentSchedule(SCHED_GOTO_ORIGIN) && (m_fPickupTime < engine->Time()) 
-		&& (bNeedHealth || bNeedAmmo) && (!m_pEnemy && !hasSomeConditions(CONDITION_SEE_CUR_ENEMY)) )
+	if ( m_pSchedules->isCurrentSchedule(SCHED_GOTO_ORIGIN) && (m_fPickupTime < engine->Time()) && (bNeedHealth || bNeedAmmo) && (!m_pEnemy && !hasSomeConditions(CONDITION_SEE_CUR_ENEMY)) )
 	{
-		if ( (m_fPickupTime<engine->Time()) && m_pNearestDisp 
-			&& !m_pSchedules->isCurrentSchedule(SCHED_USE_DISPENSER) )
+		if ( (m_fPickupTime<engine->Time()) && m_pNearestDisp && !m_pSchedules->isCurrentSchedule(SCHED_USE_DISPENSER) )
 		{
 			if (std::fabs(CBotGlobals::entityOrigin(m_pNearestDisp).z - getOrigin().z) < static_cast<float>(BOT_JUMP_HEIGHT))
+
 			{
 				m_pSchedules->removeSchedule(SCHED_USE_DISPENSER);
 				m_pSchedules->addFront(new CBotUseDispSched(this,m_pNearestDisp));
@@ -6689,7 +6693,6 @@ bool CBotTF2 :: executeAction ( CBotUtility *util )//eBotAction id, CWaypoint *p
 			if (CTeamFortress2Mod::isMapType(TF_MAP_MVM))
 			{
 				pWaypoint = CTeamFortress2Mod::getBestWaypointMVM(this, CWaypointTypes::W_FL_SNIPER);
-				/*
 				Vector vFlagLocation;
 
 				if ( CTeamFortress2Mod::getFlagLocation(TF2_TEAM_BLUE,&vFlagLocation) )
