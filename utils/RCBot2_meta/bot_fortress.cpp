@@ -6233,14 +6233,11 @@ bool CBotTF2 :: executeAction ( CBotUtility *util )//eBotAction id, CWaypoint *p
 			}
 			return true;
 		case BOT_UTIL_GOTODISP:
-			if ((CTeamFortress2Mod::isDispenser(m_pEdict, getTeam())) && (std::strcmp(model.ToCStr(), "models/buildables/amplifier_test/amplifier.mdl") == 0))
-				return false;
-			else
-				m_pSchedules->removeSchedule(SCHED_USE_DISPENSER);
-				m_pSchedules->addFront(new CBotUseDispSched(this,m_pNearestDisp));
+			m_pSchedules->removeSchedule(SCHED_USE_DISPENSER);
+			m_pSchedules->addFront(new CBotUseDispSched(this,m_pNearestDisp));
 
-				m_fPickupTime = engine->Time() + randomFloat(6.0f,20.0f);
-				return true;
+			m_fPickupTime = engine->Time() + randomFloat(6.0f,20.0f);
+			return true;
 		case BOT_UTIL_ENGI_MOVE_SENTRY:
 			if ( m_pSentryGun.get() )
 			{
