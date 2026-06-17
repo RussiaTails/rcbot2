@@ -623,12 +623,9 @@ bool CTeamFortress2Mod::isBoss(edict_t* pEntity, const int iTeam, float* fFactor
 	{
 		if (m_pBoss.get() == pEntity)
 			return true;
-		if (std::strcmp(pEntity->GetClassName(), "base_boss") == 0 && 
-			(!std::strncmp(szmapname, "pl_candyland", 12) == 0 
-			|| !std::strncmp(szmapname, "pl_futura", 9) == 0 
-			|| !std::strncmp(szmapname, "cp_futura", 9) == 0) 
-			|| std::strcmp(pEntity->GetClassName(), "tf_robot_botler") == 0 
-			|| std::strcmp(pEntity->GetClassName(), "prop_soccer_ball") == 0) // For Krampus and any other NPCs which uses base_boss entity - RussiaTails
+		if (std::strcmp(pEntity->GetClassName(), "base_boss") == 0 || // For Krampus and any other NPCs which uses base_boss entity - RussiaTails
+			std::strcmp(pEntity->GetClassName(), "tf_robot_botler") == 0 || // Botler Robots from Embargo entity - RussiaTails
+			std::strcmp(pEntity->GetClassName(), "prop_soccer_ball") == 0)
 		{
 			m_pBoss = pEntity;
 			return true;
