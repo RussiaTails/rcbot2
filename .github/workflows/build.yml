@@ -14,20 +14,19 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          #- ubuntu-22.04 # appears to no longer work - especially forcing using GCC instead of Clang
-          - ubuntu-latest
+          - ubuntu-22.04
           - windows-x32
           - windows-x64
         include:
-          #- os: ubuntu-22.04
-          #  os_short: linux-legacy
-          #  os_version: ubuntu-22.04
-          #  package_ext: tar.gz
-          #  dbg_ext: dbg
-          #  cc: gcc
-          #  cxx: g++
-          #  vs_arch: unused
-          #  am_arch: x86,x86_64
+          - os: ubuntu-22.04
+            os_short: linux-legacy
+            os_version: ubuntu-22.04
+            package_ext: tar.gz
+            dbg_ext: dbg
+            cc: clang
+            cxx: clang++
+            vs_arch: unused
+            am_arch: x86,x86_64
             
           - os: ubuntu-latest
             os_short: linux-latest
@@ -66,12 +65,12 @@ jobs:
         sudo dpkg --add-architecture i386
         sudo apt-get update
         sudo apt-get install -y clang g++-multilib
-        echo "CC=${{ matrix.cc }}" >> $GITHUB_ENV
-        echo "CXX=${{ matrix.cxx }}" >> $GITHUB_ENV
+        echo "CC=clang" >> $GITHUB_ENV
+        echo "CXX=clang++" >> $GITHUB_ENV
 
     - name: Add msbuild to PATH (Windows)
       if: runner.os == 'Windows'
-      uses: microsoft/setup-msbuild@v3
+      uses: microsoft/setup-msbuild@v2
 
     - name: Install (Windows)
       if: runner.os == 'Windows'
@@ -88,7 +87,7 @@ jobs:
         )
 
     - name: Setup Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
 
@@ -99,7 +98,7 @@ jobs:
         pip install git+https://github.com/alliedmodders/ambuild
 
     - name: Fetch RCBot2
-      uses: actions/checkout@v6
+      uses: actions/checkout@v4
       with:
         path: rcbot2
         submodules: recursive
@@ -112,72 +111,19 @@ jobs:
         python3 ../configure.py --sdks=present --mms-path="${{ github.workspace }}/rcbot2/alliedmodders/metamod-source" --sm-path="${{ github.workspace }}/rcbot2/alliedmodders/sourcemod" --hl2sdk-root="${{ github.workspace }}/rcbot2/alliedmodders" --symbol-files --target ${{ matrix.am_arch }} --enable-optimize
         ambuild
 
-    - uses: benjlevesque/short-sha@v3.0
+    - uses: benjlevesque/short-sha@v2.2
       id: short-sha
 
     - name: Upload Binary
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@v4
       with:
         name: rcbot2-${{ matrix.os_short }}-${{ steps.short-sha.outputs.sha }}
         path: |
             rcbot2/post/package/*
 
     - name: Upload Debug Symbols
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@v4
       with:
         name: rcbot2-dbgsym-${{ matrix.os_short }}-${{ steps.short-sha.outputs.sha }}
         path: |
             rcbot2/post/**/*.${{ matrix.dbg_ext }}
-
-  combine_windows:
-    name: Combine Windows Builds
-    needs: build_main
-    runs-on: ubuntu-latest
-    steps:
-      - uses: benjlevesque/short-sha@v3.0
-        id: short-sha
-      
-      - name: Download Win32 artifact
-        uses: actions/download-artifact@v7
-        with:
-          name: rcbot2-win32-${{ steps.short-sha.outputs.sha }}
-          path: combined/win32
-      
-      - name: Download Win64 artifact
-        uses: actions/download-artifact@v7
-        with:
-          name: rcbot2-win64-${{ steps.short-sha.outputs.sha }}
-          path: combined/win64
-      
-      - name: Upload Combined Windows Artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: rcbot2-windows-${{ steps.short-sha.outputs.sha }}
-          path: combined/
-
-      - name: Download Win32 Debug Symbols
-        uses: actions/download-artifact@v7
-        with:
-          name: rcbot2-dbgsym-win32-${{ steps.short-sha.outputs.sha }}
-          path: combined-dbgsym/win32
-      
-      - name: Download Win64 Debug Symbols
-        uses: actions/download-artifact@v7
-        with:
-          name: rcbot2-dbgsym-win64-${{ steps.short-sha.outputs.sha }}
-          path: combined-dbgsym/win64
-      
-      - name: Upload Combined Windows Debug Symbols
-        uses: actions/upload-artifact@v7
-        with:
-          name: rcbot2-dbgsym-windows-${{ steps.short-sha.outputs.sha }}
-          path: combined-dbgsym/
-
-      - name: Delete Individual Windows Artifacts
-        uses: geekyeggo/delete-artifact@v6
-        with:
-          name: |
-            rcbot2-win32-${{ steps.short-sha.outputs.sha }}
-            rcbot2-win64-${{ steps.short-sha.outputs.sha }}
-            rcbot2-dbgsym-win32-${{ steps.short-sha.outputs.sha }}
-            rcbot2-dbgsym-win64-${{ steps.short-sha.outputs.sha }}
