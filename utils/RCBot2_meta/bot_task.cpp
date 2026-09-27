@@ -545,19 +545,18 @@ void CDODWaitForGrenadeTask :: execute (CBot *pBot,CBotSchedule *pSchedule)
 		complete();
 	else if ( m_fTime <= 0.0f )
 	{
-		CDODBot *pDODBot = static_cast<CDODBot*>(pBot);
-
 		m_fTime = engine->Time() + randomFloat(3.0f,5.0f);
 
-		pDODBot->prone();
+		// Only DoD bots can go prone - TF2/FF grenade avoidance queues this task too - [APG]RoboCop[CL]
+		if ( CBotGlobals::isMod(MOD_DOD) )
+			static_cast<CDODBot*>(pBot)->prone();
 	}
 	else if ( m_fTime < engine->Time() )
 	{
-		CDODBot *pDODBot = static_cast<CDODBot*>(pBot);
-
 		complete();
 
-		pDODBot->unProne();
+		if ( CBotGlobals::isMod(MOD_DOD) )
+			static_cast<CDODBot*>(pBot)->unProne();
 	}
 }
 
