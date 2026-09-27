@@ -299,10 +299,11 @@ void RCBotPluginMeta::BroadcastTextMessage(const char* szMessage)
 
 bf_write *RCBotPluginMeta::Hook_UserMessageBegin(IRecipientFilter *pFilter, int iMsgType)
 {
-	// Resolve the message index once (-2 = looked up and not present, so we stop searching).
+	// Resolve the message indices once (-2 = looked up and not present, so we stop searching).
 	if (m_iSetPlayerLocationMsg == -1)
 	{
 		m_iSetPlayerLocationMsg = -2;
+		m_iFFHudLuaMsg = -2;
 
 		int iId = 0;
 		char szName[64];
@@ -311,19 +312,24 @@ bf_write *RCBotPluginMeta::Hook_UserMessageBegin(IRecipientFilter *pFilter, int 
 		while (servergamedll->GetUserMessageInfo(iId, szName, sizeof(szName) - 1, iSize))
 		{
 			if (std::strcmp(szName, "SetPlayerLocation") == 0)
-			{
 				m_iSetPlayerLocationMsg = iId;
-				break;
-			}
+			else if (std::strcmp(szName, "FF_HudLua") == 0) // FF: carries the control-point icons
+				m_iFFHudLuaMsg = iId;
 
 			iId++;
 		}
 	}
 
+	bf_write *pOrigBuf = META_RESULT_ORIG_RET(bf_write *);
+
 	if (iMsgType == m_iSetPlayerLocationMsg && pFilter != nullptr && pFilter->GetRecipientCount() > 0)
 	{
 		m_iPendingLocationRecipient = pFilter->GetRecipientIndex(0); // player entindex
-		m_pPendingLocationBuf = META_RESULT_ORIG_RET(bf_write *);    // buffer FF writes the name into
+		m_pPendingLocationBuf = pOrigBuf;                            // buffer FF writes the name into
+	}
+	else if (iMsgType == m_iFFHudLuaMsg)
+	{
+		m_pPendingHudLuaBuf = pOrigBuf; // buffer holding the HUD element data
 	}
 
 	RETURN_META_VALUE(MRES_IGNORED, nullptr);
