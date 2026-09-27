@@ -1107,10 +1107,10 @@ void CDODBombPlanted :: execute ( IBotEventInterface *pEvent )
 		}
 	}*/
 
-	CBots::botFunction(&func);
-
+	// set the state before the broadcast: bots inspect m_Flags while handling this
 	CDODMod::m_Flags.setBombPlanted(cp,true);
 
+	CBots::botFunction(&func);
 }
 
 void CDODRoundStart :: execute ( IBotEventInterface *pEvent )

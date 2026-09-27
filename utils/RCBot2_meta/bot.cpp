@@ -1688,9 +1688,9 @@ bool CBot :: hurt ( edict_t *pAttacker, const int iHealthNow, const bool bDontHi
 	// TODO: replace with perceptron method
 	if ( m_iAccumulatedDamage > m_pPlayerInfo->GetMaxHealth() * m_pProfile->m_fBraveness )
 	{
-		if ( !bDontHide )
+		// Only start a hide if one isn't already running, like every other caller - [APG]RoboCop[CL]
+		if ( !bDontHide && !m_pSchedules->hasSchedule(SCHED_GOOD_HIDE_SPOT) )
 		{
-			m_pSchedules->removeSchedule(SCHED_GOOD_HIDE_SPOT);
 			m_pSchedules->addFront(new CGotoHideSpotSched(this,m_vHurtOrigin));
 		}
 

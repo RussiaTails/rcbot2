@@ -340,7 +340,7 @@ edict_t *CBotGlobals :: findPlayerByTruncName ( const char *name )
 
 			IPlayerInfo* pInfo = playerinfomanager->GetPlayerInfo(pent);
 			
-			if ( pInfo == nullptr)
+			if ( pInfo == nullptr )
 				continue;
 
 			std::strcpy(pent_lwr,pInfo->GetName());

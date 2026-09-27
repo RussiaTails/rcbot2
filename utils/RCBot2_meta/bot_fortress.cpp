@@ -4051,7 +4051,9 @@ bool CBotFortress :: wantToFollowEnemy ()
 void CBotTF2 ::voiceCommand (const byte voiceCmd)
 {
 	char scmd[64];
-	u_VOICECMD vcmd;
+	// zero-initialised so the union's unused bits are clear before the
+	// menu/extra-info bit-fields are read back out
+	u_VOICECMD vcmd{};
 
 	vcmd.voicecmd = voiceCmd;
 
