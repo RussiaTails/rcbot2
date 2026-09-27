@@ -24,6 +24,13 @@ ConVar rcbot_ff_sniper_charge("rcbot_ff_sniper_charge", "2.0", 0, "FF sniper-rif
 
 ConVar rcbot_ranged_strafe("rcbot_ranged_strafe", "1", 0, "FF/TF2/HL2DM bots strafe side-to-side during ranged firefights to be harder to hit (0 = stand still). Not applied to Counter-Strike (recoil widens with movement).");
 ConVar rcbot_melee_fallback_dist("rcbot_melee_fallback_dist", "150", 0, "Max distance a bot charges to melee when it has no usable ranged weapon (lower = less melee-rushing)");
+// FF HWGuy assault cannon scatter: aim wander per unit of target distance
+// (0.05 = ~30u of wander at 600u range). 0 restores pinpoint tracking. [APG]RoboCop[CL]
+ConVar rcbot_ff_ac_spread("rcbot_ff_ac_spread", "0.05", 0, "FF assault cannon aim scatter per unit of target distance (0 = pinpoint)");
+
+// FF pogo-hops while travelling: keeps a bot at full speed instead of bleeding it to ground
+// friction (FF only damps speed above 1.7x maxspeed). [APG]RoboCop[CL]
+ConVar rcbot_ff_bunnyhop("rcbot_ff_bunnyhop", "1", 0, "FF bots bunnyhop while travelling out of combat (0 = always run)");
 
 ConVar bot_cmd_enable_wpt_sounds("rcbot_enable_wpt_sounds", "1", 0, "Enable/disable sound effects when editing waypoints");
 //ConVar bot_general_difficulty("rcbot_skill", "0.8", 0, "General difficulty of the bots. 0.5 = stock, < 0.5 easier, > 0.5 = harder");//TODO: Broken! [APG]RoboCop[CL]
@@ -40,7 +47,7 @@ ConVar bot_waypointpathdist("rcbot_wpt_pathdist", "400", 0, "Length for waypoint
 
 ConVar bot_rj("rcbot_rj", "0.01", 0, "time for soldier to fire rocket after jumping");
 ConVar bot_defrate("rcbot_defrate", "0.2", 0, "rate for bots to defend");
-ConVar bot_beliefmulti("rcbot_beliefmulti", "20.0", 0, "multiplier for increasing bot belief"); //Not referenced properly? [APG]RoboCop[CL]
+ConVar bot_beliefmulti("rcbot_beliefmulti", "20.0", 0, "multiplier for increasing bot belief");
 ConVar bot_belief_fade("rcbot_belief_fade", "0.75", 0, "the multiplayer rate bot belief decreases");
 ConVar bot_change_class("rcbot_change_classes", "0", 0, "bots change classes at random intervals");
 ConVar bot_use_vc_commands("rcbot_voice_cmds", "1", 0, "bots use voice commands e.g. medic/spy etc");

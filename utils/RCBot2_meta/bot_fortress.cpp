@@ -460,10 +460,14 @@ float CBotFortress :: getHealFactor ( edict_t *pPlayer )
 	// 5. etc
 	float fFactor = 0.0f;
 	float fLastCalledMedic;
+
 	bool bHeavyClass = false;
 	edict_t *pMedigun = CTeamFortress2Mod::getMediGun(m_pEdict);
+
 	Vector vVel = Vector(0,0,0);
+
 	int iHighestScore = CTeamFortress2Mod::getHighestScore();
+
 	// adds extra factor to players who have recently shouted MEDIC!
 	if (!CBotGlobals::isPlayer(pPlayer))
 	{

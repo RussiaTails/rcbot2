@@ -566,14 +566,14 @@ void CClient :: think ()
 							                        m_iAutoEventWaypointTeam == 0
 								                        ? m_iAutoEventWaypoint
 								                        : (m_iAutoEventWaypoint | m_iAutoEventWaypointTeamOn) & ~
-								                        m_iAutoEventWaypointTeamOff, true, cmd.viewangles.y, 0, 32.0f);
+								                        m_iAutoEventWaypointTeamOff, true, static_cast<int>(cmd.viewangles.y), 0, 32.0f);
 					}
 					else
 						CWaypoints::addWaypoint(m_pPlayer, m_vAutoEventWaypointOrigin,
 						                        m_iAutoEventWaypointTeam == 0
 							                        ? m_iAutoEventWaypoint
 							                        : (m_iAutoEventWaypoint | m_iAutoEventWaypointTeamOn) & ~
-							                        m_iAutoEventWaypointTeamOff, true, cmd.viewangles.y, 0, 32.0f);
+							                        m_iAutoEventWaypointTeamOff, true, static_cast<int>(cmd.viewangles.y), 0, 32.0f);
 					//}
 					/*else
 					{

@@ -128,6 +128,12 @@ rcbot_ff_grenades 1
 rcbot_ff_grenade_cook 1.8
 # Chance 0..1 an FF bot throws a grenade when a valid opportunity arises
 rcbot_ff_grenade_chance 0.5
+# FF assault cannon aim scatter per unit of target distance (0 = pinpoint)
+rcbot_ff_ac_spread 0.05
+# FF sniper-rifle charge/hold time (s) before the shot is released; clamped 0.5..5.0 (full charge is 5.0s)
+rcbot_ff_sniper_charge 2.0
+# FF bots bunnyhop while travelling out of combat (0 = always run)
+rcbot_ff_bunnyhop 1
 #
 ######## TF2 Settings ########
 #
